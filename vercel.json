@@ -5,7 +5,11 @@
     { "source": "/barsaat", "destination": "/products/barsaat" },
     { "source": "/agni", "destination": "/products/agni" },
     { "source": "/noor", "destination": "/products/noor" },
-    { "source": "/aarav", "destination": "/products/aarav" }
+    { "source": "/aarav", "destination": "/products/aarav" },
+    { "source": "/pins-and-art-print", "destination": "/products/pins-and-art-print" },
+    { "source": "/action-keychains", "destination": "/products/action-keychains" },
+    { "source": "/character-mug", "destination": "/products/character-mug" },
+    { "source": "/iphone-15-case", "destination": "/products/iphone-15-case" }
   ],
   "headers": [
     {
