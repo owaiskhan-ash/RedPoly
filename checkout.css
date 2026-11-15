@@ -47,9 +47,6 @@
 .checkout-summary .checkout-overline{color:#d5ff35}
 .checkout-summary h2{font-size:32px}
 .checkout-summary__top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:17px;border-bottom:1px solid rgba(255,255,255,.2)}
-.checkout-edit-bag{flex:none;padding:8px 10px;border:1px solid rgba(200,255,0,.65);color:#d5ff35;font-size:8px;font-weight:900;letter-spacing:.8px}
-.checkout-edit-bag:hover{background:#c8ff00;color:#171512}
-.checkout-edit-bag:focus-visible{outline:3px solid #ff6b1a;outline-offset:3px}
 .checkout-items{display:flex;flex-direction:column;gap:0}
 .checkout-line{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.14)}
 .checkout-line h3{font:17px/1 'Anton',sans-serif;text-transform:uppercase}
@@ -147,3 +144,52 @@
 .thankyou-line--reward{color:#496600}
 @media(max-width:440px){.checkout-line__image{width:44px;height:44px}.shipping-option{grid-template-columns:auto 31px minmax(0,1fr) auto;gap:6px;padding:7px}.shipping-option__icon{width:30px;height:30px}}
 @media(prefers-reduced-motion:reduce){.shipping-option{transition:none}}
+
+/* Checkout flow: details, then shipping, then payment. The bag is edited in the summary, and the total stays in reach. */
+.shipping-step{margin-top:25px;padding:18px;background:#24201c;color:#fff4e1;border:2px solid #eac338;box-shadow:5px 5px 0 #eac338}
+.shipping-step .checkout-overline{color:#d5ff35}
+.shipping-step h2{font-size:26px}
+.shipping-step .checkout-shipping-methods{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px;padding:0;border:0}
+.shipping-step .shipping-option{padding:12px 11px}
+.shipping-step .shipping-option__copy strong{font-size:11px}
+.shipping-step .shipping-option__copy small{font-size:10px}
+.shipping-step .shipping-option__price{font-size:13px}
+.shipping-step .shipping-option:has(input:focus-visible){outline:2px solid #ff6b1a;outline-offset:2px}
+.shipping-step .shipping-method-status{margin-top:11px;font-size:10px;font-weight:700}
+.shipping-step .delivery-promise{margin-top:10px;padding:11px 13px;color:#171512;box-shadow:none}
+.checkout-summary__count{flex:none;padding:7px 9px;border:1px solid rgba(200,255,0,.55);color:#d5ff35;font-size:8px;font-weight:900;letter-spacing:.9px}
+.checkout-summary__count:empty{display:none}
+.checkout-line{align-items:flex-start}
+.checkout-line__copy{flex:1;min-width:0}
+.checkout-line__controls{display:flex;align-items:center;gap:12px;margin-top:10px}
+.checkout-stepper{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.38)}
+.checkout-stepper__button{display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff4e1;font-size:18px;line-height:1;cursor:pointer}
+.checkout-stepper__button:hover{background:#c8ff00;color:#171512}
+.checkout-stepper__amount{min-width:28px;text-align:center;font-size:12px;font-weight:900}
+.checkout-line__remove{padding:10px 2px;border:0;background:transparent;color:#ff9a69;font-size:8px;font-weight:900;letter-spacing:.9px;text-decoration:underline;cursor:pointer}
+.checkout-line__remove:hover{color:#fff}
+.checkout-stepper__button:focus-visible,.checkout-line__remove:focus-visible,.checkout-undo:focus-visible,.checkout-paybar button:focus-visible,.checkout-assurance a:focus-visible{outline:2px solid #ff6b1a;outline-offset:2px}
+.checkout-undo{display:block;margin-top:12px;padding:9px 11px;border:1px dashed rgba(200,255,0,.6);background:transparent;color:#d5ff35;font-size:8px;font-weight:900;letter-spacing:.8px;text-align:left;cursor:pointer}
+.checkout-undo:hover{background:rgba(200,255,0,.12)}
+.checkout-undo[hidden]{display:none}
+.checkout-bag-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.checkout-assurance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:6px;padding-top:15px;border-top:1px dashed #b3ac9f;list-style:none}
+.checkout-assurance li{display:flex;align-items:flex-start;gap:9px;min-width:0}
+.checkout-assurance svg{flex:none;width:22px;height:22px;margin-top:1px;fill:none;stroke:#4c6600;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.checkout-assurance strong{display:block;color:#171512;font-size:9px;letter-spacing:.9px}
+.checkout-assurance span{display:block;margin-top:4px;color:#5b554d;font-size:10px;line-height:1.5}
+.checkout-assurance a{color:#3a2f9c;font-weight:800;text-decoration:underline;white-space:nowrap}
+.checkout-paybar{display:none}
+@media(max-width:760px){
+ .checkout-paybar{position:fixed;z-index:60;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(16,16,13,.97);border-top:2px solid #c8ff00;box-shadow:0 -8px 22px rgba(0,0,0,.35);transform:translateY(110%);visibility:hidden;transition:transform .2s ease,visibility 0s .2s}
+ .checkout-paybar.is-visible{transform:none;visibility:visible;transition:transform .2s ease}
+ .checkout-paybar p{display:flex;flex-direction:column;gap:4px}
+ .checkout-paybar p span{color:#aaa69c;font-size:8px;font-weight:900;letter-spacing:1.4px}
+ .checkout-paybar p strong{color:#c8ff00;font:27px/.95 'Anton',sans-serif}
+ .checkout-paybar button{display:flex;align-items:center;gap:10px;padding:14px 15px;border:2px solid #171512;background:#c8ff00;color:#171512;font-size:10px;font-weight:900;letter-spacing:1px;box-shadow:3px 3px 0 #ff6b1a}
+ .checkout-paybar button:disabled{opacity:.55;cursor:not-allowed}
+}
+@media(max-width:1000px){.shipping-step .checkout-shipping-methods{grid-template-columns:1fr;gap:8px}.checkout-assurance{grid-template-columns:1fr;gap:11px}}
+@media(min-width:560px) and (max-width:760px){.shipping-step .checkout-shipping-methods{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.checkout-assurance{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
+@media(max-width:440px){.shipping-step{padding:14px}.checkout-stepper__button{width:38px;height:38px}}
+@media(prefers-reduced-motion:reduce){.checkout-paybar,.checkout-paybar.is-visible{transition:none}}

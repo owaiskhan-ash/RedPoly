@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=origin-comic-20261114" />
-  <link rel="stylesheet" href="/checkout.css?v=checkout-demo-20261115-v8" />
-  <script src="/checkout.js?v=checkout-demo-20261115-v8" defer></script>
+  <link rel="stylesheet" href="/checkout.css?v=checkout-flow-20261116-v9" />
+  <script src="/checkout.js?v=checkout-flow-20261116-v9" defer></script>
 </head>
 <body class="checkout-page">
   <header class="checkout-header"><a href="/" class="checkout-brand" aria-label="REDPOLY home"><img src="/assets/images/redpoly/redpoly-logo.png" alt="REDPOLY" width="1353" height="711" /><span>CREATURE CLUB</span></a><a href="/#accessories" class="checkout-back">KEEP EXPLORING <span aria-hidden="true">↗</span></a></header>
@@ -23,7 +23,6 @@
       <section class="checkout-form-panel" aria-labelledby="checkout-form-title">
         <p class="checkout-overline">01 / YOUR DETAILS</p>
         <h2 id="checkout-form-title">DELIVERY DETAILS</h2>
-        <div class="delivery-promise"><span aria-hidden="true">⚡</span><p><strong id="delivery-estimate-title">4-DAY STANDARD DELIVERY</strong><br /><span id="delivery-estimate-copy">Estimated to valid PIN codes across India</span></p></div>
         <form id="demo-checkout-form" novalidate>
           <div class="checkout-fields">
             <label class="field field--wide">FULL NAME<input name="customer-name" autocomplete="name" required placeholder="Your name" /></label>
@@ -35,8 +34,18 @@
             <label class="field">STATE<input id="checkout-state" name="state" autocomplete="address-level1" required placeholder="Auto-detected from PIN" /></label>
             <p class="pin-lookup-status" id="pin-lookup-status" role="status" aria-live="polite">Enter a 6-digit PIN to look up city and state. If lookup is unavailable, fill them in manually.</p>
           </div>
+          <div class="shipping-step">
+            <p class="checkout-overline">02 / SHIPPING</p>
+            <h2 id="shipping-title">DELIVERY SPEED</h2>
+            <div class="checkout-shipping-methods" id="shipping-methods" role="radiogroup" aria-labelledby="shipping-title">
+              <label class="shipping-option" for="shipping-standard"><input id="shipping-standard" type="radio" name="shipping-method" value="standard" checked /><span class="shipping-option__icon shipping-option__icon--standard" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="shipping-option__copy"><strong>STANDARD</strong><small>4-day delivery</small></span><strong class="shipping-option__price" id="shipping-standard-price">₹30</strong></label>
+              <label class="shipping-option" for="shipping-express"><input id="shipping-express" type="radio" name="shipping-method" value="express" /><span class="shipping-option__icon shipping-option__icon--express" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.5 2.5 5 13h6l-.5 8.5L19 10h-6z"/></svg></span><span class="shipping-option__copy"><strong>EXPRESS</strong><small>2-day delivery</small></span><strong class="shipping-option__price" id="shipping-express-price">₹120</strong></label>
+            </div>
+            <p class="shipping-method-status" id="shipping-method-status" role="status" aria-live="polite"></p>
+            <div class="delivery-promise"><span aria-hidden="true">⚡</span><p><strong id="delivery-estimate-title">4-DAY STANDARD DELIVERY</strong><br /><span id="delivery-estimate-copy">Estimated to valid PIN codes across India</span></p></div>
+          </div>
           <div class="demo-payment" aria-labelledby="payment-title">
-            <div class="demo-payment__heading"><div><p class="checkout-overline">02 / PAYMENT PREVIEW</p><h2 id="payment-title">FAKE CARD DETAILS</h2></div><span class="demo-stamp">TEST<br />ONLY</span></div>
+            <div class="demo-payment__heading"><div><p class="checkout-overline">03 / PAYMENT PREVIEW</p><h2 id="payment-title">FAKE CARD DETAILS</h2></div><span class="demo-stamp">TEST<br />ONLY</span></div>
             <p class="demo-payment__notice">These are mock details for the demo. Do not enter real card data. Nothing is sent, saved, or charged.</p>
             <div class="demo-card-fields">
               <label class="field field--wide">NAME ON TEST CARD<input value="REDPOLY DEMO" readonly autocomplete="off" /></label>
@@ -49,23 +58,25 @@
           <label class="demo-consent"><input id="demo-consent" type="checkbox" required /><span>I understand this is a demo checkout and no real order or payment will be made.</span></label>
           <button class="checkout-submit" id="place-demo-order" type="button">PLACE DEMO ORDER <span aria-hidden="true">↗</span></button>
           <p class="checkout-form-status" id="checkout-status" role="status" aria-live="polite"></p>
+          <ul class="checkout-assurance" aria-label="Good to know before you order">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v4.5h4.5"/></svg><p><strong>7-DAY RETURNS</strong><span>Unused and in its original packaging. <a href="/help#returns">Returns policy</a></span></p></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10V7.5a6 6 0 0 1 12 0V10M4.5 10h15v10.5h-15zM12 14v3"/></svg><p><strong>NOTHING IS CHARGED</strong><span>Demo checkout. No card details are sent or saved. <a href="/help#privacy">Privacy</a></span></p></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9.5L5 20v-4H4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><p><strong>NEED A HAND?</strong><span>Shipping, cancellation and contact answers. <a href="/help">Help + contact</a></span></p></li>
+          </ul>
         </form>
       </section>
       <aside class="checkout-summary" aria-labelledby="summary-title">
-        <div class="checkout-summary__top"><div><p class="checkout-overline">03 / CREATURE COUNT</p><h2 id="summary-title">ORDER SUMMARY</h2></div><a class="checkout-edit-bag" href="/?editBag=1#accessories">EDIT BAG <span aria-hidden="true">↗</span></a></div>
+        <div class="checkout-summary__top"><div><p class="checkout-overline">YOUR BAG</p><h2 id="summary-title">ORDER SUMMARY</h2></div><span class="checkout-summary__count" id="checkout-count"></span></div>
         <div class="checkout-items" id="checkout-items"></div>
         <p class="checkout-empty" id="checkout-empty" hidden>Your bag is empty. Find your next creature first.</p>
-        <fieldset class="checkout-shipping-methods" id="shipping-methods">
-          <legend class="checkout-overline">04 / CHOOSE SHIPPING</legend>
-          <label class="shipping-option" for="shipping-standard"><input id="shipping-standard" type="radio" name="shipping-method" value="standard" checked /><span class="shipping-option__icon shipping-option__icon--standard" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="shipping-option__copy"><strong>STANDARD</strong><small>4-day delivery</small></span><strong class="shipping-option__price" id="shipping-standard-price">₹30</strong></label>
-          <label class="shipping-option" for="shipping-express"><input id="shipping-express" type="radio" name="shipping-method" value="express" /><span class="shipping-option__icon shipping-option__icon--express" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.5 2.5 5 13h6l-.5 8.5L19 10h-6z"/></svg></span><span class="shipping-option__copy"><strong>EXPRESS</strong><small>2-day delivery</small></span><strong class="shipping-option__price" id="shipping-express-price">₹120</strong></label>
-          <p class="shipping-method-status" id="shipping-method-status" role="status" aria-live="polite"></p>
-        </fieldset>
-        <div class="checkout-totals"><p><span>ITEMS SUBTOTAL</span><strong id="checkout-subtotal">₹0</strong></p><p><span>GST (18%)</span><strong id="checkout-gst">₹0</strong></p><p class="checkout-shipping"><span>SHIPPING</span><strong id="checkout-shipping-cost">₹30</strong></p><p class="checkout-grand-total"><span>FINAL TOTAL</span><strong id="checkout-final-total">₹0</strong></p></div>
-        <a class="checkout-return" href="/#accessories">← BACK TO ACCESSORIES</a>
+        <button class="checkout-undo" id="checkout-undo" type="button" hidden>UNDO REMOVAL</button>
+        <p class="checkout-bag-status" id="checkout-bag-status" role="status" aria-live="polite"></p>
+        <div class="checkout-totals"><p><span>ITEMS SUBTOTAL</span><strong id="checkout-subtotal">₹0</strong></p><p><span>GST (18%)</span><strong id="checkout-gst">₹0</strong></p><p class="checkout-shipping"><span id="checkout-shipping-label">SHIPPING</span><strong id="checkout-shipping-cost">₹30</strong></p><p class="checkout-grand-total"><span>FINAL TOTAL</span><strong id="checkout-final-total">₹0</strong></p></div>
+        <a class="checkout-return" href="/#accessories">← ADD MORE FROM THE SHOP</a>
       </aside>
     </div>
   </main>
+  <div class="checkout-paybar" id="checkout-paybar"><p><span>FINAL TOTAL</span><strong id="checkout-paybar-total">₹0</strong></p><button type="button" id="checkout-paybar-button">PLACE DEMO ORDER <span aria-hidden="true">↗</span></button></div>
   <div class="checkout-transition" aria-hidden="true"><span>REDPOLY</span></div>
   <footer class="checkout-footer"><span>REDPOLY · COLLECT. EXPLORE. DISPLAY.</span><nav class="checkout-footer__links" aria-label="Help and policies"><a href="/help">HELP + CONTACT</a><a href="/help#shipping">SHIPPING</a><a href="/help#returns">RETURNS</a><a href="/help#cancellation">CANCELLATION</a><a href="/help#privacy">PRIVACY</a><a href="/help#terms">TERMS</a></nav><span>THIS IS A NON-FUNCTIONAL PAYMENT DEMO</span></footer>
 </body>
