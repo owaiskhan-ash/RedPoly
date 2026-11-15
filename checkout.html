@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=origin-comic-20261114" />
-  <link rel="stylesheet" href="/checkout.css?v=checkout-demo-20261115" />
-  <script src="/checkout.js?v=checkout-demo-20261115" defer></script>
+  <link rel="stylesheet" href="/checkout.css?v=checkout-demo-20261115-v3" />
+  <script src="/checkout.js?v=checkout-demo-20261115-v3" defer></script>
 </head>
 <body class="checkout-page">
   <header class="checkout-header"><a href="/" class="checkout-brand" aria-label="REDPOLY home"><img src="/assets/images/redpoly/redpoly-logo.png" alt="REDPOLY" width="1353" height="711" /><span>CREATURE CLUB</span></a><a href="/#accessories" class="checkout-back">KEEP EXPLORING <span aria-hidden="true">↗</span></a></header>
@@ -30,9 +30,11 @@
             <label class="field">EMAIL<input name="email" type="email" autocomplete="email" required placeholder="you@example.com" /></label>
             <label class="field">MOBILE NUMBER<input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" pattern="[6-9][0-9]{9}" maxlength="10" required placeholder="10-digit mobile" /></label>
             <label class="field field--wide">ADDRESS<input name="address" autocomplete="street-address" required placeholder="House, street, area" /></label>
-            <label class="field">CITY<input name="city" autocomplete="address-level2" required placeholder="City" /></label>
-            <label class="field">STATE<input name="state" autocomplete="address-level1" required placeholder="State" /></label>
-            <label class="field">PIN CODE<input name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" required placeholder="6-digit PIN" /></label>
+            <label class="field">PIN CODE<input id="checkout-pin" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" required placeholder="6-digit PIN" aria-describedby="pin-lookup-status pin-lookup-note" /></label>
+            <label class="field">CITY<input id="checkout-city" name="city" autocomplete="address-level2" required placeholder="Auto-detected from PIN" /></label>
+            <label class="field">STATE<input id="checkout-state" name="state" autocomplete="address-level1" required placeholder="Auto-detected from PIN" /></label>
+            <p class="pin-lookup-status" id="pin-lookup-status" role="status" aria-live="polite">Enter a 6-digit PIN to look up city and state. If lookup is unavailable, fill them in manually.</p>
+            <p class="pin-lookup-note" id="pin-lookup-note">Only the PIN code is sent to a public postal lookup service to find the location.</p>
           </div>
           <div class="demo-payment" aria-labelledby="payment-title">
             <div class="demo-payment__heading"><div><p class="checkout-overline">02 / PAYMENT PREVIEW</p><h2 id="payment-title">FAKE CARD DETAILS</h2></div><span class="demo-stamp">TEST<br />ONLY</span></div>
@@ -60,6 +62,7 @@
       </aside>
     </div>
   </main>
+  <div class="checkout-transition" aria-hidden="true"><span>REDPOLY</span></div>
   <footer class="checkout-footer"><span>REDPOLY · COLLECT. EXPLORE. DISPLAY.</span><span>THIS IS A NON-FUNCTIONAL PAYMENT DEMO</span></footer>
 </body>
 </html>
