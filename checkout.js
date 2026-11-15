@@ -118,6 +118,6 @@
     placeButton.setAttribute('aria-busy', 'true');
     status.textContent = 'Moving to your demo thank-you page…';
     document.body.classList.add('checkout-page--leaving');
-    window.setTimeout(function () { window.location.href='/thank-you'; }, reducedMotion ? 20 : 170);
+    window.setTimeout(function () { window.location.href='/thank-you'; }, reducedMotion ? 20 : 510);
   });
 })();
