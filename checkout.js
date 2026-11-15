@@ -132,7 +132,7 @@
           cityInput.readOnly = true;
           stateInput.readOnly = true;
           lastAutoFilledPin = pin;
-          pinStatus.textContent = 'City and state detected: ' + cityInput.value + ', ' + stateInput.value + '. You can change the PIN to look up another location.';
+          pinStatus.textContent = '';
         })
         .catch(function () {
           if (sequence !== lookupSequence || pinInput.value.trim() !== pin) return;

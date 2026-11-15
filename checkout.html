@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=origin-comic-20261114" />
-  <link rel="stylesheet" href="/checkout.css?v=checkout-demo-20261115-v5" />
-  <script src="/checkout.js?v=checkout-demo-20261115-v5" defer></script>
+  <link rel="stylesheet" href="/checkout.css?v=checkout-demo-20261115-v6" />
+  <script src="/checkout.js?v=checkout-demo-20261115-v6" defer></script>
 </head>
 <body class="checkout-page">
   <header class="checkout-header"><a href="/" class="checkout-brand" aria-label="REDPOLY home"><img src="/assets/images/redpoly/redpoly-logo.png" alt="REDPOLY" width="1353" height="711" /><span>CREATURE CLUB</span></a><a href="/#accessories" class="checkout-back">KEEP EXPLORING <span aria-hidden="true">↗</span></a></header>
@@ -30,11 +30,10 @@
             <label class="field">EMAIL<input name="email" type="email" autocomplete="email" required placeholder="you@example.com" /></label>
             <label class="field">MOBILE NUMBER<input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" pattern="[6-9][0-9]{9}" maxlength="10" required placeholder="10-digit mobile" /></label>
             <label class="field field--wide">ADDRESS<input name="address" autocomplete="street-address" required placeholder="House, street, area" /></label>
-            <label class="field">PIN CODE<input id="checkout-pin" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" required placeholder="6-digit PIN" aria-describedby="pin-lookup-status pin-lookup-note" /></label>
+            <label class="field">PIN CODE<input id="checkout-pin" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" required placeholder="6-digit PIN" aria-describedby="pin-lookup-status" /></label>
             <label class="field">CITY<input id="checkout-city" name="city" autocomplete="address-level2" required placeholder="Auto-detected from PIN" /></label>
             <label class="field">STATE<input id="checkout-state" name="state" autocomplete="address-level1" required placeholder="Auto-detected from PIN" /></label>
             <p class="pin-lookup-status" id="pin-lookup-status" role="status" aria-live="polite">Enter a 6-digit PIN to look up city and state. If lookup is unavailable, fill them in manually.</p>
-            <p class="pin-lookup-note" id="pin-lookup-note">Only the PIN code is sent to a public postal lookup service to find the location.</p>
           </div>
           <div class="demo-payment" aria-labelledby="payment-title">
             <div class="demo-payment__heading"><div><p class="checkout-overline">02 / PAYMENT PREVIEW</p><h2 id="payment-title">FAKE CARD DETAILS</h2></div><span class="demo-stamp">TEST<br />ONLY</span></div>
@@ -63,7 +62,6 @@
           <p class="shipping-method-status" id="shipping-method-status" role="status" aria-live="polite"></p>
         </fieldset>
         <div class="checkout-totals"><p><span>ITEMS SUBTOTAL</span><strong id="checkout-subtotal">₹0</strong></p><p><span>GST (18%)</span><strong id="checkout-gst">₹0</strong></p><p class="checkout-shipping"><span>SHIPPING</span><strong id="checkout-shipping-cost">₹30</strong></p><p class="checkout-grand-total"><span>FINAL TOTAL</span><strong id="checkout-final-total">₹0</strong></p></div>
-        <p class="checkout-total-note">GST is calculated at 18% of the items subtotal. Shipping is free on item subtotals of ₹5,000 or more. Demo totals only—no payment is collected.</p>
         <a class="checkout-return" href="/#accessories">← BACK TO ACCESSORIES</a>
       </aside>
     </div>
