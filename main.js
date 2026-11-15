@@ -69,10 +69,12 @@
   document.querySelectorAll('.add-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var name = btn.getAttribute('data-name') || 'FIGURE';
+      var price = Number(btn.getAttribute('data-price')) || 3299;
+      var formattedPrice = '₹' + price.toLocaleString('en-IN');
       var original = btn.innerHTML;
       btn.classList.add('added');
       btn.innerHTML = '✓ ADDED TO CART';
-      showToast(name + ' added to cart - ₹3,299');
+      showToast(name + ' added to cart - ' + formattedPrice);
       setTimeout(function () {
         btn.classList.remove('added');
         btn.innerHTML = original;
