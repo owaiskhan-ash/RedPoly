@@ -1,9 +1,25 @@
 {
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/index" },
+    { "source": "/barsaat", "destination": "/products/barsaat" },
+    { "source": "/agni", "destination": "/products/agni" },
+    { "source": "/noor", "destination": "/products/noor" },
+    { "source": "/aarav", "destination": "/products/aarav" },
+    { "source": "/pins-and-art-print", "destination": "/products/pins-and-art-print" },
+    { "source": "/action-keychains", "destination": "/products/action-keychains" },
+    { "source": "/character-mug", "destination": "/products/character-mug" },
+    { "source": "/iphone-15-case", "destination": "/products/iphone-15-case" },
+    { "source": "/help", "destination": "/help.html" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+    },
+    {
+      "source": "/comics/(.*).webp",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     }
   ]
 }

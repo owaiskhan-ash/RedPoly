@@ -1,11 +1,9 @@
-# Testbuild
+# REDPOLY — Monsoon Mischief
 
-**Artisan** — a retro, hand-illustrated landing page (static HTML + CSS, no build step).
+**Tagline:** Original collectible creatures. Monsoon mischief, made to be collected.
 
-- `index.html` – page markup
-- `styles.css` – styles (scales proportionally from a 700-unit design grid; re-flows below 760px)
-- `main.js` – cinematic effects (hero parallax and day-to-dusk, pinned card sequence, tilt, custom cursor, magnetic buttons, scroll reveals, generated ambient sound); the page still works without JavaScript
-- `assets/images/` – generated PNG illustrations (layered hero scene, 3 cards, 4 plant badges, artisans)
-- `assets/fonts/` – self-hosted fonts (Berkshire Swash, Kaushan Script, Bitter — all SIL OFL)
+**Description:** REDPOLY is a character-led collectible storefront for four original creatures: Barsaat, Agni, Noor, and Aarav. [Visit redpoly.justsimpleapps.online](https://redpoly.justsimpleapps.online/).
 
-Open `index.html` in a browser, or serve the folder with any static server (e.g. `npx serve .`).
+## Character IP
+
+All REDPOLY character names, designs, and artwork are reserved. No reuse is permitted without prior written permission. See [CHARACTER-IP-LICENSE.md](CHARACTER-IP-LICENSE.md) for the full terms.
