@@ -112,7 +112,7 @@
   var cartLayer = document.createElement('div');
   cartLayer.className = 'cart-layer';
   cartLayer.hidden = true;
-  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR CREATURE CLUB BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is waiting for a little creature energy.</p><footer class="cart-drawer__footer"><p class="cart-subtotal"><span>SUBTOTAL</span><strong id="cart-subtotal">₹0</strong></p><p class="cart-shipping-note">Shipping charges are calculated at checkout.</p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">Online checkout and payment are not connected yet. Your bag is saved in this browser.</p></footer></aside></div>';
+  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR CREATURE CLUB BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is waiting for a little creature energy.</p><footer class="cart-drawer__footer"><p class="cart-subtotal"><span>SUBTOTAL</span><strong id="cart-subtotal">₹0</strong></p><p class="cart-shipping-note">2-day delivery to all valid Indian PIN codes. Shipping fees are shown at checkout.</p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
   document.body.appendChild(cartLayer);
   var cartDrawer = cartLayer.querySelector('.cart-drawer');
   var cartItemsNode = cartLayer.querySelector('#cart-items');
@@ -192,9 +192,7 @@
     persistCart(); renderCart();
   });
   cartCheckout.addEventListener('click', function () {
-    var note = cartLayer.querySelector('#cart-checkout-note');
-    note.textContent = 'Your bag is saved in this browser, but online checkout is not available yet. No order has been placed.';
-    note.focus && note.focus();
+    if (cartItems.length) window.location.href = '/checkout';
   });
   document.addEventListener('keydown', function (event) {
     if (cartLayer.hidden) return;
@@ -261,10 +259,10 @@
   document.querySelectorAll('.accessory-policy-panel .wrap').forEach(function (policyWrap,index) {
     var checker=document.createElement('form'); checker.className='delivery-checker'; checker.noValidate=true;
     var id='delivery-pin-'+index;
-    checker.innerHTML='<div><p class="delivery-checker__eyebrow">DELIVERY CHECK</p><label for="'+id+'">Enter your 6-digit PIN code</label><p class="delivery-checker__hint">We will show serviceability, delivery timing and shipping fees once shipping lookup is connected.</p></div><div class="delivery-checker__form"><input id="'+id+'" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" placeholder="e.g. 400001" aria-describedby="'+id+'-status" /><button type="submit">CHECK PIN</button><p id="'+id+'-status" class="delivery-checker__status" role="status" aria-live="polite"></p></div>';
+    checker.innerHTML='<div><p class="delivery-checker__eyebrow">DELIVERY CHECK</p><label for="'+id+'">Enter your 6-digit PIN code</label><p class="delivery-checker__hint">2-day delivery across India to all valid PIN codes.</p></div><div class="delivery-checker__form"><input id="'+id+'" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" placeholder="e.g. 400001" aria-describedby="'+id+'-status" /><button type="submit">CHECK PIN</button><p id="'+id+'-status" class="delivery-checker__status" role="status" aria-live="polite"></p></div>';
     policyWrap.appendChild(checker);
     var input=checker.querySelector('input'); var status=checker.querySelector('.delivery-checker__status');
-    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='PIN format looks valid. A live delivery estimate and fee are not available until shipping rules or a carrier lookup are connected.';});
+    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='Estimated delivery: 2 days to PIN code ' + pin + '. Shipping fee is shown at checkout.';});
   });
 
   // Add to bag and open the drawer.
