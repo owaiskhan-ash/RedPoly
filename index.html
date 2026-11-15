@@ -36,6 +36,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css?v=origin-comic-20261114" />
+<link rel="stylesheet" href="/accessories.css?v=accessories-bundle-20261114-v2" />
 </head>
 <body>
 
@@ -259,6 +260,31 @@
         <div class="p-card__body"><h3><a class="p-card__product-link" href="/iphone-15-case">IPHONE 15 CASE <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">CREATURE COVER, ON</p><p class="p-card__price">₹599</p><button class="add-btn" type="button" data-name="IPHONE 15 CASE" data-price="599">ADD TO CART</button></div>
       </article>
     </div>
+
+    <section class="bundle-builder" aria-labelledby="bundle-title">
+      <div class="bundle-builder__intro">
+        <p class="bundle-builder__eyebrow">THE CREATURE CLUB TRIO</p>
+        <h3 id="bundle-title">PICK ANY THREE.<br /><span>MAKE IT YOURS.</span></h3>
+        <p>Choose 3 of the 4 accessories and pay <strong>₹1,499</strong> instead of ₹1,797. You save ₹298.</p>
+        <p class="bundle-builder__count" id="bundle-count" aria-live="polite">0 of 3 selected</p>
+        <button class="add-btn bundle-builder__submit" id="bundle-add" type="button" data-name="CREATURE CLUB TRIO" data-price="1499" disabled>CHOOSE 3 TO UNLOCK ₹1,499</button>
+      </div>
+      <fieldset class="bundle-builder__options" aria-describedby="bundle-count">
+        <legend class="sr-only">Choose exactly three accessories for the Creature Club Trio</legend>
+        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="pins-and-art-print" data-label="Pins + Art Print" /><img src="/assets/images/redpoly/accessories/pins-and-art-print.jpg" alt="" /><span><strong>PINS + ART PRINT</strong><small>₹599</small></span><b aria-hidden="true">✓</b></label>
+        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="action-keychains" data-label="Action Keychains" /><img src="/assets/images/redpoly/accessories/action-keychains.jpg" alt="" /><span><strong>ACTION KEYCHAINS</strong><small>₹599</small></span><b aria-hidden="true">✓</b></label>
+        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="character-mug" data-label="Character Mug" /><img src="/assets/images/redpoly/accessories/character-mug.jpg" alt="" /><span><strong>CHARACTER MUG</strong><small>₹599</small></span><b aria-hidden="true">✓</b></label>
+        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="iphone-15-case" data-label="iPhone 15 Case" /><img src="/assets/images/redpoly/accessories/iphone-15-case.jpg" alt="" /><span><strong>IPHONE 15 CASE</strong><small>₹599</small></span><b aria-hidden="true">✓</b></label>
+      </fieldset>
+    </section>
+  </div>
+</section>
+
+<section class="accessory-policy-panel" aria-labelledby="accessory-policy-title">
+  <div class="wrap">
+    <header><p>THE IMPORTANT BITS</p><h2 id="accessory-policy-title">DELIVERY + RETURNS</h2></header>
+    <details><summary>How is shipping charged?</summary><p>Shipping charges are calculated and shown at checkout.</p></details>
+    <details><summary>What is the return policy?</summary><p>Return requests must be made within 7 days. Items must be unused and in their original packaging. Approved refunds are returned to the original payment method.</p></details>
   </div>
 </section>
 
@@ -381,6 +407,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="main.js?v=agni-page-20261114" defer></script>
+<script src="main.js?v=accessory-bundle-20261114-v2" defer></script>
 </body>
 </html>

@@ -65,6 +65,26 @@
     toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2200);
   }
 
+  // Bundle picker: limit the customer to three accessories and reveal the set price.
+  var bundleInputs = Array.prototype.slice.call(document.querySelectorAll('.bundle-option input[name="bundle-item"]'));
+  var bundleStatus = document.getElementById('bundle-count');
+  var bundleButton = document.getElementById('bundle-add');
+  function updateBundlePicker() {
+    if (!bundleInputs.length || !bundleButton) return;
+    var selected = bundleInputs.filter(function (input) { return input.checked; });
+    bundleInputs.forEach(function (input) {
+      input.disabled = selected.length === 3 && !input.checked;
+      input.closest('.bundle-option').classList.toggle('is-selected', input.checked);
+    });
+    if (bundleStatus) bundleStatus.textContent = selected.length + ' of 3 selected' + (selected.length === 3 ? ' · You save ₹298' : '');
+    bundleButton.disabled = selected.length !== 3;
+    bundleButton.setAttribute('aria-disabled', selected.length !== 3 ? 'true' : 'false');
+    bundleButton.innerHTML = selected.length === 3 ? 'ADD YOUR TRIO — ₹1,499' : 'CHOOSE ' + (3 - selected.length) + ' MORE TO UNLOCK ₹1,499';
+    bundleButton.setAttribute('data-name', selected.length === 3 ? 'CREATURE CLUB TRIO: ' + selected.map(function (input) { return input.getAttribute('data-label'); }).join(', ') : 'CREATURE CLUB TRIO');
+  }
+  bundleInputs.forEach(function (input) { input.addEventListener('change', updateBundlePicker); });
+  updateBundlePicker();
+
   // Add to cart: quick button confirmation + rupee-price toast.
   document.querySelectorAll('.add-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
