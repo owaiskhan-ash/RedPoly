@@ -112,7 +112,7 @@
   var cartLayer = document.createElement('div');
   cartLayer.className = 'cart-layer';
   cartLayer.hidden = true;
-  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR CREATURE CLUB BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is waiting for a little creature energy.</p><footer class="cart-drawer__footer"><p class="cart-subtotal"><span>SUBTOTAL</span><strong id="cart-subtotal">₹0</strong></p><p class="cart-shipping-note">Shipping charges are calculated at checkout.</p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">Online checkout and payment are not connected yet. Your bag is saved in this browser.</p></footer></aside></div>';
+  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR CREATURE CLUB BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is waiting for a little creature energy.</p><footer class="cart-drawer__footer"><p class="cart-subtotal"><span>SUBTOTAL</span><strong id="cart-subtotal">₹0</strong></p><p class="cart-shipping-note">2-day delivery to all valid Indian PIN codes. Shipping fees are shown at checkout.</p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
   document.body.appendChild(cartLayer);
   var cartDrawer = cartLayer.querySelector('.cart-drawer');
   var cartItemsNode = cartLayer.querySelector('#cart-items');
@@ -165,7 +165,7 @@
     cartLayer.hidden = true;
     if (cartReturnFocus && cartReturnFocus.focus) cartReturnFocus.focus();
   }
-  function addCartItem(button) {
+  function addCartItem(button, feedbackButton) {
     var name = button.getAttribute('data-name') || 'FIGURE';
     var price = Number(button.getAttribute('data-price')) || 3299;
     var id = name.toLowerCase() + '|' + price;
@@ -173,9 +173,10 @@
     if (existing) existing.quantity += 1;
     else cartItems.push({ id:id, name:name, price:price, quantity:1 });
     persistCart(); renderCart(); openCart();
-    var original = button.innerHTML;
-    button.classList.add('added'); button.innerHTML = '✓ ADDED';
-    setTimeout(function () { button.classList.remove('added'); button.innerHTML = original; }, 1600);
+    var feedback = feedbackButton || button;
+    var original = feedback.innerHTML;
+    feedback.classList.add('added'); feedback.innerHTML = '✓ ADDED';
+    setTimeout(function () { feedback.classList.remove('added'); feedback.innerHTML = original; }, 1600);
   }
   cartToggle.addEventListener('click', openCart);
   cartLayer.querySelector('.cart-backdrop').addEventListener('click', closeCart);
@@ -192,9 +193,7 @@
     persistCart(); renderCart();
   });
   cartCheckout.addEventListener('click', function () {
-    var note = cartLayer.querySelector('#cart-checkout-note');
-    note.textContent = 'Your bag is saved in this browser, but online checkout is not available yet. No order has been placed.';
-    note.focus && note.focus();
+    if (cartItems.length) window.location.href = '/checkout';
   });
   document.addEventListener('keydown', function (event) {
     if (cartLayer.hidden) return;
@@ -220,8 +219,13 @@
     stickyPrice.innerHTML='<small>YOUR PICK</small><strong></strong>';
     var priceNode = document.querySelector('.char-buy-row .char-price strong');
     if (priceNode) stickyPrice.querySelector('strong').textContent=priceNode.textContent;
-    var stickyButton = heroBuy.cloneNode(false); stickyButton.innerHTML='ADD TO BAG'; stickyButton.classList.add('mobile-buy-bar__button');
+    var stickyButton = heroBuy.cloneNode(false); stickyButton.innerHTML='ADD TO BAG';
+    stickyButton.classList.remove('add-btn');
+    stickyButton.classList.add('mobile-buy-bar__button');
+    stickyButton.type = 'button';
+    stickyButton.tabIndex = -1;
     stickyButton.setAttribute('aria-label','Add ' + (heroBuy.getAttribute('data-name') || 'product') + ' to bag');
+    stickyButton.addEventListener('click', function () { addCartItem(heroBuy, stickyButton); });
     stickyBar.appendChild(stickyPrice); stickyBar.appendChild(stickyButton); document.body.appendChild(stickyBar);
     var finalCta = document.querySelector('.char-final-cta');
     var scrollFrame = false;
@@ -229,7 +233,10 @@
       scrollFrame = false;
       var passedBuy = heroBuy.getBoundingClientRect().bottom < 0;
       var atFinal = finalCta && finalCta.getBoundingClientRect().top < window.innerHeight && finalCta.getBoundingClientRect().bottom > 0;
-      stickyBar.classList.toggle('mobile-buy-bar--visible', passedBuy && !atFinal);
+      var visible = passedBuy && !atFinal && window.innerWidth <= 760;
+      stickyBar.classList.toggle('mobile-buy-bar--visible', visible);
+      stickyBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+      stickyButton.tabIndex = visible ? 0 : -1;
     }
     function requestStickySync() { if (!scrollFrame) { scrollFrame=true; requestAnimationFrame(syncStickyBuy); } }
     window.addEventListener('scroll',requestStickySync,{passive:true}); window.addEventListener('resize',requestStickySync); syncStickyBuy();
@@ -261,10 +268,10 @@
   document.querySelectorAll('.accessory-policy-panel .wrap').forEach(function (policyWrap,index) {
     var checker=document.createElement('form'); checker.className='delivery-checker'; checker.noValidate=true;
     var id='delivery-pin-'+index;
-    checker.innerHTML='<div><p class="delivery-checker__eyebrow">DELIVERY CHECK</p><label for="'+id+'">Enter your 6-digit PIN code</label><p class="delivery-checker__hint">We will show serviceability, delivery timing and shipping fees once shipping lookup is connected.</p></div><div class="delivery-checker__form"><input id="'+id+'" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" placeholder="e.g. 400001" aria-describedby="'+id+'-status" /><button type="submit">CHECK PIN</button><p id="'+id+'-status" class="delivery-checker__status" role="status" aria-live="polite"></p></div>';
+    checker.innerHTML='<div><p class="delivery-checker__eyebrow">DELIVERY CHECK</p><label for="'+id+'">Enter your 6-digit PIN code</label><p class="delivery-checker__hint">2-day delivery across India to all valid PIN codes.</p></div><div class="delivery-checker__form"><input id="'+id+'" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" placeholder="e.g. 400001" aria-describedby="'+id+'-status" /><button type="submit">CHECK PIN</button><p id="'+id+'-status" class="delivery-checker__status" role="status" aria-live="polite"></p></div>';
     policyWrap.appendChild(checker);
     var input=checker.querySelector('input'); var status=checker.querySelector('.delivery-checker__status');
-    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='PIN format looks valid. A live delivery estimate and fee are not available until shipping rules or a carrier lookup are connected.';});
+    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='Estimated delivery: 2 days to PIN code ' + pin + '. Shipping fee is shown at checkout.';});
   });
 
   // Add to bag and open the drawer.
