@@ -87,14 +87,15 @@
 
   // Local cart shared across storefront and product pages. Checkout stays clearly marked as pending integration.
   var cartStorageKey = 'redpoly-cart-v1';
+  var freeGiftId = 'redpoly-free-keychain';
   var cartItems = [];
   try {
     var storedCart = JSON.parse(window.localStorage.getItem(cartStorageKey) || '[]');
     if (Array.isArray(storedCart)) cartItems = storedCart.filter(function (item) {
       return item && typeof item.id === 'string' && typeof item.name === 'string' &&
-        Number.isFinite(Number(item.price)) && Number(item.price) > 0 && Number.isFinite(Number(item.quantity)) && Number(item.quantity) > 0;
+        Number.isFinite(Number(item.price)) && (Number(item.price) > 0 || (item.id === freeGiftId && Number(item.price) === 0)) && Number.isFinite(Number(item.quantity)) && Number(item.quantity) > 0;
     }).map(function (item) {
-      return { id: item.id, name: item.name, price: Number(item.price), quantity: Math.floor(Number(item.quantity)) };
+      return { id: item.id, name: item.name, price: Number(item.price), quantity: Math.floor(Number(item.quantity)), isReward: item.id === freeGiftId };
     });
   } catch (ignoreCartStorage) { cartItems = []; }
 
@@ -112,7 +113,7 @@
   var cartLayer = document.createElement('div');
   cartLayer.className = 'cart-layer';
   cartLayer.hidden = true;
-  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR CREATURE CLUB BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is waiting for a little creature energy.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><p class="cart-subtotal"><span>SUBTOTAL</span><strong id="cart-subtotal">₹0</strong></p><p class="cart-shipping-note">2-day delivery to all valid Indian PIN codes. Shipping fees are shown at checkout.</p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
+  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR CREATURE CLUB BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is waiting for a little creature energy.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">YOUR NEXT UNLOCK</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free shipping" aria-valuemin="0" aria-valuemax="5000" aria-valuenow="0"><span></span></div></div></div><div class="cart-reward" id="keychain-reward"><span class="cart-reward__icon cart-reward__icon--gift" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10h18v11H3zM2 6h20v4H2zM12 6v15M12 6H8.5a2.5 2.5 0 1 1 2.2-3.7L12 6Zm0 0h3.5a2.5 2.5 0 1 0-2.2-3.7L12 6Z"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE CREATURE KEYCHAIN</strong><span id="keychain-reward-copy">Add more to unlock your free gift</span></div><div class="cart-reward__track" id="keychain-reward-track" role="progressbar" aria-label="Progress toward free keychain" aria-valuemin="0" aria-valuemax="6000" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS SUBTOTAL</span><strong id="cart-subtotal">₹0</strong></p><p class="cart-shipping-note">Standard ₹30 · Express ₹120. Both ship free when your item subtotal reaches ₹5,000.</p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
   document.body.appendChild(cartLayer);
   var cartDrawer = cartLayer.querySelector('.cart-drawer');
   var cartItemsNode = cartLayer.querySelector('#cart-items');
@@ -120,6 +121,10 @@
   var cartSubtotalNode = cartLayer.querySelector('#cart-subtotal');
   var cartCheckout = cartLayer.querySelector('#cart-checkout');
   var cartUndo = cartLayer.querySelector('#cart-undo');
+  var shippingRewardCopy = cartLayer.querySelector('#shipping-reward-copy');
+  var keychainRewardCopy = cartLayer.querySelector('#keychain-reward-copy');
+  var shippingRewardTrack = cartLayer.querySelector('#shipping-reward-track');
+  var keychainRewardTrack = cartLayer.querySelector('#keychain-reward-track');
   var cartReturnFocus = null;
   var lastRemovedItem = null;
   var cartSuggestions = [
@@ -133,8 +138,33 @@
     try { window.localStorage.setItem(cartStorageKey, JSON.stringify(cartItems)); } catch (ignoreSaveError) { /* Cart remains usable for this page view. */ }
   }
   function renderCart() {
+    var subtotalBeforeGift = cartItems.reduce(function (total, item) { return total + (item.id === freeGiftId ? 0 : item.price * item.quantity); }, 0);
+    var giftIndex = cartItems.findIndex(function (item) { return item.id === freeGiftId; });
+    var giftChanged = false;
+    if (subtotalBeforeGift >= 6000 && giftIndex === -1) {
+      cartItems.push({ id:freeGiftId, name:'COMPLIMENTARY CREATURE KEYCHAIN', price:0, quantity:1, isReward:true });
+      giftChanged = true;
+    } else if (subtotalBeforeGift < 6000 && giftIndex !== -1) {
+      cartItems = cartItems.filter(function (item) { return item.id !== freeGiftId; });
+      giftChanged = true;
+    } else if (giftIndex !== -1 && (cartItems[giftIndex].quantity !== 1 || Number(cartItems[giftIndex].price) !== 0)) {
+      cartItems[giftIndex].quantity = 1; cartItems[giftIndex].price = 0; cartItems[giftIndex].isReward = true;
+      giftChanged = true;
+    }
+    if (giftChanged) persistCart();
     var quantity = cartItems.reduce(function (total, item) { return total + item.quantity; }, 0);
     var subtotal = cartItems.reduce(function (total, item) { return total + item.price * item.quantity; }, 0);
+    function updateReward(copy, track, threshold, rewardName) {
+      var reached = subtotal >= threshold;
+      var remaining = Math.max(0, threshold - subtotal);
+      copy.textContent = reached ? rewardName + ' unlocked!' : 'Add ' + money(remaining) + ' more to unlock ' + rewardName.toLowerCase() + '.';
+      var progress = Math.min(100, (subtotal / threshold) * 100);
+      track.setAttribute('aria-valuenow', String(Math.min(subtotal, threshold)));
+      track.setAttribute('aria-valuetext', reached ? rewardName + ' unlocked' : money(remaining) + ' remaining');
+      track.firstElementChild.style.width = progress + '%';
+    }
+    updateReward(shippingRewardCopy, shippingRewardTrack, 5000, 'Free shipping');
+    updateReward(keychainRewardCopy, keychainRewardTrack, 6000, 'Free creature keychain');
     var countEls = cartLayer.querySelectorAll('.cart-drawer__count');
     Array.prototype.forEach.call(countEls, function (el) { el.textContent = quantity; });
     cartToggle.querySelector('.cart-toggle__count').textContent = quantity;
@@ -144,19 +174,36 @@
     cartEmptyNode.hidden = cartItems.length > 0;
     cartCheckout.disabled = cartItems.length === 0;
     cartSubtotalNode.textContent = money(subtotal);
+    var cartImageByName = {
+      'BARSAAT':'/assets/images/redpoly/characters/barsaat.png',
+      'AGNI':'/assets/images/redpoly/characters/agni-product.png',
+      'NOOR':'/assets/images/redpoly/characters/noor.png',
+      'AARAV':'/assets/images/redpoly/characters/aarav.png',
+      'PINS + ART PRINT':'/assets/images/redpoly/accessories/pins-and-art-print.jpg',
+      'ACTION KEYCHAINS':'/assets/images/redpoly/accessories/action-keychains.jpg',
+      'CHARACTER MUG':'/assets/images/redpoly/accessories/character-mug.jpg',
+      'IPHONE 15 CASE':'/assets/images/redpoly/accessories/iphone-15-case.jpg'
+    };
     cartItems.forEach(function (item) {
-      var row = document.createElement('article'); row.className = 'cart-item';
+      var row = document.createElement('article'); row.className = 'cart-item' + (item.id === freeGiftId ? ' cart-item--reward' : '');
+      var image = document.createElement('img'); image.className = 'cart-item__image'; image.loading = 'lazy';
+      image.src = item.id === freeGiftId ? cartImageByName['ACTION KEYCHAINS'] : (item.name.indexOf('CREATURE CLUB TRIO') === 0 ? '/assets/images/redpoly/collections/accessories.jpg' : (cartImageByName[item.name] || '/assets/images/redpoly/collections/accessories.jpg'));
+      image.alt = item.name;
       var details = document.createElement('div'); details.className = 'cart-item__details';
       var name = document.createElement('h3'); name.textContent = item.name;
-      var lineTotal = document.createElement('p'); lineTotal.textContent = money(item.price) + ' each · ' + money(item.price * item.quantity) + ' line total';
+      var lineTotal = document.createElement('p'); lineTotal.textContent = item.id === freeGiftId ? 'COMPLIMENTARY REWARD' : money(item.price) + ' each · ' + money(item.price * item.quantity) + ' line total';
       details.appendChild(name); details.appendChild(lineTotal);
       var controls = document.createElement('div'); controls.className = 'cart-item__controls';
-      [['decrease','−','Decrease quantity of ' + item.name],['increase','+','Increase quantity of ' + item.name]].forEach(function (control) {
-        var button = document.createElement('button'); button.type='button'; button.className='cart-quantity-button'; button.setAttribute('data-cart-action',control[0]); button.setAttribute('data-cart-id',item.id); button.setAttribute('aria-label',control[2]); button.textContent=control[1]; controls.appendChild(button);
-        if (control[0] === 'decrease') { var amount = document.createElement('span'); amount.className='cart-item__quantity'; amount.textContent=item.quantity; controls.insertBefore(amount, controls.lastChild); }
-      });
-      var remove = document.createElement('button'); remove.type='button'; remove.className='cart-item__remove'; remove.setAttribute('data-cart-action','remove'); remove.setAttribute('data-cart-id',item.id); remove.textContent='REMOVE'; controls.appendChild(remove);
-      row.appendChild(details); row.appendChild(controls); cartItemsNode.appendChild(row);
+      if (item.id === freeGiftId) {
+        var freeLabel = document.createElement('span'); freeLabel.className = 'cart-item__free-label'; freeLabel.textContent = 'FREE'; controls.appendChild(freeLabel);
+      } else {
+        [['decrease','−','Decrease quantity of ' + item.name],['increase','+','Increase quantity of ' + item.name]].forEach(function (control) {
+          var button = document.createElement('button'); button.type='button'; button.className='cart-quantity-button'; button.setAttribute('data-cart-action',control[0]); button.setAttribute('data-cart-id',item.id); button.setAttribute('aria-label',control[2]); button.textContent=control[1]; controls.appendChild(button);
+          if (control[0] === 'decrease') { var amount = document.createElement('span'); amount.className='cart-item__quantity'; amount.textContent=item.quantity; controls.insertBefore(amount, controls.lastChild); }
+        });
+        var remove = document.createElement('button'); remove.type='button'; remove.className='cart-item__remove'; remove.setAttribute('data-cart-action','remove'); remove.setAttribute('data-cart-id',item.id); remove.textContent='REMOVE'; controls.appendChild(remove);
+      }
+      row.appendChild(image); row.appendChild(details); row.appendChild(controls); cartItemsNode.appendChild(row);
     });
     cartUndo.hidden = !lastRemovedItem;
     cartUndo.textContent = lastRemovedItem ? 'UNDO REMOVAL · ' + lastRemovedItem.item.name : 'UNDO REMOVAL';
@@ -219,7 +266,7 @@
     var control = event.target.closest('[data-cart-action]');
     if (!control) return;
     var item = cartItems.find(function (entry) { return entry.id === control.getAttribute('data-cart-id'); });
-    if (!item) return;
+    if (!item || item.id === freeGiftId) return;
     var action = control.getAttribute('data-cart-action');
     if (action === 'increase') item.quantity += 1;
     else if (action === 'decrease') {
