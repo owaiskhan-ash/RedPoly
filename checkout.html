@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=origin-comic-20261114" />
-  <link rel="stylesheet" href="/checkout.css?v=checkout-demo-20261115-v4" />
-  <script src="/checkout.js?v=checkout-demo-20261115-v4" defer></script>
+  <link rel="stylesheet" href="/checkout.css?v=checkout-demo-20261115-v5" />
+  <script src="/checkout.js?v=checkout-demo-20261115-v5" defer></script>
 </head>
 <body class="checkout-page">
   <header class="checkout-header"><a href="/" class="checkout-brand" aria-label="REDPOLY home"><img src="/assets/images/redpoly/redpoly-logo.png" alt="REDPOLY" width="1353" height="711" /><span>CREATURE CLUB</span></a><a href="/#accessories" class="checkout-back">KEEP EXPLORING <span aria-hidden="true">↗</span></a></header>
@@ -56,8 +56,14 @@
         <div class="checkout-summary__top"><p class="checkout-overline">03 / CREATURE COUNT</p><h2 id="summary-title">ORDER SUMMARY</h2></div>
         <div class="checkout-items" id="checkout-items"></div>
         <p class="checkout-empty" id="checkout-empty" hidden>Your bag is empty. Find your next creature first.</p>
-        <div class="checkout-totals"><p><span>ITEMS SUBTOTAL</span><strong id="checkout-subtotal">₹0</strong></p><p class="checkout-shipping"><span>SHIPPING</span><strong>Not calculated in this demo</strong></p></div>
-        <p class="checkout-total-note">Shipping fees will be shown before payment once checkout is integrated. This demo only totals items; no payment will be collected.</p>
+        <fieldset class="checkout-shipping-methods" id="shipping-methods">
+          <legend class="checkout-overline">04 / CHOOSE SHIPPING</legend>
+          <label class="shipping-option" for="shipping-standard"><input id="shipping-standard" type="radio" name="shipping-method" value="standard" checked /><span class="shipping-option__icon shipping-option__icon--standard" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="shipping-option__copy"><strong>STANDARD</strong><small>Regular delivery</small></span><strong class="shipping-option__price" id="shipping-standard-price">₹30</strong></label>
+          <label class="shipping-option" for="shipping-express"><input id="shipping-express" type="radio" name="shipping-method" value="express" /><span class="shipping-option__icon shipping-option__icon--express" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.5 2.5 5 13h6l-.5 8.5L19 10h-6z"/></svg></span><span class="shipping-option__copy"><strong>EXPRESS</strong><small>Priority delivery</small></span><strong class="shipping-option__price" id="shipping-express-price">₹120</strong></label>
+          <p class="shipping-method-status" id="shipping-method-status" role="status" aria-live="polite"></p>
+        </fieldset>
+        <div class="checkout-totals"><p><span>ITEMS SUBTOTAL</span><strong id="checkout-subtotal">₹0</strong></p><p><span>GST (18%)</span><strong id="checkout-gst">₹0</strong></p><p class="checkout-shipping"><span>SHIPPING</span><strong id="checkout-shipping-cost">₹30</strong></p><p class="checkout-grand-total"><span>FINAL TOTAL</span><strong id="checkout-final-total">₹0</strong></p></div>
+        <p class="checkout-total-note">GST is calculated at 18% of the items subtotal. Shipping is free on item subtotals of ₹5,000 or more. Demo totals only—no payment is collected.</p>
         <a class="checkout-return" href="/#accessories">← BACK TO ACCESSORIES</a>
       </aside>
     </div>
