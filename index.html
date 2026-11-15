@@ -35,8 +35,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=origin-comic-20261114" />
-<link rel="stylesheet" href="/accessories.css?v=store-ui-20261115-v3" />
+<link rel="stylesheet" href="styles.css?v=origin-comic-20261114-ui2" />
+<link rel="stylesheet" href="/accessories.css?v=store-ui-20261115-v5" />
 </head>
 <body>
 
@@ -67,6 +67,9 @@
     </nav>
     <a class="site-header__cta" href="#featured">MEET THE CREW <span aria-hidden="true">↗</span></a>
   </div>
+  <nav class="shop-jumpbar wrap" aria-label="Shop collections">
+    <a href="#figures">THE CREW</a><a href="#accessories">ACCESSORIES</a><a href="#bundle-builder">BUILD A TRIO</a><a href="/help">HELP + POLICIES</a>
+  </nav>
 </header>
 
 <!-- ================= HERO ================= -->
@@ -159,6 +162,15 @@
       </p>
     </div>
   </div>
+</section>
+
+<!-- ================= PRODUCT DISCOVERY ================= -->
+<section class="shop-discovery wrap" aria-label="Find products">
+  <label class="shop-search"><span>FIND YOUR CREATURE</span><input id="product-search" type="search" placeholder="Search figures and accessories" autocomplete="off" /></label>
+  <label class="shop-filter"><span>COLLECTION</span><select id="product-category"><option value="all">All products</option><option value="figures">Figures</option><option value="accessories">Accessories</option></select></label>
+  <label class="shop-filter"><span>SORT BY</span><select id="product-sort"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name: A to Z</option></select></label>
+  <p id="product-results" class="shop-results" role="status" aria-live="polite">Showing all 8 products</p>
+  <p id="product-no-results" class="shop-no-results" hidden>No creatures match that search. Try another name or collection.</p>
 </section>
 
 <!-- ================= FEATURED FIGURES ================= -->
@@ -261,7 +273,7 @@
       </article>
     </div>
 
-    <section class="bundle-builder" aria-labelledby="bundle-title">
+    <section class="bundle-builder" id="bundle-builder" aria-labelledby="bundle-title">
       <div class="bundle-builder__intro">
         <p class="bundle-builder__eyebrow">THE CREATURE CLUB TRIO</p>
         <h3 id="bundle-title">PICK ANY THREE.<br /><span>MAKE IT YOURS.</span></h3>
@@ -401,12 +413,13 @@
 <footer class="foot">
   <div class="wrap foot__inner">
     <a class="foot__brand" href="./" aria-label="REDPOLY home"><img class="foot__brand-logo" src="assets/images/redpoly/redpoly-logo.png?v=redpoly-logo-20261114" alt="" width="1353" height="711" /><span>© 2026 - Collect. Explore. Display. Belong.</span></a>
+    <nav class="foot__links" aria-label="Help and policies"><a href="/help">HELP + CONTACT</a><a href="/help#shipping">SHIPPING</a><a href="/help#returns">RETURNS</a><a href="/help#cancellation">CANCELLATION</a><a href="/help#privacy">PRIVACY</a><a href="/help#terms">TERMS</a></nav>
     <p class="foot__more">MORE<br />MONSTERS.</p>
   </div>
 </footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="main.js?v=store-ui-20261115-v4" defer></script>
+<script src="main.js?v=store-ui-20261115-v6" defer></script>
 </body>
 </html>
