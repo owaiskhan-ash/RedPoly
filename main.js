@@ -165,7 +165,7 @@
     cartLayer.hidden = true;
     if (cartReturnFocus && cartReturnFocus.focus) cartReturnFocus.focus();
   }
-  function addCartItem(button) {
+  function addCartItem(button, feedbackButton) {
     var name = button.getAttribute('data-name') || 'FIGURE';
     var price = Number(button.getAttribute('data-price')) || 3299;
     var id = name.toLowerCase() + '|' + price;
@@ -173,9 +173,10 @@
     if (existing) existing.quantity += 1;
     else cartItems.push({ id:id, name:name, price:price, quantity:1 });
     persistCart(); renderCart(); openCart();
-    var original = button.innerHTML;
-    button.classList.add('added'); button.innerHTML = '✓ ADDED';
-    setTimeout(function () { button.classList.remove('added'); button.innerHTML = original; }, 1600);
+    var feedback = feedbackButton || button;
+    var original = feedback.innerHTML;
+    feedback.classList.add('added'); feedback.innerHTML = '✓ ADDED';
+    setTimeout(function () { feedback.classList.remove('added'); feedback.innerHTML = original; }, 1600);
   }
   cartToggle.addEventListener('click', openCart);
   cartLayer.querySelector('.cart-backdrop').addEventListener('click', closeCart);
@@ -218,8 +219,13 @@
     stickyPrice.innerHTML='<small>YOUR PICK</small><strong></strong>';
     var priceNode = document.querySelector('.char-buy-row .char-price strong');
     if (priceNode) stickyPrice.querySelector('strong').textContent=priceNode.textContent;
-    var stickyButton = heroBuy.cloneNode(false); stickyButton.innerHTML='ADD TO BAG'; stickyButton.classList.add('mobile-buy-bar__button');
+    var stickyButton = heroBuy.cloneNode(false); stickyButton.innerHTML='ADD TO BAG';
+    stickyButton.classList.remove('add-btn');
+    stickyButton.classList.add('mobile-buy-bar__button');
+    stickyButton.type = 'button';
+    stickyButton.tabIndex = -1;
     stickyButton.setAttribute('aria-label','Add ' + (heroBuy.getAttribute('data-name') || 'product') + ' to bag');
+    stickyButton.addEventListener('click', function () { addCartItem(heroBuy, stickyButton); });
     stickyBar.appendChild(stickyPrice); stickyBar.appendChild(stickyButton); document.body.appendChild(stickyBar);
     var finalCta = document.querySelector('.char-final-cta');
     var scrollFrame = false;
@@ -227,7 +233,10 @@
       scrollFrame = false;
       var passedBuy = heroBuy.getBoundingClientRect().bottom < 0;
       var atFinal = finalCta && finalCta.getBoundingClientRect().top < window.innerHeight && finalCta.getBoundingClientRect().bottom > 0;
-      stickyBar.classList.toggle('mobile-buy-bar--visible', passedBuy && !atFinal);
+      var visible = passedBuy && !atFinal && window.innerWidth <= 760;
+      stickyBar.classList.toggle('mobile-buy-bar--visible', visible);
+      stickyBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+      stickyButton.tabIndex = visible ? 0 : -1;
     }
     function requestStickySync() { if (!scrollFrame) { scrollFrame=true; requestAnimationFrame(syncStickyBuy); } }
     window.addEventListener('scroll',requestStickySync,{passive:true}); window.addEventListener('resize',requestStickySync); syncStickyBuy();
