@@ -46,7 +46,10 @@
 .checkout-summary{position:sticky;top:20px;background:#24201c;color:#fff4e1;border-color:#eac338;box-shadow:7px 7px 0 #eac338}
 .checkout-summary .checkout-overline{color:#d5ff35}
 .checkout-summary h2{font-size:32px}
-.checkout-summary__top{padding-bottom:17px;border-bottom:1px solid rgba(255,255,255,.2)}
+.checkout-summary__top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:17px;border-bottom:1px solid rgba(255,255,255,.2)}
+.checkout-edit-bag{flex:none;padding:8px 10px;border:1px solid rgba(200,255,0,.65);color:#d5ff35;font-size:8px;font-weight:900;letter-spacing:.8px}
+.checkout-edit-bag:hover{background:#c8ff00;color:#171512}
+.checkout-edit-bag:focus-visible{outline:3px solid #ff6b1a;outline-offset:3px}
 .checkout-items{display:flex;flex-direction:column;gap:0}
 .checkout-line{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.14)}
 .checkout-line h3{font:17px/1 'Anton',sans-serif;text-transform:uppercase}
