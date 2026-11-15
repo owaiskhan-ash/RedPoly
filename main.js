@@ -298,6 +298,12 @@
     renderCart();
   });
   renderCart();
+  var editBagUrl = new URL(window.location.href);
+  if (editBagUrl.searchParams.get('editBag') === '1') {
+    editBagUrl.searchParams.delete('editBag');
+    window.history.replaceState(null, '', editBagUrl.pathname + editBagUrl.search + editBagUrl.hash);
+    openCart();
+  }
 
   // Mobile sticky buy bar for product detail pages (not the multi-product homepage).
   var heroBuy = document.querySelector('.char-buy-row .add-btn');
@@ -385,10 +391,10 @@
   document.querySelectorAll('.accessory-policy-panel .wrap').forEach(function (policyWrap,index) {
     var checker=document.createElement('form'); checker.className='delivery-checker'; checker.noValidate=true;
     var id='delivery-pin-'+index;
-    checker.innerHTML='<div><p class="delivery-checker__eyebrow">DELIVERY CHECK</p><label for="'+id+'">Enter your 6-digit PIN code</label><p class="delivery-checker__hint">2-day delivery across India to all valid PIN codes.</p></div><div class="delivery-checker__form"><input id="'+id+'" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" placeholder="e.g. 400001" aria-describedby="'+id+'-status" /><button type="submit">CHECK PIN</button><p id="'+id+'-status" class="delivery-checker__status" role="status" aria-live="polite"></p></div>';
+    checker.innerHTML='<div><p class="delivery-checker__eyebrow">DELIVERY CHECK</p><label for="'+id+'">Enter your 6-digit PIN code</label><p class="delivery-checker__hint">Estimated delivery: Standard 4 days · Express 2 days to valid PIN codes.</p></div><div class="delivery-checker__form"><input id="'+id+'" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" placeholder="e.g. 400001" aria-describedby="'+id+'-status" /><button type="submit">CHECK PIN</button><p id="'+id+'-status" class="delivery-checker__status" role="status" aria-live="polite"></p></div>';
     policyWrap.appendChild(checker);
     var input=checker.querySelector('input'); var status=checker.querySelector('.delivery-checker__status');
-    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='Estimated delivery: 2 days to PIN code ' + pin + '. Shipping fee is shown at checkout.';});
+    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='Estimated delivery to PIN code ' + pin + ': Standard 4 days · Express 2 days. Shipping fees are shown at checkout.';});
   });
 
   // Product search, category filtering, sorting, and accessible quick views on listing cards.

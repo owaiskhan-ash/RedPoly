@@ -1,6 +1,7 @@
 (function () {
   var cartKey = 'redpoly-cart-v1';
   var orderKey = 'redpoly-demo-order-v1';
+  var shippingMethodKey = 'redpoly-shipping-method-v1';
   var freeGiftId = 'redpoly-free-keychain';
   var items = [];
   try {
@@ -22,6 +23,8 @@
   var shippingOptions = Array.prototype.slice.call(document.querySelectorAll('input[name="shipping-method"]'));
   var standardPriceNode = document.getElementById('shipping-standard-price');
   var expressPriceNode = document.getElementById('shipping-express-price');
+  var deliveryEstimateTitle = document.getElementById('delivery-estimate-title');
+  var deliveryEstimateCopy = document.getElementById('delivery-estimate-copy');
   var emptyNode = document.getElementById('checkout-empty');
   var placeButton = document.getElementById('place-demo-order');
   var form = document.getElementById('demo-checkout-form');
@@ -35,6 +38,13 @@
   var lookupSequence = 0;
   var lastAutoFilledPin = '';
   var subtotal = 0;
+  try {
+    var savedShippingMethod = sessionStorage.getItem(shippingMethodKey);
+    if (savedShippingMethod === 'standard' || savedShippingMethod === 'express') {
+      var savedOption = document.querySelector('input[name="shipping-method"][value="' + savedShippingMethod + '"]');
+      if (savedOption) savedOption.checked = true;
+    }
+  } catch (ignoreShippingRead) { /* Default to Standard if browser storage is unavailable. */ }
   function money(amount) { return '₹' + Number(amount).toLocaleString('en-IN'); }
 
   var checkoutImageByName = {
@@ -69,20 +79,26 @@
     var freeShipping = subtotal >= 5000;
     var gst = Math.round(subtotal * 0.18);
     var shipping = freeShipping ? 0 : (method === 'express' ? 120 : 30);
+    var deliveryDays = method === 'express' ? 2 : 4;
     standardPriceNode.textContent = freeShipping ? 'FREE' : '₹30';
     expressPriceNode.textContent = freeShipping ? 'FREE' : '₹120';
     subtotalNode.textContent = money(subtotal);
     gstNode.textContent = money(gst);
     shippingCostNode.textContent = freeShipping ? 'FREE' : money(shipping);
     finalTotalNode.textContent = money(subtotal + gst + shipping);
+    deliveryEstimateTitle.textContent = deliveryDays + '-DAY ' + method.toUpperCase() + ' DELIVERY';
+    deliveryEstimateCopy.textContent = 'Estimated to valid PIN codes across India';
     document.querySelectorAll('.shipping-option').forEach(function (option) {
       var input=option.querySelector('input');
       option.classList.toggle('is-selected', !!input && input.checked);
     });
     shippingStatus.textContent = freeShipping ? 'Free shipping unlocked — Standard and Express are both free!' : 'Add ' + money(5000 - subtotal) + ' more to unlock free shipping on both methods.';
-    return { method:method, freeShipping:freeShipping, gst:gst, shipping:shipping, total:subtotal+gst+shipping };
+    return { method:method, freeShipping:freeShipping, gst:gst, shipping:shipping, deliveryDays:deliveryDays, total:subtotal+gst+shipping };
   }
-  shippingOptions.forEach(function (input) { input.addEventListener('change', updateCheckoutTotals); });
+  shippingOptions.forEach(function (input) { input.addEventListener('change', function () {
+    try { sessionStorage.setItem(shippingMethodKey, input.value); } catch (ignoreShippingWrite) { /* Selection still updates for this page view. */ }
+    updateCheckoutTotals();
+  }); });
   updateCheckoutTotals();
 
   pinInput.addEventListener('input', function () {
@@ -148,10 +164,11 @@
     var pin = form.querySelector('[name="postal-code"]').value.trim();
     var reference='RED-DEMO-' + String(Math.floor(100000 + Math.random()*900000));
     var totals=updateCheckoutTotals();
-    var demoOrder={ reference:reference, pin:pin, deliveryDays:2, subtotal:subtotal, gst:totals.gst, shippingMethod:totals.method, shippingCost:totals.shipping, freeShipping:totals.freeShipping, total:totals.total, items:items };
+    var demoOrder={ reference:reference, pin:pin, deliveryDays:totals.deliveryDays, subtotal:subtotal, gst:totals.gst, shippingMethod:totals.method, shippingCost:totals.shipping, freeShipping:totals.freeShipping, total:totals.total, items:items };
     try {
       sessionStorage.setItem(orderKey,JSON.stringify(demoOrder));
       localStorage.removeItem(cartKey);
+      sessionStorage.removeItem(shippingMethodKey);
     } catch (ignoreOrderStorage) {
       status.textContent='Your demo order summary could not be saved in this browser. Please try again.';
       return;

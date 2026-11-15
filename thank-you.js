@@ -24,6 +24,7 @@
         var label=document.createElement('span');label.textContent=pair[0];var value=document.createElement('strong');value.textContent=pair[1];row.appendChild(label);row.appendChild(value);totalsNode.appendChild(row);
       });
     }
-    delivery.textContent='Estimated delivery: 2 days to PIN code '+order.pin+'. This is a demo estimate only.';
+    var deliveryDays = Number(order.deliveryDays) || (order.shippingMethod === 'express' ? 2 : 4);
+    delivery.textContent='Estimated delivery: '+deliveryDays+' days via '+String(order.shippingMethod||'standard').toUpperCase()+' to PIN code '+order.pin+'. This is a demo estimate only.';
   } catch(ignoreOrderRead) { /* The thank-you page still clearly identifies itself as a demo. */ }
 })();
