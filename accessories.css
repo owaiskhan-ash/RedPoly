@@ -192,17 +192,29 @@ body.cart-open{overflow:hidden}
 .accessory-gallery__viewport{position:relative;z-index:1;display:grid;place-items:center;width:min(100%,570px);height:min(65vh,545px);aspect-ratio:1;overflow:hidden;border:8px solid var(--character-light);border-radius:3px;background:var(--character-light);box-shadow:0 24px 38px var(--character-shadow),8px 8px 0 var(--character-border);transform:rotate(-2deg)}
 .accessory-gallery__viewport .accessory-product-image{position:relative;z-index:1;width:100%;height:100%;max-height:none;aspect-ratio:auto;object-fit:contain;border:0;border-radius:0;background:transparent;box-shadow:none;transform:scale(1);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
 .accessory-gallery__viewport[data-view="detail"] .accessory-product-image{transform:scale(var(--gallery-detail-scale,1.5))}
-.accessory-page--pin .accessory-gallery__viewport{transform:rotate(3deg);border-width:10px;box-shadow:0 25px 45px var(--character-shadow),12px 12px 0 var(--character-border)}
 .accessory-page--keys .accessory-gallery__viewport{transform:rotate(-5deg);border-radius:50% 50% 8px 8px;border-width:7px}
 .accessory-page--mug .accessory-gallery__viewport{width:min(100%,620px);height:min(70vh,590px);border-radius:43% 43% 8px 8px;border-width:12px;transform:rotate(1.5deg)}
-.accessory-page--case .accessory-gallery__viewport{width:min(84%,460px);height:min(70vh,590px);aspect-ratio:4/5;border-width:7px;border-radius:28px;transform:rotate(5deg);box-shadow:0 26px 40px var(--character-shadow),10px 10px 0 var(--character-border)}
+/* Immersive frames (pin set, phone case): the photo fills the frame edge to edge with no cream mat. The frame is sized to the photo, a blurred copy of the photo glows behind it, and the view controls sit under the frame so they never cover the product. */
+.accessory-page--pin{--frame-photo:url(/assets/images/redpoly/accessories/pins-and-art-print.jpg);--frame-ratio:4/3;--frame-width:min(100%,680px,96vh);--frame-tilt:2deg;--frame-radius:16px}
+.accessory-page--case{--frame-photo:url(/assets/images/redpoly/accessories/iphone-15-case.jpg);--frame-ratio:4/5;--frame-width:min(84%,450px,58vh);--frame-tilt:4deg;--frame-radius:30px}
+.accessory-page--pin .accessory-stage,.accessory-page--case .accessory-stage{padding:25px 0 86px}
+.accessory-frame{position:relative;z-index:1;width:var(--frame-width);aspect-ratio:var(--frame-ratio);transform:rotate(var(--frame-tilt))}
+.accessory-frame::before{content:"";position:absolute;z-index:-1;inset:-4%;border-radius:var(--frame-radius);background:var(--frame-photo) center/cover no-repeat;filter:blur(40px) saturate(1.7) brightness(1.5);opacity:.95;pointer-events:none}
+.accessory-frame .accessory-gallery__viewport{position:absolute;inset:0;width:auto;height:auto;aspect-ratio:auto;border:0;border-radius:var(--frame-radius);background:#0e0a1f;box-shadow:0 0 0 1px rgba(12,6,30,.85),0 30px 54px -14px rgba(14,4,32,.8);transform:none}
+.accessory-frame .accessory-gallery__viewport::after{content:"";position:absolute;z-index:2;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 0 0 70px rgba(8,4,24,.4);pointer-events:none}
+.accessory-frame .accessory-gallery__viewport .accessory-product-image{position:absolute;inset:0;object-fit:cover}
+.accessory-frame .char-stage__caption{top:-13px;bottom:auto;left:-14px;transform:rotate(-5deg)}
+.accessory-page--pin .accessory-gallery-controls,.accessory-page--case .accessory-gallery-controls{bottom:18px}
+.accessory-page--pin .char-hero__copy,.accessory-page--case .char-hero__copy{z-index:4}
+@media(max-width:920px){.accessory-page--pin{--frame-width:min(94%,680px,96vh)}}
+@media(max-width:680px){.accessory-page--pin .accessory-stage,.accessory-page--case .accessory-stage{aspect-ratio:auto;padding:26px 0 78px}.accessory-page--pin .accessory-stage .char-sticker,.accessory-page--case .accessory-stage .char-sticker{top:-8px;right:-8px}.accessory-frame .char-stage__caption{top:-10px;left:-6px}}
 .accessory-page--case .accessory-gallery__viewport .accessory-product-image{--gallery-detail-scale:1.8}
 .accessory-page--pin .accessory-gallery__viewport .accessory-product-image{--gallery-detail-scale:1.6}
 .accessory-page--keys .accessory-gallery__viewport .accessory-product-image{--gallery-detail-scale:1.7}
-.accessory-gallery-controls{position:absolute;z-index:6;left:50%;bottom:9%;display:flex;align-items:center;gap:7px;max-width:calc(100% - 24px);padding:6px;background:rgba(15,12,13,.9);border:1px solid var(--character-ring);transform:translateX(-50%);box-shadow:0 5px 15px rgba(0,0,0,.28)}
+.accessory-gallery-controls{position:absolute;z-index:6;left:50%;bottom:9%;display:flex;align-items:center;gap:7px;width:max-content;max-width:calc(100% - 24px);padding:6px;background:rgba(15,12,13,.9);border:1px solid var(--character-ring);transform:translateX(-50%);box-shadow:0 5px 15px rgba(0,0,0,.28)}
 .gallery-thumb{display:flex;align-items:center;gap:6px;min-width:0;padding:4px 6px;border:1px solid transparent;background:transparent;color:var(--character-light);font-size:8px;font-weight:900;letter-spacing:.7px;white-space:nowrap;cursor:pointer}
 .gallery-thumb img{width:38px;height:32px;object-fit:cover;background:#fff}
-.gallery-thumb .gallery-thumb__crop{transform:scale(1.7)}
+.gallery-thumb .gallery-thumb__crop{transform:scale(1.7);clip-path:inset(20.6%)}
 .gallery-thumb.is-active{border-color:var(--character-accent);background:rgba(255,255,255,.13)}
 .gallery-thumb:focus-visible,.gallery-zoom-button:focus-visible{outline:2px solid var(--character-light);outline-offset:2px}
 .gallery-zoom-button{padding:8px 10px;border:1px solid var(--character-accent);background:var(--character-accent);color:var(--character-ink);font-size:8px;font-weight:900;letter-spacing:1px;cursor:pointer}
@@ -234,7 +246,6 @@ body.cart-open{overflow:hidden}
  .site-header__inner{grid-template-columns:minmax(0,1fr) auto}
  .site-header__cta{display:none}
  .accessory-gallery__viewport{height:auto;max-height:none;width:min(100%,430px);aspect-ratio:1}
- .accessory-page--case .accessory-gallery__viewport{width:min(80%,350px);height:auto;aspect-ratio:4/5}
  .accessory-page--mug .accessory-gallery__viewport{height:auto;aspect-ratio:1}
  .accessory-gallery-controls{bottom:9%;gap:3px;padding:4px}
  .gallery-thumb{gap:4px;padding:3px;font-size:7px}
