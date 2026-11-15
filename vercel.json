@@ -9,7 +9,8 @@
     { "source": "/pins-and-art-print", "destination": "/products/pins-and-art-print" },
     { "source": "/action-keychains", "destination": "/products/action-keychains" },
     { "source": "/character-mug", "destination": "/products/character-mug" },
-    { "source": "/iphone-15-case", "destination": "/products/iphone-15-case" }
+    { "source": "/iphone-15-case", "destination": "/products/iphone-15-case" },
+    { "source": "/help", "destination": "/help.html" }
   ],
   "headers": [
     {

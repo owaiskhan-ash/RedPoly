@@ -116,3 +116,7 @@
 .pin-lookup-status{margin-top:-4px;color:#426100;font-weight:800}
 .pin-lookup-note{margin-top:-8px;color:#777066;font-weight:600}
 .field input[name="city"][readonly],.field input[name="state"][readonly]{border-color:#96b83d;background:#f1f8db;color:#35440b;cursor:default}
+.checkout-footer__links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 12px}
+.checkout-footer__links a{color:#d5d0c6;font-size:8px;font-weight:900;letter-spacing:.65px}
+.checkout-footer__links a:hover,.checkout-footer__links a:focus-visible{color:#c8ff00}
+.checkout-footer__links a:focus-visible{outline:2px solid #ff6b1a;outline-offset:3px}

@@ -449,3 +449,43 @@ html.redpoly-splash-seen .brand-splash{display:none}
 @keyframes brand-splash-drop{0%,100%{translate:0 0;opacity:.6}50%{translate:0 -9px;opacity:1}}
 @media(max-width:600px){.brand-splash__content{width:calc(100vw - 34px);padding:24px 18px 21px}.brand-splash__logo{width:min(100%,370px)}.brand-splash__tagline{gap:7px;font-size:8px;letter-spacing:1.4px}.brand-splash__orb--lime{left:-4%}.brand-splash__orb--orange{right:-5%}}
 @media(prefers-reduced-motion:reduce){.brand-splash{animation-delay:.18s;animation-duration:.2s}.brand-splash__content,.brand-splash__orb,.brand-splash__drop,.brand-splash::before,.brand-splash::after,.brand-splash__progress span{animation-duration:.01ms!important;animation-iteration-count:1!important}.brand-splash__content{opacity:1;transform:none;filter:none}.brand-splash__progress span{transform:scaleX(1)}}
+
+/* Shop discovery controls, collection jump links, and quick-view dialog. */
+.shop-jumpbar{display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,34px);min-height:38px;border-top:1px solid rgba(255,255,255,.1)}
+.shop-jumpbar a{flex:none;color:#d8d5cb;font-size:8px;font-weight:900;letter-spacing:1.1px;transition:color .18s ease}
+.shop-jumpbar a:hover,.shop-jumpbar a:focus-visible{color:var(--lime)}
+.shop-discovery{display:grid;grid-template-columns:minmax(220px,1.5fr) minmax(140px,.8fr) minmax(155px,.9fr) auto;gap:12px;align-items:end;margin-top:28px;margin-bottom:25px;padding:16px;background:#1c1a17;border:1px solid rgba(255,255,255,.13);box-shadow:5px 5px 0 rgba(200,255,0,.8)}
+.shop-search,.shop-filter{display:flex;flex-direction:column;gap:6px;color:#c8ff00;font-size:8px;font-weight:900;letter-spacing:1px}
+.shop-search input,.shop-filter select{width:100%;min-height:42px;padding:10px 12px;border:1px solid #666056;border-radius:0;background:#f4f0e6;color:#171512;font:600 12px 'Archivo',sans-serif;letter-spacing:0}
+.shop-search input:focus,.shop-filter select:focus{outline:2px solid #c8ff00;outline-offset:2px}
+.shop-results{align-self:center;color:#c8c0b3;font-size:9px;font-weight:800;white-space:nowrap}
+.shop-no-results{grid-column:1/-1;padding:12px;background:#f4f0e6;color:#171512;font-size:12px;font-weight:700}
+.shop-no-results[hidden]{display:none}
+.p-card[hidden],#figures[hidden],#accessories[hidden]{display:none!important}
+.quick-view-trigger{position:absolute;right:9px;bottom:9px;z-index:5;padding:9px 10px;border:1px solid #171512;background:#c8ff00;color:#171512;font-size:8px;font-weight:900;letter-spacing:.8px;box-shadow:2px 2px 0 #171512;opacity:0;transform:translateY(4px);transition:opacity .16s ease,transform .16s ease}
+.p-card__img:hover .quick-view-trigger,.quick-view-trigger:focus-visible{opacity:1;transform:translateY(0)}
+.quick-view{position:fixed;inset:0;max-width:none;max-height:none;width:100%;height:100%;margin:0;padding:24px;border:0;background:rgba(8,7,8,.72);color:#171512;place-items:center}
+.quick-view[open]{display:grid}
+.quick-view::backdrop{background:rgba(8,7,8,.72)}
+.quick-view__layout{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:clamp(18px,4vw,42px);align-items:center;width:min(850px,100%);max-height:calc(100vh - 48px);overflow:auto;padding:clamp(20px,4vw,42px);background:#f4f0e6;border:3px solid #171512;box-shadow:9px 9px 0 #c8ff00}
+.quick-view__image{width:100%;max-height:64vh;aspect-ratio:1;object-fit:contain;background:#fff}
+.quick-view__copy{display:flex;flex-direction:column;align-items:flex-start}
+.quick-view__eyebrow{color:#ba321d;font-size:8px;font-weight:900;letter-spacing:1.5px}
+.quick-view__copy h2{margin-top:12px;font:clamp(35px,6vw,62px)/.9 'Anton',sans-serif;text-transform:uppercase}
+.quick-view__subtitle{margin-top:12px;color:#625c52;font-size:11px;font-weight:800;letter-spacing:.6px}
+.quick-view__price{margin-top:18px;font:32px/1 'Anton',sans-serif}
+.quick-view__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.quick-view__add{padding:13px 15px;border:2px solid #171512;background:#c8ff00;color:#171512;font-size:9px;font-weight:900;letter-spacing:1px}
+.quick-view__details{display:inline-flex;align-items:center;padding:13px 15px;background:#171512;color:#fff;font-size:9px;font-weight:900;letter-spacing:.7px}
+.quick-view__close{position:absolute;top:12px;right:12px;z-index:2;display:grid;place-items:center;width:42px;height:42px;border:2px solid #171512;background:#f4f0e6;color:#171512;font-size:26px}
+.quick-view button:focus-visible,.quick-view a:focus-visible{outline:3px solid #ff6b1a;outline-offset:3px}
+@media(max-width:760px){.shop-discovery{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:13px}.shop-search{grid-column:1/-1}.shop-results{grid-column:1/-1}.shop-jumpbar{justify-content:flex-start;gap:20px;overflow-x:auto;min-height:36px;scrollbar-width:none}.shop-jumpbar::-webkit-scrollbar{display:none}.quick-view__layout{grid-template-columns:1fr;gap:15px;align-content:start;width:min(520px,100%);max-height:calc(100vh - 28px);padding:18px}.quick-view__image{max-height:42vh}.quick-view__copy h2{font-size:40px}.quick-view__price{margin-top:11px}.quick-view__actions{margin-top:13px}}
+@media(max-width:420px){.shop-discovery{grid-template-columns:1fr}.shop-search,.shop-results{grid-column:1}.shop-results{white-space:normal}.quick-view__actions{width:100%}.quick-view__add,.quick-view__details{flex:1;justify-content:center}}
+@media(prefers-reduced-motion:reduce){.shop-jumpbar a,.quick-view-trigger{transition:none}}
+.foot__links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 13px;max-width:540px}
+.foot__links a{color:#d5d0c6;font-size:8px;font-weight:900;letter-spacing:.65px}
+.foot__links a:hover,.foot__links a:focus-visible{color:var(--lime)}
+.foot__links a:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+@media(hover:none){.quick-view-trigger{opacity:1;transform:none}}
+@media(max-width:640px){.foot__inner{align-items:flex-start;flex-direction:column}.foot__links{justify-content:flex-start}.foot__more{align-self:flex-end}}
+#figures,#accessories,#bundle-builder,#collections,#story{scroll-margin-top:145px}

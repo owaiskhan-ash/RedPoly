@@ -260,3 +260,12 @@ body.cart-open{overflow:hidden}
 .accessory-policy-panel:not(.accessory-policy-panel--product) .delivery-checker button{background:#171512;color:#fff}
 .accessory-policy-panel:not(.accessory-policy-panel--product) .delivery-checker__status{color:#426100}
 @media(max-width:640px){.site-header__inner{grid-template-columns:minmax(0,1fr) auto}}
+.cart-undo{align-self:flex-start;margin:4px 0 12px;padding:0;border:0;background:transparent;color:#4938a6;font-size:9px;font-weight:900;letter-spacing:.5px;text-decoration:underline;cursor:pointer}
+.cart-undo[hidden]{display:none}
+.cart-recommendations{margin:18px 0 6px;padding:13px;background:#e8e2d7;border-left:3px solid #4439b8}
+.cart-recommendations h3{margin-bottom:8px;color:#4d3eb2;font-size:8px;font-weight:900;letter-spacing:1px}
+.cart-recommendation{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:8px 0;border-top:1px solid rgba(23,21,18,.13)}
+.cart-recommendation a{font-size:9px;font-weight:900;color:#171512}
+.cart-recommendation__add{flex:none;padding:7px 9px;border:1px solid #171512;background:#c8ff00;color:#171512;font-size:8px;font-weight:900}
+.cart-drawer button:focus-visible,.cart-recommendation a:focus-visible{outline:3px solid #ff6b1a;outline-offset:3px}
+.cart-recommendation a:hover{color:#4938a6}
