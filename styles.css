@@ -651,3 +651,15 @@ html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out 
 /* Five header links on small tablets: tighter spacing and no club label, so nothing runs off the edge */
 @media(min-width:761px) and (max-width:900px){.site-header__nav{gap:13px}.site-header__brand span{display:none}}
 @media(max-width:1120px){.site-header__cta{display:none}}
+
+/* Third product on the home page: Cute Dinos, with the three colours as swatches under the toy */
+.shop-feature--dino{background:#e6f6d3;border-top:3px dashed rgba(10,10,10,.16)}
+.shop-feature--dino .t-lime{color:#5d9f1c}
+.shop-feature--dino .shop-feature__image img{max-height:410px}
+.shop-feature__swatches{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;padding:0;list-style:none}
+.shop-feature__swatches a{display:block;width:24px;height:24px;border:2px solid var(--black);border-radius:50%;background:var(--swatch,#bbb);box-shadow:2px 2px 0 rgba(10,10,10,.28);transition:transform .16s ease}
+.shop-feature__swatches a:hover,.shop-feature__swatches a:focus-visible{transform:translateY(-3px) scale(1.08)}
+.shop-feature__swatches a:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.shop-feature__swatch-note{margin-top:7px;text-align:center;font-size:8px;font-weight:900;letter-spacing:1.3px;color:#3b4636}
+@media(max-width:560px){.shop-feature--dino .shop-feature__image img{max-height:280px}}
+@media(prefers-reduced-motion:reduce){.shop-feature__swatches a{transition:none}.shop-feature__swatches a:hover,.shop-feature__swatches a:focus-visible{transform:none}}

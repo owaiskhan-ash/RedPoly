@@ -71,7 +71,12 @@
   // Anything else found in a saved bag or saved list (for example an item that is no longer sold) is dropped.
   var catalogue = {
     'BUBBLE GUN': { price:499, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' },
-    'STUNT PET': { price:599, href:'/stunt-pet', image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' }
+    'STUNT PET': { price:599, href:'/stunt-pet', image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' },
+    // Cute Dinos sells as one dino in any of three colours (₹249) or the set of all three (₹549).
+    'CUTE DINOS GREEN': { price:249, href:'/cute-dinos?colour=green', image:'/assets/images/redpoly/products/cute-dinos-green-thumb.png?v=dinos-20261116' },
+    'CUTE DINOS RED': { price:249, href:'/cute-dinos?colour=red', image:'/assets/images/redpoly/products/cute-dinos-red-thumb.png?v=dinos-20261116' },
+    'CUTE DINOS TEAL': { price:249, href:'/cute-dinos?colour=teal', image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.png?v=dinos-20261116' },
+    'CUTE DINOS TRIO': { price:549, href:'/cute-dinos?pack=trio', image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.png?v=dinos-20261116' }
   };
   function inCatalogue(name, price) { return Object.prototype.hasOwnProperty.call(catalogue, name) && catalogue[name].price === Number(price); }
   var cartStorageKey = 'redpoly-cart-v1';
@@ -566,7 +571,8 @@
   function registerWishButton(button, data) {
     button.wishData = data;
     wishButtons.push(button);
-    button.addEventListener('click', function () { toggleWish(data); });
+    // Read the data at click time so a product page can change its pick (Cute Dinos colours).
+    button.addEventListener('click', function () { toggleWish(button.wishData || data); });
   }
   function localPath(url) { try { var parsed = new URL(url, window.location.href); return parsed.pathname + parsed.search; } catch (ignoreUrl) { return ''; } }
   var heartMarkup = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
