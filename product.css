@@ -5,6 +5,7 @@ body.creature-page--noor{--character-primary:#352f9f;--character-mid:#292481;--c
 body.creature-page--aarav{--character-primary:#0caaa5;--character-mid:#0c9993;--character-dark:#087f80;--character-deep:#08666b;--character-hot:#4ed4b8;--character-accent:#9deb32;--character-light:#f4f0e6;--character-ink:#063336;--character-story:#083d3e;--character-card-dark:#0c6262;--character-glow:rgba(157,235,50,.45);--character-glow-soft:rgba(114,224,164,.5);--character-glow-faint:rgba(8,102,107,.28);--character-accent-soft:rgba(157,235,50,.18);--character-ring:rgba(244,240,230,.55);--character-accent-halo:rgba(157,235,50,.08);--character-accent-halo-strong:rgba(244,240,230,.045);--character-accent-inset:rgba(157,235,50,.1);--character-shadow:rgba(2,37,40,.5);--character-text-shadow:rgba(3,51,51,.34);--character-nav:rgba(5,66,65,.55);--character-soft-shade:rgba(5,61,62,.22);--character-muted:rgba(244,240,230,.74);--character-muted-strong:rgba(244,240,230,.96);--character-muted-border:rgba(244,240,230,.42);--character-card-ink:#063336;--character-button-shadow:rgba(3,49,47,.5);--character-final-ink:#083332;--character-accent-bright:#c2f46b;--character-plate-top:#65dcc0;--character-plate-mid:#0c9993;--character-plate-bottom:#087f80;--character-border:#064f52}
 body.creature-page--bubble{--character-primary:#0e1750;--character-mid:#0b1242;--character-dark:#060a26;--character-deep:#080e34;--character-hot:#2fd0ff;--character-accent:#ffd21f;--character-light:#f1f7ff;--character-ink:#0a1238;--character-story:#060a22;--character-card-dark:#101b5e;--character-glow:rgba(47,208,255,.55);--character-glow-soft:rgba(110,180,255,.6);--character-glow-faint:rgba(47,208,255,.24);--character-accent-soft:rgba(255,210,31,.18);--character-ring:rgba(255,210,31,.55);--character-accent-halo:rgba(47,208,255,.1);--character-accent-halo-strong:rgba(255,210,31,.05);--character-accent-inset:rgba(47,208,255,.12);--character-shadow:rgba(3,6,30,.6);--character-text-shadow:rgba(4,8,40,.5);--character-nav:rgba(5,8,32,.7);--character-soft-shade:rgba(5,9,40,.26);--character-muted:rgba(241,247,255,.76);--character-muted-strong:rgba(241,247,255,.95);--character-muted-border:rgba(241,247,255,.42);--character-card-ink:#101a52;--character-button-shadow:rgba(3,6,30,.55);--character-final-ink:#0a1238;--character-accent-bright:#ffe36a;--character-plate-top:#2fd0ff;--character-plate-mid:#2b62e6;--character-plate-bottom:#0a1140;--character-border:#070c33}
 body.creature-page--pet{--character-primary:#5c1436;--character-mid:#4a102c;--character-dark:#1d0612;--character-deep:#2b0a1b;--character-hot:#ff8a80;--character-accent:#ffa02e;--character-light:#fff4ea;--character-ink:#2b0a1b;--character-story:#1a0611;--character-card-dark:#63183b;--character-glow:rgba(255,138,128,.55);--character-glow-soft:rgba(255,170,150,.6);--character-glow-faint:rgba(255,138,128,.24);--character-accent-soft:rgba(255,160,46,.18);--character-ring:rgba(255,160,46,.55);--character-accent-halo:rgba(255,138,128,.1);--character-accent-halo-strong:rgba(255,160,46,.45);--character-accent-inset:rgba(255,138,128,.12);--character-shadow:rgba(22,4,13,.6);--character-text-shadow:rgba(30,6,18,.5);--character-nav:rgba(26,6,16,.7);--character-soft-shade:rgba(30,7,18,.26);--character-muted:rgba(255,244,234,.78);--character-muted-strong:rgba(255,244,234,.95);--character-muted-border:rgba(255,244,234,.42);--character-card-ink:#4a102c;--character-button-shadow:rgba(22,4,13,.55);--character-final-ink:#2b0a1b;--character-accent-bright:#ffc163;--character-plate-top:#ff8a80;--character-plate-mid:#c93a5a;--character-plate-bottom:#2b0a1b;--character-border:#210713}
+body.creature-page--dino{--character-primary:#0f6b46;--character-mid:#0b5738;--character-dark:#04251a;--character-deep:#073d29;--character-hot:#ff9f2e;--character-accent:#c8ff00;--character-light:#f5ffe9;--character-ink:#061c13;--character-story:#04160e;--character-card-dark:#0a4a32;--character-glow:rgba(150,255,70,.42);--character-glow-soft:rgba(190,255,110,.5);--character-glow-faint:rgba(90,220,120,.22);--character-accent-soft:rgba(200,255,0,.16);--character-ring:rgba(200,255,0,.5);--character-accent-halo:rgba(200,255,0,.09);--character-accent-halo-strong:rgba(200,255,0,.05);--character-accent-inset:rgba(200,255,0,.1);--character-shadow:rgba(2,20,12,.5);--character-text-shadow:rgba(3,30,18,.4);--character-nav:rgba(4,32,21,.55);--character-soft-shade:rgba(3,28,18,.24);--character-muted:rgba(245,255,233,.74);--character-muted-strong:rgba(245,255,233,.95);--character-muted-border:rgba(245,255,233,.42);--character-muted-border-strong:rgba(245,255,233,.55);--character-card-ink:#0a2a1b;--character-button-shadow:rgba(2,24,14,.55);--character-final-ink:#0b1c12;--character-accent-bright:#dcff5c;--character-plate-top:#9be23f;--character-plate-mid:#2f9e57;--character-plate-bottom:#0a3f28;--character-border:#032015}
 body.creature-page--noor .char-spark{width:9px;height:9px;border-radius:50%;background:var(--character-accent);font-size:0;box-shadow:0 0 16px var(--character-accent-halo-strong)}
 body.creature-page--noor .char-spark--two{width:6px;height:6px}
 body.creature-page--noor .char-spark--four{width:11px;height:11px}
@@ -395,3 +396,60 @@ html.motion-ready body.creature-page--pet .figure-gallery__viewport[data-photo="
 .char-nav nav a{white-space:nowrap}
 @media(max-width:960px){.char-nav nav>a.char-nav__cross{display:none}.char-nav .wish-toggle>span{display:none}.char-nav .wish-toggle{min-width:46px;justify-content:center}}
 @media(max-width:340px){.char-nav nav a.char-nav__back{white-space:normal}}
+
+/* Cute Dinos: the licensed wordmark sits above the hero title, and the buy column carries a
+   colour + pack picker. One dino is ₹249; the 3-pack of every colour is ₹549. */
+.char-brandmark{display:inline-flex;width:clamp(168px,19vw,226px);margin-top:34px;padding:7px 11px;background:var(--character-light);border:2px solid var(--character-border);box-shadow:5px 5px 0 var(--character-button-shadow);transform:rotate(-2deg)}
+.char-brandmark img{display:block;width:100%;height:auto}
+.char-brandmark + .char-kicker{margin-top:18px}
+.dino-picker{max-width:470px;margin-top:20px;padding:15px 15px 14px;border:2px solid var(--character-border);background:rgba(4,26,18,.55);box-shadow:5px 5px 0 var(--character-button-shadow)}
+.dino-picker__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.dino-picker__title{font-size:9px;font-weight:900;letter-spacing:2px;color:var(--character-accent)}
+.dino-picker__state{font-size:9px;font-weight:900;letter-spacing:1.1px;color:var(--character-muted-strong)}
+.dino-picker__group{min-width:0;margin:12px 0 0;padding:0;border:0;transition:opacity .2s ease}
+.dino-picker__group legend{padding:0;font-size:8px;font-weight:900;letter-spacing:1.6px;color:var(--character-muted)}
+.dino-picker__group[disabled]{opacity:.36}
+.dino-swatches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.dino-swatch{position:relative;display:grid;justify-items:center;gap:6px;padding:10px 4px 8px;background:var(--character-light);color:var(--character-card-ink);border:2px solid transparent;cursor:pointer;transition:transform .16s ease,background-color .16s ease,box-shadow .16s ease}
+.dino-swatch:hover{transform:translateY(-2px)}
+.dino-swatch input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.dino-swatch__chip{display:block;width:30px;height:30px;border:2px solid #111;border-radius:50%;background:var(--swatch,#ccc);box-shadow:inset 0 -7px 0 rgba(0,0,0,.14)}
+.dino-swatch__name{font:400 14px/1 'Anton',sans-serif;letter-spacing:.5px}
+.dino-swatch__price{font-size:8px;font-weight:900;letter-spacing:.5px;opacity:.62}
+.dino-swatch:has(input:checked){background:#fff;border-color:#111;box-shadow:3px 3px 0 var(--character-accent)}
+.dino-swatch:has(input:checked)::after{content:"✓";position:absolute;top:2px;right:5px;font-size:11px;font-weight:900;color:#0a4a32}
+.dino-swatch:has(input:focus-visible){outline:3px solid var(--character-hot);outline-offset:2px}
+.dino-packs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.dino-pack{position:relative;display:grid;gap:3px;padding:9px 10px;background:var(--character-light);color:var(--character-card-ink);border:2px solid transparent;cursor:pointer;transition:transform .16s ease,background-color .16s ease,box-shadow .16s ease}
+.dino-pack:hover{transform:translateY(-2px)}
+.dino-pack input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.dino-pack__top{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+.dino-pack__name{font:400 15px/1 'Anton',sans-serif;letter-spacing:.4px}
+.dino-pack__amount{font:400 20px/1 'Anton',sans-serif;letter-spacing:-.3px;color:#0a4a32}
+.dino-pack small{font-size:8.5px;font-weight:800;line-height:1.35;color:#3f5145}
+.dino-pack:has(input:checked){background:#fff;border-color:#111;box-shadow:3px 3px 0 var(--character-accent)}
+.dino-pack:has(input:focus-visible){outline:3px solid var(--character-hot);outline-offset:2px}
+.dino-picker__hint{margin-top:9px;font-size:9px;font-weight:700;line-height:1.5;color:var(--character-muted)}
+.char-box__buy{margin-top:24px}
+body.creature-page--dino .char-hero h1{font-size:clamp(82px,12.4vw,168px);line-height:.8}
+body.creature-page--dino .char-stage__figure{filter:drop-shadow(0 24px 20px var(--character-shadow))}
+body.creature-page--dino .char-box__photo img,
+body.creature-page--dino .char-file__portrait img{filter:drop-shadow(0 12px 10px rgba(0,0,0,.35))}
+body.creature-page--dino .char-final-cta h2 span{color:#123f26}
+body.creature-page--dino .char-file__portrait img{max-width:82%;max-height:190px}
+@media(max-width:680px){
+  body.creature-page--dino .char-hero h1{font-size:clamp(72px,22vw,124px)}
+  .char-brandmark{width:150px;margin-top:26px}
+  .dino-picker{padding:13px 12px 12px}
+  .dino-swatch__chip{width:26px;height:26px}
+  .dino-pack__name{font-size:13px}
+  .dino-pack__amount{font-size:17px}
+}
+@media(max-width:380px){
+  .dino-packs{grid-template-columns:1fr}
+  body.creature-page--dino .char-file__portrait img{max-width:78%;max-height:150px}
+}
+@media(prefers-reduced-motion:reduce){
+  .dino-swatch,.dino-pack,.dino-picker__group{transition:none}
+  .dino-swatch:hover,.dino-pack:hover{transform:none}
+}
