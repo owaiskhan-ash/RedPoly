@@ -397,11 +397,9 @@ html.motion-ready body.creature-page--pet .figure-gallery__viewport[data-photo="
 @media(max-width:960px){.char-nav nav>a.char-nav__cross{display:none}.char-nav .wish-toggle>span{display:none}.char-nav .wish-toggle{min-width:46px;justify-content:center}}
 @media(max-width:340px){.char-nav nav a.char-nav__back{white-space:normal}}
 
-/* Cute Dinos: the licensed wordmark sits above the hero title, and the buy column carries a
-   colour + pack picker. One dino is ₹249; the 3-pack of every colour is ₹549. */
-.char-brandmark{display:inline-flex;width:clamp(168px,19vw,226px);margin-top:34px;padding:7px 11px;background:var(--character-light);border:2px solid var(--character-border);box-shadow:5px 5px 0 var(--character-button-shadow);transform:rotate(-2deg)}
-.char-brandmark img{display:block;width:100%;height:auto}
-.char-brandmark + .char-kicker{margin-top:18px}
+/* Cute Dinos: the buy column carries a colour + pack picker. One dino is ₹249; the
+   3-pack of every colour is ₹549. The licensed wordmark shows up in the details card
+   portrait rather than above the hero title. */
 .dino-picker{max-width:470px;margin-top:20px;padding:15px 15px 14px;border:2px solid var(--character-border);background:rgba(4,26,18,.55);box-shadow:5px 5px 0 var(--character-button-shadow)}
 .dino-picker__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
 .dino-picker__title{font-size:9px;font-weight:900;letter-spacing:2px;color:var(--character-accent)}
@@ -444,7 +442,6 @@ body.creature-page--dino .char-file__no{top:auto;bottom:14px;left:16px;z-index:3
 body.creature-page--dino .char-file__stamp{z-index:3;bottom:16px;right:16px}
 @media(max-width:680px){
   body.creature-page--dino .char-hero h1{font-size:clamp(72px,22vw,124px)}
-  .char-brandmark{width:150px;margin-top:26px}
   .dino-picker{padding:13px 12px 12px}
   .dino-swatch__chip{width:26px;height:26px}
   .dino-pack__name{font-size:13px}
