@@ -19,8 +19,14 @@
       row.appendChild(name);row.appendChild(price);itemsNode.appendChild(row);
     });
     if (typeof order.gst === 'number' && typeof order.total === 'number') {
-      [["ITEMS SUBTOTAL",money(order.subtotal)],["GST ("+(Number(order.gstRate)||18)+"%)",money(order.gst)],["SHIPPING · "+String(order.shippingMethod||'standard').toUpperCase(),order.shippingCost===0?'FREE':money(order.shippingCost)],["DEMO TOTAL",money(order.total)]].forEach(function(pair,index){
-        var row=document.createElement('div');row.className='thankyou-total'+(index===3?' thankyou-total--grand':'');
+      var gstLabel="GST ("+(Number(order.gstRate)||18)+"%)";
+      var shippingRow=["SHIPPING · "+String(order.shippingMethod||'standard').toUpperCase(),order.shippingCost===0?'FREE':money(order.shippingCost)];
+      // Orders placed since shelf prices include GST show the GST share under the total.
+      var rows=order.gstIncluded
+        ? [["ITEMS (INCL. GST)",money(order.subtotal)],shippingRow,["DEMO TOTAL",money(order.total),'grand'],["INCLUDES "+gstLabel,money(order.gst),'note']]
+        : [["ITEMS SUBTOTAL",money(order.subtotal)],[gstLabel,money(order.gst)],shippingRow,["DEMO TOTAL",money(order.total),'grand']];
+      rows.forEach(function(pair){
+        var row=document.createElement('div');row.className='thankyou-total'+(pair[2]?' thankyou-total--'+pair[2]:'');
         var label=document.createElement('span');label.textContent=pair[0];var value=document.createElement('strong');value.textContent=pair[1];row.appendChild(label);row.appendChild(value);totalsNode.appendChild(row);
       });
     }

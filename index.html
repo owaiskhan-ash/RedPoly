@@ -35,8 +35,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=origin-comic-20261114-ui2" />
-<link rel="stylesheet" href="/accessories.css?v=store-ui-20261115-v8" />
+<link rel="stylesheet" href="styles.css?v=store-ux-20261118-v3" />
+<link rel="stylesheet" href="/accessories.css?v=store-ux-20261118-v9" />
 </head>
 <body>
 
@@ -66,9 +66,13 @@
       <a href="#story">OUR STORY</a>
     </nav>
     <a class="site-header__cta" href="#featured">MEET THE CREW <span aria-hidden="true">↗</span></a>
+    <button class="site-header__menu" id="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><span class="site-header__menu-icon" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only">Menu</span></button>
   </div>
+  <nav class="site-menu wrap" id="site-menu" aria-label="Menu">
+    <a href="#figures">FIGURES</a><a href="#accessories">ACCESSORIES</a><a href="#bundle-builder">BUILD A TRIO</a><a href="#collections">COLLECTIONS</a><a href="#story">OUR STORY</a><a href="/help">HELP + POLICIES</a>
+  </nav>
   <nav class="shop-jumpbar wrap" aria-label="Shop collections">
-    <a href="#figures">THE CREW</a><a href="#accessories">ACCESSORIES</a><a href="#bundle-builder">BUILD A TRIO</a><a href="/help">HELP + POLICIES</a>
+    <a href="#figures">FIGURES</a><a href="#accessories">ACCESSORIES</a><a href="#bundle-builder">BUILD A TRIO</a><a href="/help">HELP + POLICIES</a>
   </nav>
 </header>
 
@@ -91,7 +95,7 @@
         </li>
         <li>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v10l-8 4-8-4V7l8-4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 7l8 4 8-4M12 11v10" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
-          <span>4-DAY STANDARD · 2-DAY EXPRESS</span>
+          <span>FREE STANDARD SHIPPING FROM ₹1,499</span>
         </li>
       </ul>
     </div>
@@ -99,14 +103,17 @@
     <div class="hero__right">
       <div class="hero__boxes">
         <figure class="box box--barsaat">
+          <a class="box__link" href="/barsaat" data-label="MEET BARSAAT →" aria-label="Meet Barsaat, the curious one"></a>
           <img src="assets/images/redpoly/packaging/barsaat-window-box.png?v=packaging-20261114" alt="Barsaat, the curious one, inside a clear-window REDPOLY collector box." width="670" height="1065" loading="eager" />
           <figcaption class="sr-only">REDPOLY 01: Barsaat, the curious one, in branded window packaging.</figcaption>
         </figure>
         <figure class="box box--agni">
+          <a class="box__link" href="/agni" data-label="MEET AGNI →" aria-label="Meet Agni, the chaotic one"></a>
           <img src="assets/images/redpoly/packaging/agni-window-box.png?v=packaging-20261114" alt="Agni, the chaotic one, inside a clear-window REDPOLY collector box." width="442" height="717" loading="eager" />
           <figcaption class="sr-only">REDPOLY 02: Agni, the chaotic one, in branded window packaging.</figcaption>
         </figure>
         <figure class="box box--noor">
+          <a class="box__link" href="/noor" data-label="MEET NOOR →" aria-label="Meet Noor, the mysterious one"></a>
           <img src="assets/images/redpoly/packaging/noor-window-box.png?v=packaging-20261114" alt="Noor, the mysterious one, inside a clear-window REDPOLY collector box." width="523" height="847" loading="eager" />
           <figcaption class="sr-only">REDPOLY 03: Noor, the mysterious one, in branded window packaging.</figcaption>
         </figure>
@@ -151,10 +158,15 @@
     </div>
 
     <div class="limited__right">
+      <span class="limited__sticker">LIMITED · 500 MADE</span>
       <div class="price-badge">
         <span class="price-badge__only">ONLY</span>
-        <span class="price-badge__amount">₹4,099</span>
+        <span class="price-badge__amount">₹4,591</span>
         <span class="price-badge__lines" aria-hidden="true"><i></i><i></i><i></i></span>
+      </div>
+      <div class="limited__buy">
+        <button class="add-btn limited__buy-button" type="button" data-name="BARSAAT FOREVER" data-price="4591" aria-label="Add Barsaat Forever limited edition to cart for 4,591 rupees">ADD TO CART</button>
+        <p class="limited__buy-note">Incl. GST · Ships free</p>
       </div>
       <svg class="price-arrow" viewBox="0 0 60 40" aria-hidden="true"><path d="M55 5 Q30 5 15 25" fill="none" stroke="#FF6B1A" stroke-width="4" stroke-linecap="round"/><path d="M8 18 L15 28 L24 20" fill="none" stroke="#FF6B1A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <p class="hand-note">MONSOON<br />MOOD.<br />BIG<br />ATTITUDE.
@@ -188,58 +200,58 @@
       <article class="p-card">
         <div class="p-card__img">
           <a class="p-card__image-link" href="/barsaat" aria-label="Open Barsaat product page"><img src="assets/images/redpoly/characters/barsaat.png?v=creatures-inr-20261114" alt="Barsaat The Curious One aqua monsoon creature - soft 3D" /></a>
-          <span class="stock">IN STOCK</span>
+          <span class="stock">SHIPS FREE</span>
           <button class="heart" type="button" aria-label="Add Barsaat to wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="p-card__body">
           <h3><a class="p-card__product-link" href="/barsaat">BARSAAT <span aria-hidden="true">↗</span></a></h3>
           <p class="p-card__sub">THE CURIOUS ONE</p>
-          <p class="p-card__price">₹3,299</p>
-          <button class="add-btn" type="button" data-name="BARSAAT" data-price="3299"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2 12h11l2-8H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg> ADD TO CART</button>
+          <p class="p-card__price">₹3,695 <small>incl. GST</small></p>
+          <button class="add-btn" type="button" data-name="BARSAAT" data-price="3695"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2 12h11l2-8H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg> ADD TO CART</button>
         </div>
       </article>
 
       <article class="p-card">
         <div class="p-card__img">
           <a class="p-card__image-link" href="/agni" aria-label="Open Agni's product page"><img src="assets/images/redpoly/characters/agni.png?v=creatures-inr-20261114" alt="Agni The Chaotic One orange ember creature - soft 3D" /></a>
-          <span class="stock">IN STOCK</span>
+          <span class="stock">SHIPS FREE</span>
           <button class="heart" type="button" aria-label="Add Agni to wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="p-card__body">
           <h3><a class="p-card__product-link" href="/agni">AGNI <span aria-hidden="true">↗</span></a></h3>
           <p class="p-card__sub">THE CHAOTIC ONE</p>
-          <p class="p-card__price">₹3,299</p>
-          <button class="add-btn" type="button" data-name="AGNI" data-price="3299"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2 12h11l2-8H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg> ADD TO CART</button>
+          <p class="p-card__price">₹3,695 <small>incl. GST</small></p>
+          <button class="add-btn" type="button" data-name="AGNI" data-price="3695"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2 12h11l2-8H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg> ADD TO CART</button>
         </div>
       </article>
 
       <article class="p-card">
         <div class="p-card__img">
           <a class="p-card__image-link" href="/noor" aria-label="Open Noor product page"><img src="assets/images/redpoly/characters/noor.png?v=creatures-inr-20261114" alt="Noor The Mysterious One indigo moth creature - soft 3D" /></a>
-          <span class="stock">IN STOCK</span>
+          <span class="stock">SHIPS FREE</span>
           <span class="card-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 18l-1-9 5 4 5-7 5 7 5-4-1 9H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
           <button class="heart" type="button" aria-label="Add Noor to wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="p-card__body">
           <h3><a class="p-card__product-link" href="/noor">NOOR <span aria-hidden="true">↗</span></a></h3>
           <p class="p-card__sub">THE MYSTERIOUS ONE</p>
-          <p class="p-card__price">₹3,299</p>
-          <button class="add-btn" type="button" data-name="NOOR" data-price="3299"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2 12h11l2-8H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg> ADD TO CART</button>
+          <p class="p-card__price">₹3,695 <small>incl. GST</small></p>
+          <button class="add-btn" type="button" data-name="NOOR" data-price="3695"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2 12h11l2-8H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg> ADD TO CART</button>
         </div>
       </article>
 
       <article class="p-card">
         <div class="p-card__img">
           <a class="p-card__image-link" href="/aarav" aria-label="Open Aarav product page"><img src="assets/images/redpoly/characters/aarav.png?v=creatures-inr-20261114" alt="Aarav The Gentle Giant peacock-teal plate-backed creature - soft 3D" /></a>
-          <span class="stock">IN STOCK</span>
+          <span class="stock">SHIPS FREE</span>
           <span class="card-crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 18l-1-9 5 4 5-7 5 7 5-4-1 9H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
           <button class="heart" type="button" aria-label="Add Aarav to wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="p-card__body">
           <h3><a class="p-card__product-link" href="/aarav">AARAV <span aria-hidden="true">↗</span></a></h3>
           <p class="p-card__sub">THE GENTLE GIANT</p>
-          <p class="p-card__price">₹3,299</p>
-          <button class="add-btn" type="button" data-name="AARAV" data-price="3299"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2 12h11l2-8H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg> ADD TO CART</button>
+          <p class="p-card__price">₹3,695 <small>incl. GST</small></p>
+          <button class="add-btn" type="button" data-name="AARAV" data-price="3695"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h3l2 12h11l2-8H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.6" fill="currentColor"/><circle cx="18" cy="20" r="1.6" fill="currentColor"/></svg> ADD TO CART</button>
         </div>
       </article>
     </div>
@@ -256,20 +268,20 @@
     </header>
     <div class="cards">
       <article class="p-card">
-        <div class="p-card__img"><a class="p-card__image-link" href="/pins-and-art-print" aria-label="Open Pins and Art Print product page"><img src="/assets/images/redpoly/accessories/pins-and-art-print.jpg" alt="Four REDPOLY creature pins with a matching character art print" loading="lazy" /></a><span class="stock">IN STOCK</span></div>
-        <div class="p-card__body"><h3><a class="p-card__product-link" href="/pins-and-art-print">PINS + ART PRINT <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">THE CREW, PINNED DOWN</p><p class="p-card__price">₹599</p><button class="add-btn" type="button" data-name="PINS + ART PRINT" data-price="599">ADD TO CART</button></div>
+        <div class="p-card__img"><a class="p-card__image-link" href="/pins-and-art-print" aria-label="Open Pins and Art Print product page"><img src="/assets/images/redpoly/accessories/pins-and-art-print.jpg" alt="Four REDPOLY creature pins with a matching character art print" loading="lazy" /></a><span class="stock stock--deal">ANY 3 · ₹1,679</span></div>
+        <div class="p-card__body"><h3><a class="p-card__product-link" href="/pins-and-art-print">PINS + ART PRINT <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">THE CREW, PINNED DOWN</p><p class="p-card__price">₹671 <small>incl. GST</small></p><button class="add-btn" type="button" data-name="PINS + ART PRINT" data-price="671">ADD TO CART</button></div>
       </article>
       <article class="p-card">
-        <div class="p-card__img"><a class="p-card__image-link" href="/action-keychains" aria-label="Open Action Keychains product page"><img src="/assets/images/redpoly/accessories/action-keychains.jpg" alt="Four colourful REDPOLY character action keychains" loading="lazy" /></a><span class="stock">IN STOCK</span></div>
-        <div class="p-card__body"><h3><a class="p-card__product-link" href="/action-keychains">ACTION KEYCHAINS <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">THE CREW ON THE GO</p><p class="p-card__price">₹599</p><button class="add-btn" type="button" data-name="ACTION KEYCHAINS" data-price="599">ADD TO CART</button></div>
+        <div class="p-card__img"><a class="p-card__image-link" href="/action-keychains" aria-label="Open Action Keychains product page"><img src="/assets/images/redpoly/accessories/action-keychains.jpg" alt="Four colourful REDPOLY character action keychains" loading="lazy" /></a><span class="stock stock--deal">ANY 3 · ₹1,679</span></div>
+        <div class="p-card__body"><h3><a class="p-card__product-link" href="/action-keychains">ACTION KEYCHAINS <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">THE CREW ON THE GO</p><p class="p-card__price">₹671 <small>incl. GST</small></p><button class="add-btn" type="button" data-name="ACTION KEYCHAINS" data-price="671">ADD TO CART</button></div>
       </article>
       <article class="p-card">
-        <div class="p-card__img"><a class="p-card__image-link" href="/character-mug" aria-label="Open Character Mug product page"><img src="/assets/images/redpoly/accessories/character-mug.jpg" alt="REDPOLY character mug featuring the colourful creature crew" loading="lazy" /></a><span class="stock">IN STOCK</span></div>
-        <div class="p-card__body"><h3><a class="p-card__product-link" href="/character-mug">CHARACTER MUG <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">A LITTLE CREATURE BREAK</p><p class="p-card__price">₹599</p><button class="add-btn" type="button" data-name="CHARACTER MUG" data-price="599">ADD TO CART</button></div>
+        <div class="p-card__img"><a class="p-card__image-link" href="/character-mug" aria-label="Open Character Mug product page"><img src="/assets/images/redpoly/accessories/character-mug.jpg" alt="REDPOLY character mug featuring the colourful creature crew" loading="lazy" /></a><span class="stock stock--deal">ANY 3 · ₹1,679</span></div>
+        <div class="p-card__body"><h3><a class="p-card__product-link" href="/character-mug">CHARACTER MUG <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">A LITTLE CREATURE BREAK</p><p class="p-card__price">₹671 <small>incl. GST</small></p><button class="add-btn" type="button" data-name="CHARACTER MUG" data-price="671">ADD TO CART</button></div>
       </article>
       <article class="p-card">
-        <div class="p-card__img"><a class="p-card__image-link" href="/iphone-15-case" aria-label="Open iPhone 15 Case product page"><img src="/assets/images/redpoly/accessories/iphone-15-case.jpg" alt="REDPOLY character design phone case for iPhone 15" loading="lazy" /></a><span class="stock">IN STOCK</span></div>
-        <div class="p-card__body"><h3><a class="p-card__product-link" href="/iphone-15-case">IPHONE 15 CASE <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">CREATURE COVER, ON</p><p class="p-card__price">₹599</p><button class="add-btn" type="button" data-name="IPHONE 15 CASE" data-price="599">ADD TO CART</button></div>
+        <div class="p-card__img"><a class="p-card__image-link" href="/iphone-15-case" aria-label="Open iPhone 15 Case product page"><img src="/assets/images/redpoly/accessories/iphone-15-case.jpg" alt="REDPOLY character design phone case for iPhone 15" loading="lazy" /></a><span class="stock stock--deal">ANY 3 · ₹1,679</span></div>
+        <div class="p-card__body"><h3><a class="p-card__product-link" href="/iphone-15-case">IPHONE 15 CASE <span aria-hidden="true">↗</span></a></h3><p class="p-card__sub">CREATURE COVER, ON</p><p class="p-card__price">₹671 <small>incl. GST</small></p><button class="add-btn" type="button" data-name="IPHONE 15 CASE" data-price="671">ADD TO CART</button></div>
       </article>
     </div>
 
@@ -277,16 +289,16 @@
       <div class="bundle-builder__intro">
         <p class="bundle-builder__eyebrow">THE CREATURE CLUB TRIO</p>
         <h3 id="bundle-title">PICK ANY THREE.<br /><span>MAKE IT YOURS.</span></h3>
-        <p>Choose 3 of the 4 accessories and pay <strong>₹1,499</strong> instead of ₹1,797. You save ₹298.</p>
+        <p>Choose 3 of the 4 accessories and pay <strong>₹1,679</strong> instead of ₹2,013. You save ₹334. Prices include GST.</p>
         <p class="bundle-builder__count" id="bundle-count" aria-live="polite">0 of 3 selected</p>
-        <button class="add-btn bundle-builder__submit" id="bundle-add" type="button" data-name="CREATURE CLUB TRIO" data-price="1499" disabled>CHOOSE 3 TO UNLOCK ₹1,499</button>
+        <button class="add-btn bundle-builder__submit" id="bundle-add" type="button" data-name="CREATURE CLUB TRIO" data-price="1679" disabled>CHOOSE 3 TO UNLOCK ₹1,679</button>
       </div>
       <fieldset class="bundle-builder__options" aria-describedby="bundle-count">
         <legend class="sr-only">Choose exactly three accessories for the Creature Club Trio</legend>
-        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="pins-and-art-print" data-label="Pins + Art Print" /><img src="/assets/images/redpoly/accessories/pins-and-art-print.jpg" alt="" /><span><strong>PINS + ART PRINT</strong><small>₹599</small></span><b aria-hidden="true">✓</b></label>
-        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="action-keychains" data-label="Action Keychains" /><img src="/assets/images/redpoly/accessories/action-keychains.jpg" alt="" /><span><strong>ACTION KEYCHAINS</strong><small>₹599</small></span><b aria-hidden="true">✓</b></label>
-        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="character-mug" data-label="Character Mug" /><img src="/assets/images/redpoly/accessories/character-mug.jpg" alt="" /><span><strong>CHARACTER MUG</strong><small>₹599</small></span><b aria-hidden="true">✓</b></label>
-        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="iphone-15-case" data-label="iPhone 15 Case" /><img src="/assets/images/redpoly/accessories/iphone-15-case.jpg" alt="" /><span><strong>IPHONE 15 CASE</strong><small>₹599</small></span><b aria-hidden="true">✓</b></label>
+        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="pins-and-art-print" data-label="Pins + Art Print" /><img src="/assets/images/redpoly/accessories/pins-and-art-print.jpg" alt="" /><span><strong>PINS + ART PRINT</strong><small>₹671</small></span><b aria-hidden="true">✓</b></label>
+        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="action-keychains" data-label="Action Keychains" /><img src="/assets/images/redpoly/accessories/action-keychains.jpg" alt="" /><span><strong>ACTION KEYCHAINS</strong><small>₹671</small></span><b aria-hidden="true">✓</b></label>
+        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="character-mug" data-label="Character Mug" /><img src="/assets/images/redpoly/accessories/character-mug.jpg" alt="" /><span><strong>CHARACTER MUG</strong><small>₹671</small></span><b aria-hidden="true">✓</b></label>
+        <label class="bundle-option"><input type="checkbox" name="bundle-item" value="iphone-15-case" data-label="iPhone 15 Case" /><img src="/assets/images/redpoly/accessories/iphone-15-case.jpg" alt="" /><span><strong>IPHONE 15 CASE</strong><small>₹671</small></span><b aria-hidden="true">✓</b></label>
       </fieldset>
     </section>
   </div>
@@ -295,7 +307,7 @@
 <section class="accessory-policy-panel" aria-labelledby="accessory-policy-title">
   <div class="wrap">
     <header><p>THE IMPORTANT BITS</p><h2 id="accessory-policy-title">DELIVERY + RETURNS</h2></header>
-    <details><summary>How is shipping charged?</summary><p>Standard delivery: 4 days. Express: 2 days. Shipping fees are shown at checkout.</p></details>
+    <details><summary>How is shipping charged?</summary><p>Standard delivery takes 4 days and costs ₹30. It is free on bags of ₹1,499 or more. Express takes 2 days and costs ₹120, or nothing from ₹5,000. All prices on the site include GST.</p></details>
     <details><summary>What is the return policy?</summary><p>Return requests must be made within 7 days. Items must be unused and in their original packaging. Approved refunds are returned to the original payment method.</p></details>
   </div>
 </section>
@@ -322,15 +334,16 @@
           <em>SHOP FIGURES →</em>
         </span>
       </a>
-      <a class="c-card c-card--art" href="/#figures" aria-label="Shop Art Toys in the figures collection">
+      <a class="c-card c-card--art c-card--soon" href="#crew" aria-label="Art Toys are coming soon. Join the crew to hear first.">
         <img class="c-card__backdrop" src="assets/images/redpoly/collections/art-toys.jpg" alt="" aria-hidden="true" />
         <img class="c-card__character" src="assets/images/redpoly/collections/agni-collection-pose.png?v=collection-poses-20261114" alt="Agni, the orange ember creature, leaping with a joyful grin" />
         <span class="c-card__num">02</span>
+        <span class="c-card__soon" aria-hidden="true">COMING<br />SOON</span>
         <span class="c-card__crown" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 18l-1-9 5 4 5-7 5 7 5-4-1 9H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
         <span class="c-card__body">
           <strong>ART TOYS</strong>
           <small>Bigger pieces. Bolder designs.<br />For serious collectors.</small>
-          <em>SHOP ART TOYS →</em>
+          <em>GET NOTIFIED →</em>
         </span>
       </a>
       <a class="c-card c-card--accessories" href="/#accessories" aria-label="Shop Accessories collection">
@@ -396,7 +409,7 @@
 </section>
 
 <!-- ================= CREW / FOOTER ================= -->
-<section class="crew">
+<section class="crew" id="crew">
   <div class="wrap crew__inner">
     <div class="crew__left">
       <h2>JOIN THE REDPOLY CREW</h2>
@@ -420,6 +433,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="main.js?v=store-ui-20261116-v11" defer></script>
+<script src="main.js?v=store-ux-20261118-v12" defer></script>
 </body>
 </html>
