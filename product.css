@@ -433,10 +433,12 @@ html.motion-ready body.creature-page--pet .figure-gallery__viewport[data-photo="
 .char-box__buy{margin-top:24px}
 body.creature-page--dino .char-hero h1{font-size:clamp(82px,12.4vw,168px);line-height:.8}
 body.creature-page--dino .char-stage__figure{filter:drop-shadow(0 24px 20px var(--character-shadow))}
-body.creature-page--dino .char-box__photo img,
-body.creature-page--dino .char-file__portrait img{filter:drop-shadow(0 12px 10px rgba(0,0,0,.35))}
+body.creature-page--dino .char-box__photo img{filter:drop-shadow(0 12px 10px rgba(0,0,0,.35))}
 body.creature-page--dino .char-final-cta h2 span{color:#123f26}
-body.creature-page--dino .char-file__portrait img{max-width:82%;max-height:190px}
+body.creature-page--dino .char-file__portrait{gap:15px;align-content:center;padding:46px 18px 34px}
+body.creature-page--dino .char-file__brandmark{display:block;width:min(58%,186px);padding:5px 8px;background:var(--character-light);border:2px solid #0d0d0d;box-shadow:4px 4px 0 rgba(0,0,0,.34);transform:rotate(-2deg)}
+body.creature-page--dino .char-file__brandmark img{width:100%;height:auto;max-width:none;max-height:none;filter:none}
+body.creature-page--dino .char-file__photo{width:auto;max-width:80%;max-height:206px;border:3px solid #0d0d0d;box-shadow:6px 6px 0 rgba(0,0,0,.3);filter:none;background:var(--character-light);transform:rotate(1.6deg)}
 @media(max-width:680px){
   body.creature-page--dino .char-hero h1{font-size:clamp(72px,22vw,124px)}
   .char-brandmark{width:150px;margin-top:26px}
@@ -447,9 +449,79 @@ body.creature-page--dino .char-file__portrait img{max-width:82%;max-height:190px
 }
 @media(max-width:380px){
   .dino-packs{grid-template-columns:1fr}
-  body.creature-page--dino .char-file__portrait img{max-width:78%;max-height:150px}
 }
 @media(prefers-reduced-motion:reduce){
   .dino-swatch,.dino-pack,.dino-picker__group{transition:none}
   .dino-swatch:hover,.dino-pack:hover{transform:none}
+}
+
+/* Cute Dinos: three small story beats on the hero stage. The toy idles with a press-and-go
+   squash, the display plinth sends out a stomp ring with dust puffs, and a line of three-toed
+   prints stamps across the base. Everything is transform/opacity only, and only runs under
+   html.motion-ready, which main.js adds when the visitor has not asked for reduced motion. */
+.char-stage__stomp,.char-stage__tracks{position:absolute;left:50%;bottom:5%;width:min(83%,500px);height:73px;transform:translateX(-50%) perspective(360px) rotateX(22deg);pointer-events:none}
+.char-stage__stomp{z-index:0}
+.char-stage__tracks{z-index:1}
+.char-stage__stomp i{position:absolute;left:0;bottom:0;display:block;width:100%;height:100%;border:2px solid var(--character-accent);border-radius:50%;opacity:0;transform:scale(.55)}
+.char-stage__stomp i:nth-child(3),.char-stage__stomp i:nth-child(4),.char-stage__stomp i:nth-child(5){left:14%;bottom:6px;width:12px;height:12px;border:0;border-radius:50%;background:var(--character-accent);filter:blur(1.4px)}
+.char-stage__stomp i:nth-child(4){left:50%;bottom:2px;width:16px;height:16px}
+.char-stage__stomp i:nth-child(5){left:84%;bottom:10px;width:10px;height:10px}
+.char-stage__tracks i{position:absolute;display:block;width:28px;height:33px;opacity:0;filter:drop-shadow(0 1px 1px rgba(2,20,12,.55));background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 36'%3E%3Cg fill='%23c8ff00'%3E%3Ccircle cx='7.2' cy='8' r='4.5'/%3E%3Ccircle cx='15' cy='5' r='4.8'/%3E%3Ccircle cx='22.8' cy='8' r='4.5'/%3E%3Cpath d='M15 12.5c5.1 0 8.5 4.5 8.5 9.6 0 5.1-3.4 9-8.5 9s-8.5-3.9-8.5-9c0-5.1 3.4-9.6 8.5-9.6Z'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat}
+.char-stage__tracks i:nth-child(1){left:4%;bottom:14%;--tilt:-13deg}
+.char-stage__tracks i:nth-child(2){left:14%;bottom:29%;--tilt:-6deg}
+.char-stage__tracks i:nth-child(3){left:24%;bottom:15%;--tilt:-10deg}
+html.motion-ready body.creature-page--dino .char-stage .char-stage__figure{animation:dino-trundle 8s ease-in-out infinite;transform-origin:50% 94%;will-change:transform}
+html.motion-ready body.creature-page--dino .figure-gallery__viewport[data-view="detail"] .char-stage__figure{animation:none}
+html.motion-ready body.creature-page--dino .char-stage__stomp i:nth-child(1){animation:dino-stomp-ring 8s .02s ease-out infinite}
+html.motion-ready body.creature-page--dino .char-stage__stomp i:nth-child(2){animation:dino-stomp-ring 8s .22s ease-out infinite}
+html.motion-ready body.creature-page--dino .char-stage__stomp i:nth-child(3){animation:dino-stomp-puff 8s .04s ease-out infinite}
+html.motion-ready body.creature-page--dino .char-stage__stomp i:nth-child(4){animation:dino-stomp-puff 8s .1s ease-out infinite}
+html.motion-ready body.creature-page--dino .char-stage__stomp i:nth-child(5){animation:dino-stomp-puff 8s .16s ease-out infinite}
+html.motion-ready body.creature-page--dino .char-stage__tracks i:nth-child(1){animation:dino-track 8s .1s ease-out infinite}
+html.motion-ready body.creature-page--dino .char-stage__tracks i:nth-child(2){animation:dino-track 8s .72s ease-out infinite}
+html.motion-ready body.creature-page--dino .char-stage__tracks i:nth-child(3){animation:dino-track 8s 1.34s ease-out infinite}
+@keyframes dino-trundle{
+  0%{transform:translateY(0) rotate(-2.4deg) scale(1.008,.985)}
+  9%{transform:translateY(3px) rotate(-2.1deg) scale(1.014,.972)}
+  32%{transform:translateY(-10px) rotate(-3.9deg) scale(.996,1.012)}
+  56%{transform:translateY(-4px) rotate(-2.8deg) scale(1,1)}
+  78%{transform:translateY(-7px) rotate(-2.2deg) scale(1,1)}
+  100%{transform:translateY(0) rotate(-2.4deg) scale(1.008,.985)}
+}
+@keyframes dino-stomp-ring{
+  0%{opacity:0;transform:scale(.55)}
+  5%{opacity:.8}
+  32%{opacity:0;transform:scale(1.48)}
+  100%{opacity:0;transform:scale(1.48)}
+}
+@keyframes dino-stomp-puff{
+  0%{opacity:0;transform:translateY(4px) scale(.5)}
+  8%{opacity:.6}
+  30%{opacity:0;transform:translateY(-18px) scale(1.25)}
+  100%{opacity:0;transform:translateY(-18px) scale(1.25)}
+}
+@keyframes dino-track{
+  0%{opacity:0;transform:scale(.55) rotate(var(--tilt,0deg))}
+  6%{opacity:.62;transform:scale(1) rotate(var(--tilt,0deg))}
+  58%{opacity:.52;transform:scale(1) rotate(var(--tilt,0deg))}
+  76%,100%{opacity:0;transform:scale(1) rotate(var(--tilt,0deg))}
+}
+@media(max-width:680px){
+  body.creature-page--dino .char-file__portrait{padding:82px 16px 26px;gap:11px}
+  body.creature-page--dino .char-file__brandmark{width:min(62%,142px)}
+  body.creature-page--dino .char-file__photo{max-width:86%;max-height:150px}
+  .char-stage__tracks i{width:22px;height:26px}
+  .char-stage__stomp{bottom:4%}
+  .char-stage__tracks{bottom:4%}
+}
+@media(max-width:380px){
+  body.creature-page--dino .char-file__brandmark{width:min(66%,126px)}
+  body.creature-page--dino .char-file__photo{max-height:130px}
+}
+@media(prefers-reduced-motion:reduce){
+  html.motion-ready body.creature-page--dino .char-stage__figure,
+  html.motion-ready body.creature-page--dino .char-stage__stomp i,
+  html.motion-ready body.creature-page--dino .char-stage__tracks i{animation:none}
+  html.motion-ready body.creature-page--dino .char-stage__stomp i,
+  html.motion-ready body.creature-page--dino .char-stage__tracks i{opacity:0}
 }
