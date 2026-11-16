@@ -257,7 +257,6 @@ button{font-family:inherit;cursor:pointer}
   .crew__form input{flex:1;min-width:0}
 }
 @media (max-width:420px){
-  .cards{grid-template-columns:1fr}
   .hero__boxes{height:280px}
 }
 
@@ -489,3 +488,88 @@ html.redpoly-splash-seen .brand-splash{display:none}
 @media(hover:none){.quick-view-trigger{opacity:1;transform:none}}
 @media(max-width:640px){.foot__inner{align-items:flex-start;flex-direction:column}.foot__links{justify-content:flex-start}.foot__more{align-self:flex-end}}
 #figures,#accessories,#bundle-builder,#collections,#story{scroll-margin-top:145px}
+
+/* ===== Store UX update: one-row phone header, tappable hero boxes, limited buy button, stickers, GST-inclusive prices ===== */
+.site-header__menu,.site-menu{display:none}
+.p-card__price small{margin-left:3px;font:900 8px/1 'Archivo',sans-serif;letter-spacing:.7px;text-transform:uppercase;color:#6a635a;vertical-align:middle;white-space:nowrap}
+.stock--deal{background:var(--orange)}
+#featured,#limited,#crew{scroll-margin-top:145px}
+
+/* Hero boxes tap through to their figure */
+.box__link{position:absolute;inset:0;z-index:5;display:block}
+.box__link::after{content:attr(data-label);position:absolute;left:50%;bottom:-20px;padding:6px 9px 5px;background:var(--lime);color:#111;font:900 9px/1 'Archivo',sans-serif;letter-spacing:.8px;white-space:nowrap;box-shadow:3px 3px 0 #000;transform:translateX(-50%) rotate(-2deg);clip-path:polygon(2% 0,100% 6%,97% 100%,0 92%);transition:transform .18s ease,background .18s ease}
+.box--agni .box__link::after{background:var(--orange);transform:translateX(-50%) rotate(1.5deg)}
+.box--noor .box__link::after{transform:translateX(-50%) rotate(2.5deg)}
+.box:hover{z-index:4;filter:drop-shadow(8px 14px 11px rgba(0,0,0,.5)) brightness(1.06)}
+.box__link:hover::after,.box__link:focus-visible::after{background:#fff;transform:translateX(-50%) rotate(0) scale(1.06)}
+.box__link:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+
+/* Limited edition: sticker and buy button */
+.limited__sticker{display:inline-block;padding:7px 11px 6px;background:var(--black);color:var(--lime);font:900 10px/1 'Archivo',sans-serif;letter-spacing:1.2px;transform:rotate(-3deg);clip-path:polygon(2% 0,100% 6%,97% 100%,0 92%);margin-bottom:8px}
+.limited__buy{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;max-width:220px;margin-top:14px}
+.limited__buy-button{margin-top:0;background:var(--black);color:var(--lime);font-size:13px;padding:14px 12px;box-shadow:none}
+.limited__buy-button:hover{background:#222;color:#fff}
+.limited__buy-button.added{background:var(--lime);color:var(--black)}
+.limited__buy-note{color:var(--black);font-size:9px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;text-align:center}
+@media(max-width:1024px){.limited__right{flex-wrap:wrap}.limited__buy{margin-top:0}}
+@media(max-width:640px){.limited__buy{max-width:300px;margin-top:10px}.limited .price-arrow,.limited .hand-note{display:none}}
+
+/* Art Toys: coming soon */
+.c-card--soon .c-card__backdrop{filter:grayscale(.55) brightness(.82)}
+.c-card__soon{position:absolute;top:34%;left:50%;z-index:3;padding:13px 20px 11px;border:3px solid #111;background:var(--lime);color:#111;font:400 clamp(25px,3vw,36px)/.92 'Anton',sans-serif;letter-spacing:.6px;text-align:center;box-shadow:6px 6px 0 #000;transform:translate(-50%,-50%) rotate(-7deg)}
+.c-card--soon:hover .c-card__soon{transform:translate(-50%,-50%) rotate(-4deg) scale(1.04)}
+html.motion-ready .c-card__soon{transition:transform .2s ease}
+
+@media(max-width:760px){
+  .site-header__inner{display:flex;align-items:center;gap:8px;min-height:58px;padding-top:8px;padding-bottom:8px}
+  .site-header__brand{margin-right:auto;min-width:0}
+  .site-header__nav,.site-header__cta,.shop-jumpbar{display:none}
+  .site-header__menu{display:grid;place-items:center;flex:none;width:46px;height:42px;border:1px solid rgba(244,240,230,.4);background:#171717;color:#fff;cursor:pointer}
+  .site-header__menu-icon{display:grid;gap:4px;width:18px}
+  .site-header__menu-icon i{display:block;height:2px;background:currentColor;transition:transform .18s ease,opacity .18s ease}
+  .site-header.is-menu-open .site-header__menu{border-color:var(--lime);background:var(--lime);color:#111}
+  .site-header.is-menu-open .site-header__menu-icon i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  .site-header.is-menu-open .site-header__menu-icon i:nth-child(2){opacity:0}
+  .site-header.is-menu-open .site-header__menu-icon i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+  .site-header__menu:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+  .site-header.is-menu-open .site-menu{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding-top:12px;padding-bottom:16px;border-top:1px solid rgba(244,240,230,.14)}
+  .site-menu a{display:flex;align-items:center;min-height:46px;padding:10px 12px;border:1px solid rgba(255,255,255,.16);background:#1c1a17;color:#fff;font-size:10px;font-weight:900;letter-spacing:1.1px;box-shadow:3px 3px 0 var(--lime)}
+  .site-menu a:nth-child(even){box-shadow:3px 3px 0 var(--orange)}
+  .site-menu a:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--lime)}
+  .site-header .cart-toggle>span,.site-header .wish-toggle>span{display:none}
+  .site-header .cart-toggle,.site-header .wish-toggle{padding:9px 10px}
+  #figures,#accessories,#bundle-builder,#collections,#story,#featured,#limited,#crew{scroll-margin-top:74px}
+}
+@media(max-width:640px){
+  /* Boxed figures move up under the headline so they sit on the first screen */
+  .hero__grid{display:flex;flex-direction:column;gap:0}
+  .hero__left{display:contents}
+  .hero__title{order:1;align-self:flex-start}
+  .hero__right{order:2;width:100%;margin-top:24px}
+  .hero__copy{order:3;margin-top:22px}
+  .hero__copy br{display:none}
+  .hero .btn-lime{order:4;align-self:flex-start}
+  .hero__feats{order:5}
+  .hero__side-note{display:none}
+  .hero__boxes{height:282px}
+  .box__link::after{font-size:8px;padding:5px 7px 4px;bottom:6px}
+  /* Two products per row */
+  .p-card{border-width:2px;box-shadow:4px 4px 0 #000}
+  .p-card__body{padding:10px 10px 12px}
+  .p-card__sub{font-size:8px;letter-spacing:.7px}
+  .p-card__price small{display:block;margin:4px 0 0}
+  .stock{top:7px;left:7px;padding:4px 6px;font-size:8px}
+  .heart{top:6px;right:6px}
+  .quick-view-trigger{font-size:8px}
+}
+@media(max-width:420px){
+  .cards{gap:9px}
+  .p-card__body h3{font-size:15px}
+  .p-card__product-link span{display:none}
+  .accessory-shelf .p-card__sub{min-height:22px}
+}
+@media(prefers-reduced-motion:reduce){.box__link::after,.site-header__menu-icon i,.c-card__soon{transition:none}}
+/* Room for the SAVED button in the header on tablets and small laptops */
+@media(max-width:1180px){.site-header .wish-toggle>span{display:none}}
+@media(max-width:1024px){.site-header__cta{display:none}}
+@media(max-width:400px){.site-header__brand span{display:none}}

@@ -193,3 +193,8 @@
 @media(min-width:560px) and (max-width:760px){.shipping-step .checkout-shipping-methods{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.checkout-assurance{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
 @media(max-width:440px){.shipping-step{padding:14px}.checkout-stepper__button{width:38px;height:38px}}
 @media(prefers-reduced-motion:reduce){.checkout-paybar,.checkout-paybar.is-visible{transition:none}}
+
+/* GST is part of the shelf price; shown under the total as information */
+.checkout-totals>p.checkout-gst-note{margin-top:-3px;color:rgba(255,255,255,.66);font-size:8px}
+.checkout-totals>p.checkout-gst-note strong{font:800 11px/1 'Archivo',sans-serif;letter-spacing:.4px}
+.thankyou-total--note{padding-top:2px;color:#6d665d;font-size:8px}

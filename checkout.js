@@ -7,12 +7,33 @@
   var freeStandardFrom = 1499;
   var freeExpressFrom = 5000;
   var freeGiftFrom = 6000;
+  // GST rate in percent. Shelf prices already include it, so checkout shows the GST share
+  // inside the total instead of adding it on top. Change the rate here only; the labels follow.
+  // main.js keeps the same number for bags saved before prices included GST.
+  var gstRate = 12;
   var items = [];
+  // Shelf prices include GST since the store-ux update. A bag saved before that holds
+  // pre-GST prices, so bring it up to the same price the shopper would have paid.
+  var pricingKey = 'redpoly-cart-pricing';
+  var pricingMode = 'incl-gst';
+  function upgradeSavedBag(saved) {
+    var mode = null;
+    try { mode = localStorage.getItem(pricingKey); } catch (ignoreMode) { /* Treat as current. */ return saved; }
+    if (mode === pricingMode) return saved;
+    var upgraded = saved.map(function (item) {
+      if (!item || typeof item.name !== 'string' || !(Number(item.price) > 0)) return item;
+      var price = Math.round(Number(item.price) * (100 + gstRate) / 100);
+      return { id:item.name.toLowerCase() + '|' + price, name:item.name, price:price, quantity:item.quantity, isReward:item.isReward };
+    });
+    try { localStorage.setItem(pricingKey, pricingMode); localStorage.setItem(cartKey, JSON.stringify(upgraded)); } catch (ignoreUpgrade) { /* Prices are still right for this page view. */ }
+    return upgraded;
+  }
 
   function readBag() {
     try {
       var parsed = JSON.parse(localStorage.getItem(cartKey) || '[]');
       if (!Array.isArray(parsed)) return [];
+      parsed = upgradeSavedBag(parsed);
       return parsed.filter(function (item) {
         return item && typeof item.name === 'string' && Number.isFinite(Number(item.price)) &&
           (Number(item.price) > 0 || (item.id === freeGiftId && Number(item.price) === 0)) && Number(item.quantity) > 0;
@@ -39,6 +60,7 @@
   var bagStatus = document.getElementById('checkout-bag-status');
   var subtotalNode = document.getElementById('checkout-subtotal');
   var gstNode = document.getElementById('checkout-gst');
+  var gstLabelNode = document.getElementById('checkout-gst-label');
   var shippingLabelNode = document.getElementById('checkout-shipping-label');
   var shippingCostNode = document.getElementById('checkout-shipping-cost');
   var finalTotalNode = document.getElementById('checkout-final-total');
@@ -79,6 +101,7 @@
 
   var checkoutImageByName = {
     'BARSAAT':'/assets/images/redpoly/characters/barsaat.png',
+    'BARSAAT FOREVER':'/assets/images/redpoly/characters/barsaat.png',
     'AGNI':'/assets/images/redpoly/characters/agni-product.png',
     'NOOR':'/assets/images/redpoly/characters/noor.png',
     'AARAV':'/assets/images/redpoly/characters/aarav.png',
@@ -157,16 +180,17 @@
     var standardFree = subtotal >= freeStandardFrom;
     var expressFree = subtotal >= freeExpressFrom;
     var freeShipping = method === 'express' ? expressFree : standardFree;
-    var gst = Math.round(subtotal * 0.18);
+    var gst = Math.round(subtotal * gstRate / (100 + gstRate));
     var shipping = freeShipping ? 0 : (method === 'express' ? 120 : 30);
     var deliveryDays = method === 'express' ? 2 : 4;
     standardPriceNode.textContent = standardFree ? 'FREE' : '₹30';
     expressPriceNode.textContent = expressFree ? 'FREE' : '₹120';
     subtotalNode.textContent = money(subtotal);
+    gstLabelNode.textContent = 'INCLUDES GST (' + gstRate + '%)';
     gstNode.textContent = money(gst);
     shippingLabelNode.textContent = 'SHIPPING · ' + method.toUpperCase();
     shippingCostNode.textContent = !items.length ? '—' : (freeShipping ? 'FREE' : money(shipping));
-    finalTotalNode.textContent = money(items.length ? subtotal + gst + shipping : 0);
+    finalTotalNode.textContent = money(items.length ? subtotal + shipping : 0);
     payBarTotal.textContent = finalTotalNode.textContent;
     deliveryEstimateTitle.textContent = deliveryDays + '-DAY ' + method.toUpperCase() + ' DELIVERY';
     deliveryEstimateCopy.textContent = 'Estimated to valid PIN codes across India';
@@ -178,7 +202,7 @@
     else if (expressFree) shippingStatus.textContent = 'Free shipping unlocked on both Standard and Express.';
     else if (standardFree) shippingStatus.textContent = 'Free Standard shipping unlocked. Express is free from ' + money(freeExpressFrom) + '.';
     else shippingStatus.textContent = 'Add ' + money(freeStandardFrom - subtotal) + ' more for free Standard shipping.';
-    return { method:method, freeShipping:freeShipping, gst:gst, shipping:shipping, deliveryDays:deliveryDays, total:subtotal + gst + shipping };
+    return { method:method, freeShipping:freeShipping, gst:gst, shipping:shipping, deliveryDays:deliveryDays, total:subtotal + shipping };
   }
   shippingOptions.forEach(function (input) { input.addEventListener('change', function () {
     try { sessionStorage.setItem(shippingMethodKey, input.value); } catch (ignoreShippingWrite) { /* Selection still updates for this page view. */ }
@@ -305,7 +329,7 @@
     var pin = form.querySelector('[name="postal-code"]').value.trim();
     var reference='RED-DEMO-' + String(Math.floor(100000 + Math.random()*900000));
     var totals=updateCheckoutTotals();
-    var demoOrder={ reference:reference, pin:pin, deliveryDays:totals.deliveryDays, subtotal:subtotal, gst:totals.gst, shippingMethod:totals.method, shippingCost:totals.shipping, freeShipping:totals.freeShipping, total:totals.total, items:items };
+    var demoOrder={ reference:reference, pin:pin, deliveryDays:totals.deliveryDays, subtotal:subtotal, gstRate:gstRate, gstIncluded:true, gst:totals.gst, shippingMethod:totals.method, shippingCost:totals.shipping, freeShipping:totals.freeShipping, total:totals.total, items:items };
     try {
       sessionStorage.setItem(orderKey,JSON.stringify(demoOrder));
       localStorage.removeItem(cartKey);

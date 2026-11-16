@@ -76,10 +76,10 @@
       input.disabled = selected.length === 3 && !input.checked;
       input.closest('.bundle-option').classList.toggle('is-selected', input.checked);
     });
-    if (bundleStatus) bundleStatus.textContent = selected.length + ' of 3 selected' + (selected.length === 3 ? ' · You save ₹298' : '');
+    if (bundleStatus) bundleStatus.textContent = selected.length + ' of 3 selected' + (selected.length === 3 ? ' · You save ₹334' : '');
     bundleButton.disabled = selected.length !== 3;
     bundleButton.setAttribute('aria-disabled', selected.length !== 3 ? 'true' : 'false');
-    bundleButton.innerHTML = selected.length === 3 ? 'ADD YOUR TRIO — ₹1,499' : 'CHOOSE ' + (3 - selected.length) + ' MORE TO UNLOCK ₹1,499';
+    bundleButton.innerHTML = selected.length === 3 ? 'ADD YOUR TRIO — ₹1,679' : 'CHOOSE ' + (3 - selected.length) + ' MORE TO UNLOCK ₹1,679';
     bundleButton.setAttribute('data-name', selected.length === 3 ? 'CREATURE CLUB TRIO: ' + selected.map(function (input) { return input.getAttribute('data-label'); }).join(', ') : 'CREATURE CLUB TRIO');
   }
   bundleInputs.forEach(function (input) { input.addEventListener('change', updateBundlePicker); });
@@ -92,6 +92,17 @@
   var cartItems = [];
   try {
     var storedCart = JSON.parse(window.localStorage.getItem(cartStorageKey) || '[]');
+    // Shelf prices include GST since the store-ux update. A bag saved before that holds pre-GST
+    // prices, so bring it up to what the shopper would have paid. Rate mirrors gstRate in checkout.js.
+    if (Array.isArray(storedCart) && window.localStorage.getItem('redpoly-cart-pricing') !== 'incl-gst') {
+      storedCart = storedCart.map(function (item) {
+        if (!item || typeof item.name !== 'string' || !(Number(item.price) > 0)) return item;
+        var upgradedPrice = Math.round(Number(item.price) * 112 / 100);
+        return { id:item.name.toLowerCase() + '|' + upgradedPrice, name:item.name, price:upgradedPrice, quantity:item.quantity, isReward:item.isReward };
+      });
+      window.localStorage.setItem('redpoly-cart-pricing', 'incl-gst');
+      window.localStorage.setItem(cartStorageKey, JSON.stringify(storedCart));
+    }
     if (Array.isArray(storedCart)) cartItems = storedCart.filter(function (item) {
       return item && typeof item.id === 'string' && typeof item.name === 'string' &&
         Number.isFinite(Number(item.price)) && (Number(item.price) > 0 || (item.id === freeGiftId && Number(item.price) === 0)) && Number.isFinite(Number(item.quantity)) && Number(item.quantity) > 0;
@@ -114,7 +125,7 @@
   var cartLayer = document.createElement('div');
   cartLayer.className = 'cart-layer';
   cartLayer.hidden = true;
-  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR CREATURE CLUB BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is waiting for a little creature energy.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">UNLOCK YOUR EXTRAS</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE STANDARD SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free standard shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free standard shipping" aria-valuemin="0" aria-valuemax="1499" aria-valuenow="0"><span></span></div></div></div><div class="cart-reward" id="keychain-reward"><span class="cart-reward__icon cart-reward__icon--gift" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10h18v11H3zM2 6h20v4H2zM12 6v15M12 6H8.5a2.5 2.5 0 1 1 2.2-3.7L12 6Zm0 0h3.5a2.5 2.5 0 1 0-2.2-3.7L12 6Z"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE CREATURE KEYCHAIN</strong><span id="keychain-reward-copy">Add more to unlock your free gift</span></div><div class="cart-reward__track" id="keychain-reward-track" role="progressbar" aria-label="Progress toward free keychain" aria-valuemin="0" aria-valuemax="6000" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS SUBTOTAL</span><strong id="cart-subtotal">₹0</strong></p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
+  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR CREATURE CLUB BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is waiting for a little creature energy.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">UNLOCK YOUR EXTRAS</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE STANDARD SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free standard shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free standard shipping" aria-valuemin="0" aria-valuemax="1499" aria-valuenow="0"><span></span></div></div></div><div class="cart-reward" id="keychain-reward"><span class="cart-reward__icon cart-reward__icon--gift" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10h18v11H3zM2 6h20v4H2zM12 6v15M12 6H8.5a2.5 2.5 0 1 1 2.2-3.7L12 6Zm0 0h3.5a2.5 2.5 0 1 0-2.2-3.7L12 6Z"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE CREATURE KEYCHAIN</strong><span id="keychain-reward-copy">Add more to unlock your free gift</span></div><div class="cart-reward__track" id="keychain-reward-track" role="progressbar" aria-label="Progress toward free keychain" aria-valuemin="0" aria-valuemax="6000" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS (INCL. GST)</span><strong id="cart-subtotal">₹0</strong></p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
   document.body.appendChild(cartLayer);
   var cartDrawer = cartLayer.querySelector('.cart-drawer');
   var cartItemsNode = cartLayer.querySelector('#cart-items');
@@ -129,10 +140,10 @@
   var cartReturnFocus = null;
   var lastRemovedItem = null;
   var cartSuggestions = [
-    { name:'PINS + ART PRINT', price:599, href:'/pins-and-art-print' },
-    { name:'ACTION KEYCHAINS', price:599, href:'/action-keychains' },
-    { name:'CHARACTER MUG', price:599, href:'/character-mug' },
-    { name:'IPHONE 15 CASE', price:599, href:'/iphone-15-case' }
+    { name:'PINS + ART PRINT', price:671, href:'/pins-and-art-print' },
+    { name:'ACTION KEYCHAINS', price:671, href:'/action-keychains' },
+    { name:'CHARACTER MUG', price:671, href:'/character-mug' },
+    { name:'IPHONE 15 CASE', price:671, href:'/iphone-15-case' }
   ];
   function money(amount) { return '₹' + Number(amount).toLocaleString('en-IN'); }
   function persistCart() {
@@ -179,6 +190,7 @@
     cartSubtotalNode.textContent = money(subtotal);
     var cartImageByName = {
       'BARSAAT':'/assets/images/redpoly/characters/barsaat.png',
+      'BARSAAT FOREVER':'/assets/images/redpoly/characters/barsaat.png',
       'AGNI':'/assets/images/redpoly/characters/agni-product.png',
       'NOOR':'/assets/images/redpoly/characters/noor.png',
       'AARAV':'/assets/images/redpoly/characters/aarav.png',
@@ -244,7 +256,7 @@
   }
   function addCartItem(button, feedbackButton) {
     var name = button.getAttribute('data-name') || 'FIGURE';
-    var price = Number(button.getAttribute('data-price')) || 3299;
+    var price = Number(button.getAttribute('data-price')) || 3695;
     var id = name.toLowerCase() + '|' + price;
     var existing = cartItems.find(function (item) { return item.id === id; });
     if (existing) existing.quantity += 1;
@@ -395,7 +407,7 @@
     checker.innerHTML='<div><p class="delivery-checker__eyebrow">DELIVERY CHECK</p><label for="'+id+'">Enter your 6-digit PIN code</label><p class="delivery-checker__hint">Estimated delivery: Standard 4 days · Express 2 days to valid PIN codes.</p></div><div class="delivery-checker__form"><input id="'+id+'" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" placeholder="e.g. 400001" aria-describedby="'+id+'-status" /><button type="submit">CHECK PIN</button><p id="'+id+'-status" class="delivery-checker__status" role="status" aria-live="polite"></p></div>';
     policyWrap.appendChild(checker);
     var input=checker.querySelector('input'); var status=checker.querySelector('.delivery-checker__status');
-    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='Estimated delivery to PIN code ' + pin + ': Standard 4 days · Express 2 days. Shipping fees are shown at checkout.';});
+    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='Estimated delivery to PIN code ' + pin + ': Standard 4 days · Express 2 days. Standard shipping is free on bags of ₹1,499 or more.';});
   });
 
   // Product search, category filtering, sorting, and accessible quick views on listing cards.
@@ -486,7 +498,7 @@
       quickSubtitle.textContent = sub ? sub.textContent : 'COLLECTIBLE CREATURE';
       quickPrice.textContent = (card.querySelector('.p-card__price') || {}).textContent || '';
       quickAdd.setAttribute('data-name', price ? price.getAttribute('data-name') : quickTitle.textContent);
-      quickAdd.setAttribute('data-price', price ? price.getAttribute('data-price') : '599');
+      quickAdd.setAttribute('data-price', price ? price.getAttribute('data-price') : '671');
       quickAdd.setAttribute('aria-label', 'Add ' + quickTitle.textContent + ' to bag');
       quickDetails.href = (card.querySelector('.p-card__product-link') || card.querySelector('.p-card__image-link')).href;
       if (quickView.showModal) quickView.showModal(); else quickView.setAttribute('open', '');
@@ -500,17 +512,143 @@
     btn.addEventListener('click', function () { addCartItem(btn); });
   });
 
-  // Wishlist hearts.
-  document.querySelectorAll('.heart').forEach(function (btn) {
-    btn.setAttribute('aria-pressed', 'false');
-    btn.addEventListener('click', function () {
-      var favorite = btn.classList.toggle('is-favorite');
-      btn.setAttribute('aria-pressed', favorite ? 'true' : 'false');
-      var card = btn.closest('.p-card');
-      var name = card && card.querySelector('h3') ? card.querySelector('h3').textContent : 'FIGURE';
-      showToast(favorite ? name + ' added to wishlist' : name + ' removed from wishlist');
+  // Wishlist: hearts are remembered on this device and listed behind the heart button in the header.
+  var wishKey = 'redpoly-wishlist-v1';
+  // Only same-site paths are accepted for links and images read back from storage.
+  function isSitePath(value) { return typeof value === 'string' && value.charAt(0) === '/' && value.charAt(1) !== '/'; }
+  function parseWish(raw) {
+    try {
+      var stored = JSON.parse(raw || '[]');
+      if (!Array.isArray(stored)) return [];
+      return stored.filter(function (item) {
+        return item && typeof item.name === 'string' && isSitePath(item.href) && Number(item.price) > 0;
+      }).map(function (item) {
+        return { name:item.name, href:item.href, image:isSitePath(item.image) ? item.image : '', price:Number(item.price) };
+      });
+    } catch (ignoreWishParse) { return []; }
+  }
+  var wishItems = [];
+  try { wishItems = parseWish(window.localStorage.getItem(wishKey)); } catch (ignoreWishStorage) { wishItems = []; }
+  function persistWish() {
+    try { window.localStorage.setItem(wishKey, JSON.stringify(wishItems)); } catch (ignoreWishSave) { /* Hearts still work for this page view. */ }
+  }
+  function isWished(name) { return wishItems.some(function (item) { return item.name === name; }); }
+
+  var wishToggle = document.createElement('button');
+  wishToggle.type = 'button';
+  wishToggle.className = 'wish-toggle';
+  wishToggle.setAttribute('aria-haspopup', 'dialog');
+  wishToggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span>SAVED</span><b class="wish-toggle__count">0</b>';
+  if (cartToggle.parentNode) cartToggle.parentNode.insertBefore(wishToggle, cartToggle);
+
+  var wishPanel = document.createElement('dialog');
+  wishPanel.className = 'wish-panel';
+  wishPanel.setAttribute('aria-labelledby', 'wish-panel-title');
+  wishPanel.innerHTML = '<button class="wish-panel__close" type="button" aria-label="Close saved items">×</button><p class="wish-panel__eyebrow">KEPT FOR LATER</p><h2 id="wish-panel-title">YOUR SAVED CREW</h2><p class="wish-panel__empty">Nothing saved yet. Tap the heart on anything you like and it will wait here, on this device.</p><ul class="wish-panel__list"></ul>';
+  document.body.appendChild(wishPanel);
+  var wishList = wishPanel.querySelector('.wish-panel__list');
+  var wishEmpty = wishPanel.querySelector('.wish-panel__empty');
+  var wishButtons = [];
+  function closeWish() { if (wishPanel.open && wishPanel.close) wishPanel.close(); else wishPanel.removeAttribute('open'); }
+  function syncWishButton(button) {
+    var saved = isWished(button.wishData.name);
+    button.classList.toggle('is-favorite', saved);
+    button.setAttribute('aria-pressed', saved ? 'true' : 'false');
+    var label = button.querySelector('.char-save__label');
+    if (label) label.textContent = saved ? 'SAVED' : 'SAVE FOR LATER';
+  }
+  function renderWish() {
+    var count = wishItems.length;
+    wishToggle.querySelector('.wish-toggle__count').textContent = count;
+    wishToggle.classList.toggle('has-items', count > 0);
+    wishToggle.setAttribute('aria-label', 'Open saved items, ' + count + (count === 1 ? ' item' : ' items'));
+    wishEmpty.hidden = count > 0;
+    wishList.textContent = '';
+    wishItems.forEach(function (item) {
+      var row = document.createElement('li'); row.className = 'wish-item';
+      var link = document.createElement('a'); link.className = 'wish-item__link'; link.href = item.href;
+      if (item.image) { var image = document.createElement('img'); image.src = item.image; image.alt = ''; link.appendChild(image); }
+      var copy = document.createElement('span'); copy.className = 'wish-item__copy';
+      var title = document.createElement('strong'); title.textContent = item.name;
+      var price = document.createElement('small'); price.textContent = money(item.price) + ' incl. GST';
+      copy.appendChild(title); copy.appendChild(price); link.appendChild(copy);
+      var actions = document.createElement('span'); actions.className = 'wish-item__actions';
+      var add = document.createElement('button'); add.type = 'button'; add.className = 'wish-item__add'; add.textContent = 'ADD TO BAG';
+      add.setAttribute('data-name', item.name); add.setAttribute('data-price', String(item.price));
+      add.setAttribute('aria-label', 'Add ' + item.name + ' to bag');
+      add.addEventListener('click', function () { closeWish(); addCartItem(add); });
+      var remove = document.createElement('button'); remove.type = 'button'; remove.className = 'wish-item__remove'; remove.textContent = 'REMOVE';
+      remove.setAttribute('aria-label', 'Remove ' + item.name + ' from saved items');
+      remove.addEventListener('click', function () { toggleWish(item, true); });
+      actions.appendChild(add); actions.appendChild(remove);
+      row.appendChild(link); row.appendChild(actions); wishList.appendChild(row);
     });
+    wishButtons.forEach(syncWishButton);
+  }
+  function toggleWish(data, quiet) {
+    var saved = isWished(data.name);
+    if (saved) wishItems = wishItems.filter(function (item) { return item.name !== data.name; });
+    else wishItems.push({ name:data.name, href:data.href, image:data.image, price:data.price });
+    persistWish(); renderWish();
+    if (!quiet) showToast(saved ? data.name + ' removed from saved' : data.name + ' saved for later');
+  }
+  function registerWishButton(button, data) {
+    button.wishData = data;
+    wishButtons.push(button);
+    button.addEventListener('click', function () { toggleWish(data); });
+  }
+  function localPath(url) { try { var parsed = new URL(url, window.location.href); return parsed.pathname + parsed.search; } catch (ignoreUrl) { return ''; } }
+  var heartMarkup = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+  // Shelf cards: every product gets a heart, including the accessories.
+  document.querySelectorAll('.p-card').forEach(function (card) {
+    var buy = card.querySelector('.add-btn[data-name][data-price]');
+    var link = card.querySelector('.p-card__product-link') || card.querySelector('.p-card__image-link');
+    var imageBox = card.querySelector('.p-card__img');
+    var image = card.querySelector('.p-card__image-link img');
+    if (!buy || !link || !imageBox) return;
+    var heart = card.querySelector('.heart');
+    if (!heart) {
+      heart = document.createElement('button'); heart.type = 'button'; heart.className = 'heart'; heart.innerHTML = heartMarkup;
+      imageBox.appendChild(heart);
+    }
+    var name = buy.getAttribute('data-name');
+    heart.setAttribute('aria-label', 'Save ' + name + ' for later');
+    registerWishButton(heart, { name:name, href:localPath(link.getAttribute('href')), image:image ? localPath(image.getAttribute('src')) : '', price:Number(buy.getAttribute('data-price')) });
   });
+  // Product pages: a save button under the buy row.
+  var pageBuyRow = document.querySelector('.char-buy-row');
+  var pageBuy = pageBuyRow ? pageBuyRow.querySelector('.add-btn[data-name][data-price]') : null;
+  if (pageBuy) {
+    var pageImage = document.querySelector('.char-stage__figure') || document.querySelector('.accessory-product-image');
+    var saveButton = document.createElement('button'); saveButton.type = 'button'; saveButton.className = 'char-save';
+    saveButton.innerHTML = heartMarkup + '<span class="char-save__label">SAVE FOR LATER</span>';
+    pageBuyRow.insertAdjacentElement('afterend', saveButton);
+    registerWishButton(saveButton, { name:pageBuy.getAttribute('data-name'), href:window.location.pathname.replace(/\.html$/, ''), image:pageImage ? localPath(pageImage.getAttribute('src')) : '', price:Number(pageBuy.getAttribute('data-price')) });
+  }
+  wishToggle.addEventListener('click', function () { renderWish(); if (wishPanel.showModal) wishPanel.showModal(); else wishPanel.setAttribute('open', ''); });
+  wishPanel.querySelector('.wish-panel__close').addEventListener('click', closeWish);
+  wishPanel.addEventListener('click', function (event) { if (event.target === wishPanel) closeWish(); });
+  window.addEventListener('storage', function (event) {
+    if (event.key !== wishKey) return;
+    wishItems = parseWish(event.newValue); renderWish();
+  });
+  renderWish();
+
+  // Phone menu: one tidy row in the header, with the section links behind the menu button.
+  var siteHeader = document.querySelector('.site-header');
+  var menuToggle = document.getElementById('site-menu-toggle');
+  var siteMenu = document.getElementById('site-menu');
+  if (siteHeader && menuToggle && siteMenu) {
+    if (homeHeader) homeHeader.appendChild(menuToggle);
+    var setMenu = function (open) {
+      siteHeader.classList.toggle('is-menu-open', open);
+      menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    menuToggle.addEventListener('click', function () { setMenu(!siteHeader.classList.contains('is-menu-open')); });
+    siteMenu.addEventListener('click', function (event) { if (event.target.closest('a')) setMenu(false); });
+    document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && siteHeader.classList.contains('is-menu-open')) { setMenu(false); menuToggle.focus(); } });
+    document.addEventListener('click', function (event) { if (!siteHeader.contains(event.target)) setMenu(false); });
+  }
 
   // Crew form.
   var form = document.getElementById('crewForm');
