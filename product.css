@@ -4,6 +4,7 @@ body.creature-page--barsaat{--character-primary:#13bac4;--character-mid:#0daeba;
 body.creature-page--noor{--character-primary:#352f9f;--character-mid:#292481;--character-dark:#171544;--character-deep:#201b65;--character-hot:#e84ab7;--character-accent:#ffd23f;--character-light:#f7efff;--character-ink:#17123a;--character-story:#0d0b27;--character-card-dark:#25205f;--character-glow:rgba(232,74,183,.5);--character-glow-soft:rgba(118,87,255,.58);--character-glow-faint:rgba(232,74,183,.26);--character-accent-soft:rgba(232,74,183,.2);--character-ring:rgba(255,210,63,.55);--character-accent-halo:rgba(232,74,183,.09);--character-accent-halo-strong:rgba(255,210,63,.045);--character-accent-inset:rgba(232,74,183,.12);--character-shadow:rgba(7,5,35,.58);--character-text-shadow:rgba(11,7,47,.45);--character-nav:rgba(16,13,54,.6);--character-soft-shade:rgba(13,10,48,.24);--character-muted:rgba(247,239,255,.72);--character-muted-strong:rgba(247,239,255,.94);--character-muted-border:rgba(247,239,255,.4);--character-card-ink:#211846;--character-button-shadow:rgba(14,9,45,.55);--character-final-ink:#1c1038;--character-accent-bright:#ffe27a;--character-plate-top:#e84ab7;--character-plate-mid:#6b45bb;--character-plate-bottom:#171544;--character-border:#100d36}
 body.creature-page--aarav{--character-primary:#0caaa5;--character-mid:#0c9993;--character-dark:#087f80;--character-deep:#08666b;--character-hot:#4ed4b8;--character-accent:#9deb32;--character-light:#f4f0e6;--character-ink:#063336;--character-story:#083d3e;--character-card-dark:#0c6262;--character-glow:rgba(157,235,50,.45);--character-glow-soft:rgba(114,224,164,.5);--character-glow-faint:rgba(8,102,107,.28);--character-accent-soft:rgba(157,235,50,.18);--character-ring:rgba(244,240,230,.55);--character-accent-halo:rgba(157,235,50,.08);--character-accent-halo-strong:rgba(244,240,230,.045);--character-accent-inset:rgba(157,235,50,.1);--character-shadow:rgba(2,37,40,.5);--character-text-shadow:rgba(3,51,51,.34);--character-nav:rgba(5,66,65,.55);--character-soft-shade:rgba(5,61,62,.22);--character-muted:rgba(244,240,230,.74);--character-muted-strong:rgba(244,240,230,.96);--character-muted-border:rgba(244,240,230,.42);--character-card-ink:#063336;--character-button-shadow:rgba(3,49,47,.5);--character-final-ink:#083332;--character-accent-bright:#c2f46b;--character-plate-top:#65dcc0;--character-plate-mid:#0c9993;--character-plate-bottom:#087f80;--character-border:#064f52}
 body.creature-page--bubble{--character-primary:#0e1750;--character-mid:#0b1242;--character-dark:#060a26;--character-deep:#080e34;--character-hot:#2fd0ff;--character-accent:#ffd21f;--character-light:#f1f7ff;--character-ink:#0a1238;--character-story:#060a22;--character-card-dark:#101b5e;--character-glow:rgba(47,208,255,.55);--character-glow-soft:rgba(110,180,255,.6);--character-glow-faint:rgba(47,208,255,.24);--character-accent-soft:rgba(255,210,31,.18);--character-ring:rgba(255,210,31,.55);--character-accent-halo:rgba(47,208,255,.1);--character-accent-halo-strong:rgba(255,210,31,.05);--character-accent-inset:rgba(47,208,255,.12);--character-shadow:rgba(3,6,30,.6);--character-text-shadow:rgba(4,8,40,.5);--character-nav:rgba(5,8,32,.7);--character-soft-shade:rgba(5,9,40,.26);--character-muted:rgba(241,247,255,.76);--character-muted-strong:rgba(241,247,255,.95);--character-muted-border:rgba(241,247,255,.42);--character-card-ink:#101a52;--character-button-shadow:rgba(3,6,30,.55);--character-final-ink:#0a1238;--character-accent-bright:#ffe36a;--character-plate-top:#2fd0ff;--character-plate-mid:#2b62e6;--character-plate-bottom:#0a1140;--character-border:#070c33}
+body.creature-page--pet{--character-primary:#5c1436;--character-mid:#4a102c;--character-dark:#1d0612;--character-deep:#2b0a1b;--character-hot:#ff8a80;--character-accent:#ffa02e;--character-light:#fff4ea;--character-ink:#2b0a1b;--character-story:#1a0611;--character-card-dark:#63183b;--character-glow:rgba(255,138,128,.55);--character-glow-soft:rgba(255,170,150,.6);--character-glow-faint:rgba(255,138,128,.24);--character-accent-soft:rgba(255,160,46,.18);--character-ring:rgba(255,160,46,.55);--character-accent-halo:rgba(255,138,128,.1);--character-accent-halo-strong:rgba(255,160,46,.45);--character-accent-inset:rgba(255,138,128,.12);--character-shadow:rgba(22,4,13,.6);--character-text-shadow:rgba(30,6,18,.5);--character-nav:rgba(26,6,16,.7);--character-soft-shade:rgba(30,7,18,.26);--character-muted:rgba(255,244,234,.78);--character-muted-strong:rgba(255,244,234,.95);--character-muted-border:rgba(255,244,234,.42);--character-card-ink:#4a102c;--character-button-shadow:rgba(22,4,13,.55);--character-final-ink:#2b0a1b;--character-accent-bright:#ffc163;--character-plate-top:#ff8a80;--character-plate-mid:#c93a5a;--character-plate-bottom:#2b0a1b;--character-border:#210713}
 body.creature-page--noor .char-spark{width:9px;height:9px;border-radius:50%;background:var(--character-accent);font-size:0;box-shadow:0 0 16px var(--character-accent-halo-strong)}
 body.creature-page--noor .char-spark--two{width:6px;height:6px}
 body.creature-page--noor .char-spark--four{width:11px;height:11px}
@@ -356,3 +357,41 @@ html.motion-ready body.creature-page--bubble .figure-gallery__viewport[data-view
 @keyframes bubble-gun-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
 body.creature-page--bubble .char-hero h1{line-height:.8}
 body.creature-page--bubble .char-final-cta h2 span{color:#1034c4}
+
+/* Stunt Pet page: a wide two-photo stage and a "how it arrives" block with the boxed photo */
+body.creature-page--pet .char-hero h1{font-size:clamp(82px,12.4vw,168px);line-height:.8}
+body.creature-page--pet .char-stage__figure{width:min(108%,600px);max-height:470px;transform:none}
+body.creature-page--pet .figure-gallery__viewport[data-photo="1"] .char-stage__figure{width:min(104%,580px)}
+body.creature-page--pet .char-file__portrait img{filter:drop-shadow(0 12px 10px rgba(0,0,0,.35))}
+body.creature-page--pet .char-sticker b{font-size:30px}
+body.creature-page--pet .char-final-cta h2 span{color:#b3243f}
+html.motion-ready body.creature-page--pet .char-stage__figure{animation-name:stunt-pet-roll;animation-duration:2.6s}
+html.motion-ready body.creature-page--pet .figure-gallery__viewport[data-photo="1"] .char-stage__figure{animation-name:bubble-gun-float;animation-duration:4s}
+@keyframes stunt-pet-roll{0%,100%{transform:translateX(-7px) rotate(-1.4deg)}50%{transform:translateX(7px) rotate(1.4deg)}}
+.char-box{padding:0 clamp(20px,8vw,120px) 80px;background:var(--character-story);color:var(--character-light)}
+.char-box__inner{display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(26px,6vw,84px);align-items:center;max-width:1220px;margin:0 auto;padding:clamp(22px,4vw,46px);border:1px solid var(--character-muted-border);background:linear-gradient(135deg,var(--character-card-dark),var(--character-deep))}
+.char-box__photo{display:block;transform:rotate(-2deg);transition:transform .25s ease}
+.char-box__photo:hover{transform:rotate(0deg) scale(1.02)}
+.char-box__photo:focus-visible{outline:2px solid var(--character-accent);outline-offset:6px}
+.char-box__photo img{display:block;width:100%;height:auto;filter:drop-shadow(0 20px 18px rgba(0,0,0,.45))}
+.char-box h2{margin-top:12px;font:clamp(40px,5.2vw,70px)/.88 'Anton',sans-serif;letter-spacing:-.5px;color:var(--character-light)}
+.char-box h2 span{color:var(--character-accent)}
+.char-box__copy>p:not(.char-overline){margin-top:18px;max-width:440px;color:var(--character-muted);font-size:15px;line-height:1.6}
+.char-box ul{display:grid;gap:9px;margin-top:20px;padding:0;list-style:none}
+.char-box li{position:relative;padding-left:22px;font-size:12px;font-weight:800;letter-spacing:.4px;line-height:1.45;color:var(--character-light)}
+.char-box li::before{content:"";position:absolute;left:0;top:.42em;width:9px;height:9px;border-radius:50%;background:var(--character-accent)}
+@media(max-width:860px){
+  .char-box{padding-bottom:56px}
+  .char-box__inner{grid-template-columns:1fr;gap:24px}
+  .char-box__photo{max-width:520px;margin:0 auto}
+}
+@media(max-width:680px){
+  body.creature-page--pet .char-hero h1{font-size:clamp(72px,22vw,124px)}
+  body.creature-page--pet .char-stage__figure,body.creature-page--pet .figure-gallery__viewport[data-photo="1"] .char-stage__figure{width:min(100%,430px);max-height:340px}
+  body.creature-page--pet .figure-gallery__viewport{padding-top:40px}
+}
+@media(prefers-reduced-motion:reduce){.char-box__photo{transition:none}}
+/* Product page header: links stay on one line; the link to the other product shows on wide screens only */
+.char-nav nav a{white-space:nowrap}
+@media(max-width:960px){.char-nav nav>a.char-nav__cross{display:none}.char-nav .wish-toggle>span{display:none}.char-nav .wish-toggle{min-width:46px;justify-content:center}}
+@media(max-width:340px){.char-nav nav a.char-nav__back{white-space:normal}}

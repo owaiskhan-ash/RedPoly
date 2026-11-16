@@ -3,6 +3,7 @@
   "rewrites": [
     { "source": "/", "destination": "/index" },
     { "source": "/bubble-gun", "destination": "/products/bubble-gun" },
+    { "source": "/stunt-pet", "destination": "/products/stunt-pet" },
     { "source": "/help", "destination": "/help.html" }
   ],
   "redirects": [
