@@ -1,8 +1,23 @@
 # REDPOLY — Monsoon Mischief
 
-**Tagline:** Original collectible creatures. Monsoon mischief, made to be collected.
+**Description:** REDPOLY is a small storefront. [Visit redpoly.justsimpleapps.online](https://redpoly.justsimpleapps.online/).
 
-**Description:** REDPOLY is a character-led collectible storefront for four original creatures: Barsaat, Agni, Noor, and Aarav. [Visit redpoly.justsimpleapps.online](https://redpoly.justsimpleapps.online/).
+## Products on sale
+
+| Product | Page | Price (incl. GST) |
+| --- | --- | --- |
+| Bubble Gun (12-hole automatic bubble blaster, with 1 bottle of bubble water) | `/bubble-gun` (`products/bubble-gun.html`) | ₹499 |
+
+Comic Issue 1 stays online at `/stories` (files in `comics/` and `stories/`).
+
+### Adding a product
+
+1. Add a page in `products/` and a rewrite for its short URL in `vercel.json`.
+2. Add the product name, price and thumbnail to the `catalogue` list in **both** `main.js` and `checkout.js`. Bags and saved lists only keep items that are in this list at the listed price.
+3. Put a cut-out photo (transparent PNG) in `assets/images/redpoly/products/`.
+4. Add a block or card for it on the home page (`index.html`, section `#shop`).
+
+The checkout is still a demo: no payment is collected and no order is created.
 
 ## Character IP
 

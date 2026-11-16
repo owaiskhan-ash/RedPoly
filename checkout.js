@@ -2,53 +2,35 @@
   var cartKey = 'redpoly-cart-v1';
   var orderKey = 'redpoly-demo-order-v1';
   var shippingMethodKey = 'redpoly-shipping-method-v1';
-  var freeGiftId = 'redpoly-free-keychain';
-  // Reward thresholds on the item subtotal. Keep these in step with the bag drawer in main.js.
+  // Free-shipping thresholds on the item subtotal. Keep these in step with the bag drawer in main.js.
   var freeStandardFrom = 1499;
   var freeExpressFrom = 5000;
-  var freeGiftFrom = 6000;
+  // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved bag is dropped.
+  var catalogue = {
+    'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' }
+  };
+  function inCatalogue(name, price) { return Object.prototype.hasOwnProperty.call(catalogue, name) && catalogue[name].price === Number(price); }
   // GST rate in percent. Shelf prices already include it, so checkout shows the GST share
   // inside the total instead of adding it on top. Change the rate here only; the labels follow.
-  // main.js keeps the same number for bags saved before prices included GST.
   var gstRate = 12;
   var items = [];
-  // Shelf prices include GST since the store-ux update. A bag saved before that holds
-  // pre-GST prices, so bring it up to the same price the shopper would have paid.
-  var pricingKey = 'redpoly-cart-pricing';
-  var pricingMode = 'incl-gst';
-  function upgradeSavedBag(saved) {
-    var mode = null;
-    try { mode = localStorage.getItem(pricingKey); } catch (ignoreMode) { /* Treat as current. */ return saved; }
-    if (mode === pricingMode) return saved;
-    var upgraded = saved.map(function (item) {
-      if (!item || typeof item.name !== 'string' || !(Number(item.price) > 0)) return item;
-      var price = Math.round(Number(item.price) * (100 + gstRate) / 100);
-      return { id:item.name.toLowerCase() + '|' + price, name:item.name, price:price, quantity:item.quantity, isReward:item.isReward };
-    });
-    try { localStorage.setItem(pricingKey, pricingMode); localStorage.setItem(cartKey, JSON.stringify(upgraded)); } catch (ignoreUpgrade) { /* Prices are still right for this page view. */ }
-    return upgraded;
-  }
 
   function readBag() {
     try {
       var parsed = JSON.parse(localStorage.getItem(cartKey) || '[]');
       if (!Array.isArray(parsed)) return [];
-      parsed = upgradeSavedBag(parsed);
       return parsed.filter(function (item) {
-        return item && typeof item.name === 'string' && Number.isFinite(Number(item.price)) &&
-          (Number(item.price) > 0 || (item.id === freeGiftId && Number(item.price) === 0)) && Number(item.quantity) > 0;
+        return item && typeof item.name === 'string' && inCatalogue(item.name, item.price) && Number(item.quantity) >= 1;
       }).map(function (item) {
         var price = Number(item.price);
-        return { id:typeof item.id === 'string' ? item.id : item.name.toLowerCase() + '|' + price, name:item.name, price:price, quantity:Math.floor(Number(item.quantity)) };
+        return { id:item.name.toLowerCase() + '|' + price, name:item.name, price:price, quantity:Math.floor(Number(item.quantity)) };
       });
     } catch (ignoreStorage) { return []; }
   }
   function saveBag() {
     try {
       localStorage.setItem(cartKey, JSON.stringify(items.map(function (item) {
-        var entry = { id:item.id, name:item.name, price:item.price, quantity:item.quantity };
-        if (item.id === freeGiftId) entry.isReward = true;
-        return entry;
+        return { id:item.id, name:item.name, price:item.price, quantity:item.quantity };
       })));
     } catch (ignoreSave) { /* The bag still works for this page view. */ }
   }
@@ -99,34 +81,6 @@
   } catch (ignoreShippingRead) { /* Default to Standard if browser storage is unavailable. */ }
   function money(amount) { return '₹' + Number(amount).toLocaleString('en-IN'); }
 
-  var checkoutImageByName = {
-    'BARSAAT':'/assets/images/redpoly/characters/barsaat.png',
-    'BARSAAT FOREVER':'/assets/images/redpoly/characters/barsaat.png',
-    'AGNI':'/assets/images/redpoly/characters/agni-product.png',
-    'NOOR':'/assets/images/redpoly/characters/noor.png',
-    'AARAV':'/assets/images/redpoly/characters/aarav.png',
-    'PINS + ART PRINT':'/assets/images/redpoly/accessories/pins-and-art-print.jpg',
-    'ACTION KEYCHAINS':'/assets/images/redpoly/accessories/action-keychains.jpg',
-    'CHARACTER MUG':'/assets/images/redpoly/accessories/character-mug.jpg',
-    'IPHONE 15 CASE':'/assets/images/redpoly/accessories/iphone-15-case.jpg'
-  };
-
-  // The complimentary keychain follows the item subtotal, exactly as it does in the bag drawer.
-  function syncGift() {
-    var paid = items.reduce(function (total, item) { return total + (item.id === freeGiftId ? 0 : item.price * item.quantity); }, 0);
-    var giftIndex = items.findIndex(function (item) { return item.id === freeGiftId; });
-    if (paid >= freeGiftFrom && giftIndex === -1) {
-      items.push({ id:freeGiftId, name:'COMPLIMENTARY CREATURE KEYCHAIN', price:0, quantity:1 });
-      return 'added';
-    }
-    if (paid < freeGiftFrom && giftIndex !== -1) {
-      items = items.filter(function (item) { return item.id !== freeGiftId; });
-      return 'removed';
-    }
-    if (giftIndex !== -1) { items[giftIndex].quantity = 1; items[giftIndex].price = 0; }
-    return '';
-  }
-
   function updatePayBar() {
     payBar.classList.toggle('is-visible', items.length > 0 && !placeButtonInView && !leaving);
   }
@@ -136,17 +90,16 @@
     var pieces = 0;
     list.textContent = '';
     items.forEach(function (item) {
-      var isGift = item.id === freeGiftId;
       subtotal += item.price * item.quantity;
       pieces += item.quantity;
-      var row = document.createElement('article'); row.className = 'checkout-line' + (isGift ? ' checkout-line--reward' : '');
+      var row = document.createElement('article'); row.className = 'checkout-line';
       var image = document.createElement('img'); image.className = 'checkout-line__image'; image.alt = ''; image.loading = 'lazy';
-      image.src = isGift ? checkoutImageByName['ACTION KEYCHAINS'] : (item.name.indexOf('CREATURE CLUB TRIO') === 0 ? '/assets/images/redpoly/collections/accessories.jpg' : (checkoutImageByName[item.name] || '/assets/images/redpoly/collections/accessories.jpg'));
+      image.src = catalogue[item.name].image;
       var copy = document.createElement('div'); copy.className = 'checkout-line__copy';
       var title = document.createElement('h3'); title.textContent = item.name;
-      var each = document.createElement('p'); each.textContent = isGift ? 'COMPLIMENTARY REWARD' : money(item.price) + ' EACH';
+      var each = document.createElement('p'); each.textContent = money(item.price) + ' EACH';
       copy.appendChild(title); copy.appendChild(each);
-      if (!isGift) {
+      {
         var controls = document.createElement('div'); controls.className = 'checkout-line__controls';
         var stepper = document.createElement('div'); stepper.className = 'checkout-stepper'; stepper.setAttribute('role', 'group'); stepper.setAttribute('aria-label', 'Quantity of ' + item.name);
         [['decrease', '−', item.quantity === 1 ? 'Remove ' + item.name + ' from your bag' : 'Decrease quantity of ' + item.name], ['increase', '+', 'Increase quantity of ' + item.name]].forEach(function (control) {
@@ -159,7 +112,7 @@
         remove.setAttribute('data-bag-action', 'remove'); remove.setAttribute('data-bag-id', item.id); remove.setAttribute('aria-label', 'Remove ' + item.name + ' from your bag');
         controls.appendChild(stepper); controls.appendChild(remove); copy.appendChild(controls);
       }
-      var total = document.createElement('strong'); total.className = 'checkout-line__total'; total.textContent = isGift ? 'FREE' : money(item.price * item.quantity);
+      var total = document.createElement('strong'); total.className = 'checkout-line__total'; total.textContent = money(item.price * item.quantity);
       row.appendChild(image); row.appendChild(copy); row.appendChild(total); list.appendChild(row);
     });
     countNode.textContent = pieces ? pieces + (pieces === 1 ? ' ITEM' : ' ITEMS') : '';
@@ -211,10 +164,9 @@
 
   // Bag editing: change a quantity or remove a line without leaving checkout.
   function commitBag(message) {
-    var gift = syncGift();
     saveBag();
     renderBag();
-    bagStatus.textContent = message + (gift === 'added' ? ' A complimentary keychain was added.' : gift === 'removed' ? ' The complimentary keychain was removed.' : '');
+    bagStatus.textContent = message;
   }
   list.addEventListener('click', function (event) {
     var control = event.target.closest('[data-bag-action]');
@@ -222,7 +174,7 @@
     var id = control.getAttribute('data-bag-id');
     var action = control.getAttribute('data-bag-action');
     var item = items.find(function (entry) { return entry.id === id; });
-    if (!item || item.id === freeGiftId) return;
+    if (!item) return;
     var message;
     if (action === 'increase') { item.quantity += 1; message = item.name + ' quantity is now ' + item.quantity + '.'; }
     else if (action === 'decrease' && item.quantity > 1) { item.quantity -= 1; message = item.name + ' quantity is now ' + item.quantity + '.'; }
@@ -263,7 +215,6 @@
   }
   payBarButton.addEventListener('click', function () { placeButton.click(); });
 
-  if (syncGift()) saveBag();
   renderBag();
 
   pinInput.addEventListener('input', function () {
@@ -324,7 +275,7 @@
 
   form.addEventListener('submit', function (event) { event.preventDefault(); });
   placeButton.addEventListener('click', function () {
-    if (!items.length) { status.textContent='Your bag is empty. Add an accessory or figure first.'; return; }
+    if (!items.length) { status.textContent='Your bag is empty. Add a product first.'; return; }
     if (!form.reportValidity()) return;
     var pin = form.querySelector('[name="postal-code"]').value.trim();
     var reference='RED-DEMO-' + String(Math.floor(100000 + Math.random()*900000));
