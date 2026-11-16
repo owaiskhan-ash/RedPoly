@@ -70,7 +70,8 @@
   // The catalogue is the list of products on sale. Add a product here (and in checkout.js) when it gets a page.
   // Anything else found in a saved bag or saved list (for example an item that is no longer sold) is dropped.
   var catalogue = {
-    'BUBBLE GUN': { price:499, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' }
+    'BUBBLE GUN': { price:499, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' },
+    'STUNT PET': { price:599, href:'/stunt-pet', image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' }
   };
   function inCatalogue(name, price) { return Object.prototype.hasOwnProperty.call(catalogue, name) && catalogue[name].price === Number(price); }
   var cartStorageKey = 'redpoly-cart-v1';
@@ -100,7 +101,7 @@
   var cartLayer = document.createElement('div');
   cartLayer.className = 'cart-layer';
   cartLayer.hidden = true;
-  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR REDPOLY BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is empty. Add a Bubble Gun to get started.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">FREE SHIPPING TRACKER</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE STANDARD SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free standard shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free standard shipping" aria-valuemin="0" aria-valuemax="1499" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS (INCL. GST)</span><strong id="cart-subtotal">₹0</strong></p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
+  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR REDPOLY BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is empty. Pick something from the shop to get started.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">FREE SHIPPING TRACKER</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE STANDARD SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free standard shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free standard shipping" aria-valuemin="0" aria-valuemax="1499" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS (INCL. GST)</span><strong id="cart-subtotal">₹0</strong></p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
   document.body.appendChild(cartLayer);
   var cartDrawer = cartLayer.querySelector('.cart-drawer');
   var cartItemsNode = cartLayer.querySelector('#cart-items');
@@ -316,18 +317,43 @@
     zoom.addEventListener('click',function(event){if(event.target===zoom)zoom.close();});
   });
 
-  // Product pages with a cut-out photo on the stage get full/detail/zoom image controls.
+  // Product pages with a cut-out photo on the stage get image controls. A product with a second photo
+  // (data-alt-src on the image, for example the toy in its box) gets one button per photo; otherwise
+  // the buttons are full view and detail crop. Zoom always shows the photo that is on screen.
   document.querySelectorAll('.char-stage .char-stage__figure').forEach(function (image) {
     var stage = image.closest('.char-stage');
     var viewport = document.createElement('div'); viewport.className = 'figure-gallery__viewport'; viewport.setAttribute('data-view', 'full');
     stage.insertBefore(viewport, image); viewport.appendChild(image);
     var controls = document.createElement('div'); controls.className = 'figure-gallery__controls'; controls.setAttribute('role', 'group'); controls.setAttribute('aria-label', 'Product image views');
-    [['full','FULL VIEW'],['detail','DETAIL CROP']].forEach(function (view, index) {
-      var button = document.createElement('button'); button.type = 'button'; button.setAttribute('data-figure-view', view[0]); button.setAttribute('aria-pressed', index === 0 ? 'true' : 'false'); button.textContent = view[1]; controls.appendChild(button);
-    });
+    var photos = image.getAttribute('data-alt-src') ? [
+      { label:image.getAttribute('data-label') || 'PHOTO 1', src:image.getAttribute('src'), alt:image.alt },
+      { label:image.getAttribute('data-alt-label') || 'PHOTO 2', src:image.getAttribute('data-alt-src'), alt:image.getAttribute('data-alt-text') || image.alt }
+    ] : null;
+    if (photos) {
+      photos.forEach(function (photo, index) {
+        var button = document.createElement('button'); button.type = 'button'; button.setAttribute('data-figure-photo', String(index)); button.setAttribute('aria-pressed', index === 0 ? 'true' : 'false'); button.textContent = photo.label; controls.appendChild(button);
+      });
+      viewport.setAttribute('data-photo', '0');
+      var warmAltPhoto = function () { var warm = new Image(); warm.decoding = 'async'; warm.src = photos[1].src; };
+      controls.addEventListener('pointerenter', warmAltPhoto, { once:true });
+      controls.addEventListener('focusin', warmAltPhoto, { once:true });
+      controls.addEventListener('touchstart', warmAltPhoto, { once:true, passive:true });
+    } else {
+      [['full','FULL VIEW'],['detail','DETAIL CROP']].forEach(function (view, index) {
+        var button = document.createElement('button'); button.type = 'button'; button.setAttribute('data-figure-view', view[0]); button.setAttribute('aria-pressed', index === 0 ? 'true' : 'false'); button.textContent = view[1]; controls.appendChild(button);
+      });
+    }
     var zoomButton = document.createElement('button'); zoomButton.type = 'button'; zoomButton.className = 'figure-gallery__zoom'; zoomButton.textContent = 'ZOOM'; zoomButton.setAttribute('aria-label', 'Open a larger view of this product'); controls.appendChild(zoomButton);
     viewport.appendChild(controls);
     controls.addEventListener('click', function (event) {
+      var photoButton = event.target.closest('[data-figure-photo]');
+      if (photoButton && photos) {
+        var chosen = photos[Number(photoButton.getAttribute('data-figure-photo'))];
+        image.src = chosen.src; image.alt = chosen.alt;
+        viewport.setAttribute('data-photo', photoButton.getAttribute('data-figure-photo'));
+        controls.querySelectorAll('[data-figure-photo]').forEach(function (button) { button.setAttribute('aria-pressed', button === photoButton ? 'true' : 'false'); });
+        return;
+      }
       var viewButton = event.target.closest('[data-figure-view]');
       if (!viewButton) return;
       viewport.setAttribute('data-view', viewButton.getAttribute('data-figure-view'));
@@ -341,7 +367,7 @@
     var zoomImage = document.createElement('img'); zoomImage.src = image.src; zoomImage.alt = image.alt;
     zoom.appendChild(close); zoom.appendChild(zoomImage); document.body.appendChild(zoom);
     close.addEventListener('click', function () { zoom.close(); });
-    zoomButton.addEventListener('click', function () { if (zoom.showModal) zoom.showModal(); else zoom.setAttribute('open', ''); });
+    zoomButton.addEventListener('click', function () { zoomImage.src = image.src; zoomImage.alt = image.alt; if (zoom.showModal) zoom.showModal(); else zoom.setAttribute('open', ''); });
     zoom.addEventListener('click', function (event) { if (event.target === zoom) zoom.close(); });
   });
 

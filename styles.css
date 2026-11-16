@@ -630,3 +630,24 @@ html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out 
 @media(max-width:640px){#shop,#delivery,#story,#crew{scroll-margin-top:74px}}
 .shop-feature .limited__feats{flex-wrap:nowrap}
 .shop-feature .limited__feats li{flex:1 1 0;min-width:0;flex-direction:column;align-items:flex-start;gap:6px;padding:0 12px}
+
+/* Second product on the home page: Stunt Pet block with a small boxed photo beside the main one */
+.shop-feature--pet{background:#ffe2d3;border-top:3px dashed rgba(10,10,10,.16)}
+.shop-feature--pet .t-coral{color:#e8484f}
+.shop-feature--pet .shop-feature__image img{max-height:400px}
+.shop-feature__box{position:absolute;z-index:3;right:-4%;bottom:-6px;display:grid;justify-items:center;gap:3px;width:clamp(120px,36%,178px);padding:7px 7px 5px;border:2px solid var(--black);background:var(--cream);box-shadow:4px 4px 0 var(--black);transform:rotate(5deg);transition:transform .2s ease}
+.shop-feature__box:hover{transform:rotate(0deg) scale(1.04)}
+.shop-feature__box:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.shop-feature__box img{display:block;width:100%;height:auto}
+.shop-feature__box span{color:var(--black);font-size:8px;font-weight:900;letter-spacing:1.2px}
+@media(max-width:980px){
+  .shop-feature__box{right:0}
+}
+@media(max-width:560px){
+  .shop-feature--pet .shop-feature__image img{max-height:280px}
+  .shop-feature__box{width:108px;right:2px;bottom:2px}
+}
+@media(prefers-reduced-motion:reduce){.shop-feature__box{transition:none}}
+/* Five header links on small tablets: tighter spacing and no club label, so nothing runs off the edge */
+@media(min-width:761px) and (max-width:900px){.site-header__nav{gap:13px}.site-header__brand span{display:none}}
+@media(max-width:1120px){.site-header__cta{display:none}}

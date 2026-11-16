@@ -7,7 +7,8 @@
   var freeExpressFrom = 5000;
   // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved bag is dropped.
   var catalogue = {
-    'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' }
+    'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' },
+    'STUNT PET': { price:599, image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' }
   };
   function inCatalogue(name, price) { return Object.prototype.hasOwnProperty.call(catalogue, name) && catalogue[name].price === Number(price); }
   // GST rate in percent. Shelf prices already include it, so checkout shows the GST share
