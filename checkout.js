@@ -7,6 +7,8 @@
   var freeStandardFrom = 1499;
   var freeExpressFrom = 5000;
   var freeGiftFrom = 6000;
+  // GST rate in percent, applied to the item subtotal. Change it here only; the labels follow.
+  var gstRate = 12;
   var items = [];
 
   function readBag() {
@@ -39,6 +41,7 @@
   var bagStatus = document.getElementById('checkout-bag-status');
   var subtotalNode = document.getElementById('checkout-subtotal');
   var gstNode = document.getElementById('checkout-gst');
+  var gstLabelNode = document.getElementById('checkout-gst-label');
   var shippingLabelNode = document.getElementById('checkout-shipping-label');
   var shippingCostNode = document.getElementById('checkout-shipping-cost');
   var finalTotalNode = document.getElementById('checkout-final-total');
@@ -157,12 +160,13 @@
     var standardFree = subtotal >= freeStandardFrom;
     var expressFree = subtotal >= freeExpressFrom;
     var freeShipping = method === 'express' ? expressFree : standardFree;
-    var gst = Math.round(subtotal * 0.18);
+    var gst = Math.round(subtotal * gstRate / 100);
     var shipping = freeShipping ? 0 : (method === 'express' ? 120 : 30);
     var deliveryDays = method === 'express' ? 2 : 4;
     standardPriceNode.textContent = standardFree ? 'FREE' : '₹30';
     expressPriceNode.textContent = expressFree ? 'FREE' : '₹120';
     subtotalNode.textContent = money(subtotal);
+    gstLabelNode.textContent = 'GST (' + gstRate + '%)';
     gstNode.textContent = money(gst);
     shippingLabelNode.textContent = 'SHIPPING · ' + method.toUpperCase();
     shippingCostNode.textContent = !items.length ? '—' : (freeShipping ? 'FREE' : money(shipping));
@@ -305,7 +309,7 @@
     var pin = form.querySelector('[name="postal-code"]').value.trim();
     var reference='RED-DEMO-' + String(Math.floor(100000 + Math.random()*900000));
     var totals=updateCheckoutTotals();
-    var demoOrder={ reference:reference, pin:pin, deliveryDays:totals.deliveryDays, subtotal:subtotal, gst:totals.gst, shippingMethod:totals.method, shippingCost:totals.shipping, freeShipping:totals.freeShipping, total:totals.total, items:items };
+    var demoOrder={ reference:reference, pin:pin, deliveryDays:totals.deliveryDays, subtotal:subtotal, gstRate:gstRate, gst:totals.gst, shippingMethod:totals.method, shippingCost:totals.shipping, freeShipping:totals.freeShipping, total:totals.total, items:items };
     try {
       sessionStorage.setItem(orderKey,JSON.stringify(demoOrder));
       localStorage.removeItem(cartKey);
