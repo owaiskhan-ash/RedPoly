@@ -338,9 +338,12 @@
     var scrollFrame = false;
     function syncStickyBuy() {
       scrollFrame = false;
-      var passedBuy = heroBuy.getBoundingClientRect().bottom < 0;
+      // On phones the photo comes first, so the bar is there whenever the main buy button is off screen
+      // (above or below), and steps aside for the bag drawer and the closing call to action.
+      var buyRect = heroBuy.getBoundingClientRect();
+      var buyOffScreen = buyRect.bottom < 0 || buyRect.top > window.innerHeight - 70;
       var atFinal = finalCta && finalCta.getBoundingClientRect().top < window.innerHeight && finalCta.getBoundingClientRect().bottom > 0;
-      var visible = passedBuy && !atFinal && window.innerWidth <= 760;
+      var visible = buyOffScreen && !atFinal && window.innerWidth <= 760;
       stickyBar.classList.toggle('mobile-buy-bar--visible', visible);
       stickyBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
       stickyButton.tabIndex = visible ? 0 : -1;

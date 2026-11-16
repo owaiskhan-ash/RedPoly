@@ -374,3 +374,18 @@ body.creature-page .char-nav nav{margin-left:auto}
 .char-price__tax{margin-top:5px;font-style:normal;font-size:8px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase;opacity:.82}
 @media(prefers-reduced-motion:reduce){.wish-toggle,.char-save{transition:none}.wish-item{transform:none!important}}
 @media(max-width:360px){.char-nav{padding-left:12px;padding-right:12px}.char-nav .wish-toggle,.char-nav .cart-toggle{min-width:0;gap:4px;padding:8px 7px}.char-nav__back span{display:none}}
+
+/* ===== Phone layout on accessory pages: product photo first, then the name, details and price ===== */
+@media(max-width:680px){
+  .accessory-hero>.accessory-stage{order:1;margin-top:40px}
+  .accessory-hero>.char-hero__copy{order:2}
+  .accessory-page .char-kicker{margin-top:22px}
+  .accessory-page .char-hero h1{margin-top:12px}
+  .accessory-page--pin .accessory-stage,.accessory-page--case .accessory-stage{margin-top:46px}
+  /* Keep the photo a sensible size on large phones so the name stays close to the first screen */
+  .accessory-hero>.accessory-stage{width:min(100%,430px);align-self:center}
+  .accessory-page--pin .accessory-hero>.accessory-stage,.accessory-page--case .accessory-hero>.accessory-stage{width:100%}
+  .accessory-page--pin{--frame-width:min(94%,460px,96vh)}
+  .accessory-page--case{--frame-width:min(72%,300px,58vh)}
+}
+@media(max-width:340px){.char-nav__back{white-space:normal}}
