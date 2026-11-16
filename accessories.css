@@ -279,7 +279,7 @@ body.cart-open{overflow:hidden}
 .cart-drawer button:focus-visible,.cart-recommendation a:focus-visible{outline:3px solid #ff6b1a;outline-offset:3px}
 .cart-recommendation a:hover{color:#4938a6}
 .cart-item{align-items:center}
-.cart-item__image{flex:none;width:58px;height:58px;object-fit:cover;border:1px solid rgba(23,21,18,.2);background:#fff}
+.cart-item__image{flex:none;width:58px;height:58px;object-fit:contain;padding:3px;border:1px solid rgba(23,21,18,.2);background:#ebe5da}
 .cart-item__details{flex:1;min-width:0}
 .cart-item__controls{flex:none}
 .cart-item__free-label{padding:6px 8px;background:#c8ff00;color:#171512;font-size:8px;font-weight:900;letter-spacing:.7px}

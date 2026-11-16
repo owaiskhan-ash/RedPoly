@@ -573,3 +573,60 @@ html.motion-ready .c-card__soon{transition:transform .2s ease}
 @media(max-width:1180px){.site-header .wish-toggle>span{display:none}}
 @media(max-width:1024px){.site-header__cta{display:none}}
 @media(max-width:400px){.site-header__brand span{display:none}}
+
+/* ===== Bubble Gun launch: home hero product and shop block ===== */
+.hero--bubble .hero__right{display:flex;justify-content:center;align-items:flex-start}
+.hero-product{position:relative;display:block;width:min(100%,500px);margin:0 auto;padding:4px 0 40px;isolation:isolate}
+.hero-product img{position:relative;z-index:2;display:block;width:100%;height:auto;filter:drop-shadow(0 26px 22px rgba(0,0,0,.6))}
+.hero-product__glow{position:absolute;inset:2% 0 12%;z-index:0;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(70,200,255,.5),rgba(45,100,255,.28) 42%,transparent 70%);filter:blur(10px)}
+.hero-product__price{position:absolute;z-index:3;right:-2%;top:0;width:118px;height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:var(--orange);color:var(--black);transform:rotate(9deg);clip-path:polygon(50% 0%,62% 8%,78% 4%,88% 16%,100% 22%,96% 38%,100% 52%,92% 66%,96% 82%,82% 90%,70% 100%,54% 94%,38% 100%,24% 92%,10% 96%,4% 80%,0% 64%,6% 48%,0% 32%,10% 18%,22% 10%,36% 6%)}
+.hero-product__price small{font-size:8px;font-weight:900;letter-spacing:1.4px}
+.hero-product__price b{font:400 38px/.95 'Anton',sans-serif;letter-spacing:-.5px}
+.hero-product__tag{position:absolute;z-index:3;left:50%;bottom:4px;transform:translateX(-50%) rotate(-2deg);padding:8px 13px 7px;background:var(--lime);color:var(--black);font-size:10px;font-weight:900;letter-spacing:1.2px;white-space:nowrap;clip-path:polygon(1% 0,100% 8%,98% 100%,0 90%)}
+.hero-product:hover .hero-product__tag,.hero-product:focus-visible .hero-product__tag{background:#fff}
+.hero-product:focus-visible{outline:3px solid var(--orange);outline-offset:4px}
+.bubble{position:absolute;z-index:3;border-radius:50%;border:1.5px solid rgba(200,238,255,.8);background:radial-gradient(circle at 30% 27%,rgba(255,255,255,.95) 0 8%,rgba(255,255,255,.14) 21%,rgba(110,205,255,.1) 58%,rgba(200,255,0,.2) 100%);box-shadow:inset -3px -5px 9px rgba(120,205,255,.3);pointer-events:none}
+.bubble--1{left:-4%;top:25%;width:46px;height:46px}
+.bubble--2{left:6%;top:6%;width:26px;height:26px}
+.bubble--3{left:-9%;top:52%;width:20px;height:20px}
+.bubble--4{left:21%;top:-3%;width:15px;height:15px}
+.bubble--5{left:-13%;top:10%;width:32px;height:32px}
+.bubble--6{left:4%;top:68%;width:12px;height:12px}
+.bubble--7{left:40%;top:-6%;width:22px;height:22px}
+html.motion-ready .bubble{animation:bubble-float 4.6s ease-in-out infinite alternate}
+html.motion-ready .bubble--2{animation-duration:5.4s;animation-delay:-1.2s}
+html.motion-ready .bubble--3{animation-duration:3.9s;animation-delay:-2s}
+html.motion-ready .bubble--4{animation-duration:6s;animation-delay:-.6s}
+html.motion-ready .bubble--5{animation-duration:5s;animation-delay:-3s}
+html.motion-ready .bubble--6{animation-duration:4.2s;animation-delay:-1.7s}
+html.motion-ready .bubble--7{animation-duration:5.8s;animation-delay:-2.6s}
+html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out infinite}
+@keyframes bubble-float{0%{transform:translate(0,8px) scale(.94)}100%{transform:translate(-10px,-14px) scale(1.06)}}
+@keyframes hero-product-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@media(prefers-reduced-motion:reduce){.bubble,.hero-product img{animation:none!important}}
+
+.shop-feature .limited__copy{max-width:340px}
+.shop-feature__image{position:relative;z-index:2;display:block}
+.shop-feature__image img{display:block;width:auto;max-width:100%;max-height:430px;margin:0 auto;object-fit:contain;filter:drop-shadow(0 16px 12px rgba(0,0,0,.22))}
+.shop-feature__image:focus-visible{outline:3px solid var(--orange);outline-offset:4px}
+.shop-feature__details{color:var(--black);font-size:10px;font-weight:900;letter-spacing:1px;text-decoration:underline;text-underline-offset:3px}
+.shop-feature__details:hover{color:var(--orange)}
+.shop-feature .limited__feats{flex-wrap:wrap;row-gap:10px}
+@media(max-width:1024px){
+  .hero-product{width:min(100%,440px)}
+  .shop-feature__image img{max-height:360px}
+}
+@media(max-width:640px){
+  /* Phones: the product picture comes before the words in the shop block */
+  .shop-feature .limited__grid{grid-template-areas:"center" "left" "right"}
+  .hero-product{width:min(88%,360px);padding-bottom:36px}
+  .hero-product__price{width:94px;height:94px;right:-6%}
+  .hero-product__price b{font-size:30px}
+  .bubble--5{left:-7%}.bubble--3{left:-5%}.bubble--1{left:-3%}
+  .shop-feature__image img{max-height:300px}
+  .shop-feature .limited__feats li{padding:0 10px}
+}
+#shop,#delivery,#story,#crew{scroll-margin-top:92px}
+@media(max-width:640px){#shop,#delivery,#story,#crew{scroll-margin-top:74px}}
+.shop-feature .limited__feats{flex-wrap:nowrap}
+.shop-feature .limited__feats li{flex:1 1 0;min-width:0;flex-direction:column;align-items:flex-start;gap:6px;padding:0 12px}

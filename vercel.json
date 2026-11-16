@@ -2,15 +2,26 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/", "destination": "/index" },
-    { "source": "/barsaat", "destination": "/products/barsaat" },
-    { "source": "/agni", "destination": "/products/agni" },
-    { "source": "/noor", "destination": "/products/noor" },
-    { "source": "/aarav", "destination": "/products/aarav" },
-    { "source": "/pins-and-art-print", "destination": "/products/pins-and-art-print" },
-    { "source": "/action-keychains", "destination": "/products/action-keychains" },
-    { "source": "/character-mug", "destination": "/products/character-mug" },
-    { "source": "/iphone-15-case", "destination": "/products/iphone-15-case" },
+    { "source": "/bubble-gun", "destination": "/products/bubble-gun" },
     { "source": "/help", "destination": "/help.html" }
+  ],
+  "redirects": [
+    { "source": "/barsaat", "destination": "/", "permanent": false },
+    { "source": "/products/barsaat", "destination": "/", "permanent": false },
+    { "source": "/agni", "destination": "/", "permanent": false },
+    { "source": "/products/agni", "destination": "/", "permanent": false },
+    { "source": "/noor", "destination": "/", "permanent": false },
+    { "source": "/products/noor", "destination": "/", "permanent": false },
+    { "source": "/aarav", "destination": "/", "permanent": false },
+    { "source": "/products/aarav", "destination": "/", "permanent": false },
+    { "source": "/pins-and-art-print", "destination": "/", "permanent": false },
+    { "source": "/products/pins-and-art-print", "destination": "/", "permanent": false },
+    { "source": "/action-keychains", "destination": "/", "permanent": false },
+    { "source": "/products/action-keychains", "destination": "/", "permanent": false },
+    { "source": "/character-mug", "destination": "/", "permanent": false },
+    { "source": "/products/character-mug", "destination": "/", "permanent": false },
+    { "source": "/iphone-15-case", "destination": "/", "permanent": false },
+    { "source": "/products/iphone-15-case", "destination": "/", "permanent": false }
   ],
   "headers": [
     {

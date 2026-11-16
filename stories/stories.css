@@ -118,3 +118,5 @@
   .reader-progress{width:70px}
 }
 @media(prefers-reduced-motion:reduce){.issue-card,.issue-card__cover img,.stories-home-link,.reader-arrow,.reader-progress span{transition:none!important}.issue-card:hover{transform:none}.stories-kicker,.stories-hero h1,.stories-intro,.stories-stamp,.stories-hero::before,.stories-hero::after{animation:none!important;opacity:1}.stories-stamp{transform:rotate(9deg)}}
+/* Small phones: the cover fits the card instead of forcing a 380px width */
+@media(max-width:420px){.issue-card__cover{aspect-ratio:auto}}
