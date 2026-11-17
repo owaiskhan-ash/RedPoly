@@ -330,49 +330,16 @@
     zoom.addEventListener('click',function(event){if(event.target===zoom)zoom.close();});
   });
 
-  // Product pages with a cut-out photo on the stage get image controls. A product with a second photo
-  // (data-alt-src on the image, for example the toy in its box) gets one button per photo; otherwise
-  // the buttons are full view and detail crop. Zoom always shows the photo that is on screen.
+  // Product stage photos are shown plain. The HD gallery button and the media viewer on each
+  // product page are the route to the larger images, so no control strip sits over the artwork.
+  // The wrapper is kept because the per-product hero sizing and float animations target it.
   document.querySelectorAll('.char-stage .char-stage__figure').forEach(function (image) {
     var stage = image.closest('.char-stage');
-    var viewport = document.createElement('div'); viewport.className = 'figure-gallery__viewport'; viewport.setAttribute('data-view', 'full');
-    stage.insertBefore(viewport, image); viewport.appendChild(image);
-    var controls = document.createElement('div'); controls.className = 'figure-gallery__controls'; controls.setAttribute('role', 'group'); controls.setAttribute('aria-label', 'Product image views');
-    var photos = image.getAttribute('data-alt-src') ? [
-      { label:image.getAttribute('data-label') || 'PHOTO 1', src:image.getAttribute('src'), alt:image.alt },
-      { label:image.getAttribute('data-alt-label') || 'PHOTO 2', src:image.getAttribute('data-alt-src'), alt:image.getAttribute('data-alt-text') || image.alt }
-    ] : null;
-    if (photos) {
-      photos.forEach(function (photo, index) {
-        var button = document.createElement('button'); button.type = 'button'; button.setAttribute('data-figure-photo', String(index)); button.setAttribute('aria-pressed', index === 0 ? 'true' : 'false'); button.textContent = photo.label; controls.appendChild(button);
-      });
-      viewport.setAttribute('data-photo', '0');
-      var warmAltPhoto = function () { var warm = new Image(); warm.decoding = 'async'; warm.src = photos[1].src; };
-      controls.addEventListener('pointerenter', warmAltPhoto, { once:true });
-      controls.addEventListener('focusin', warmAltPhoto, { once:true });
-      controls.addEventListener('touchstart', warmAltPhoto, { once:true, passive:true });
-    }
-    var zoomButton = document.createElement('button'); zoomButton.type = 'button'; zoomButton.className = 'figure-gallery__zoom'; zoomButton.textContent = 'ZOOM'; zoomButton.setAttribute('aria-label', 'Open a larger view of this product'); controls.appendChild(zoomButton);
-    viewport.appendChild(controls);
-    controls.addEventListener('click', function (event) {
-      var photoButton = event.target.closest('[data-figure-photo]');
-      if (photoButton && photos) {
-        var chosen = photos[Number(photoButton.getAttribute('data-figure-photo'))];
-        image.src = chosen.src; image.alt = chosen.alt;
-        viewport.setAttribute('data-photo', photoButton.getAttribute('data-figure-photo'));
-        controls.querySelectorAll('[data-figure-photo]').forEach(function (button) { button.setAttribute('aria-pressed', button === photoButton ? 'true' : 'false'); });
-        return;
-      }
-    });
-    var zoom = document.createElement('dialog'); zoom.className = 'product-zoom'; zoom.setAttribute('aria-label', 'Zoomed product image');
-    var close = document.createElement('button'); close.type = 'button'; close.className = 'product-zoom__close'; close.textContent = 'CLOSE ×'; close.setAttribute('aria-label', 'Close zoomed product image');
-    var zoomImage = document.createElement('img'); zoomImage.src = image.src; zoomImage.alt = image.alt;
-    zoom.appendChild(close); zoom.appendChild(zoomImage); document.body.appendChild(zoom);
-    close.addEventListener('click', function () { zoom.close(); });
-    zoomButton.addEventListener('click', function () { zoomImage.src = image.src; zoomImage.alt = image.alt; if (zoom.showModal) zoom.showModal(); else zoom.setAttribute('open', ''); });
-    zoom.addEventListener('click', function (event) { if (event.target === zoom) zoom.close(); });
+    var viewport = document.createElement('div');
+    viewport.className = 'figure-gallery__viewport';
+    stage.insertBefore(viewport, image);
+    viewport.appendChild(image);
   });
-
   // A PIN-format helper is ready for shipping rules; it deliberately doesn't invent an ETA or serviceability.
   document.querySelectorAll('.accessory-policy-panel .wrap').forEach(function (policyWrap,index) {
     var checker=document.createElement('form'); checker.className='delivery-checker'; checker.noValidate=true;
