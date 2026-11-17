@@ -147,7 +147,7 @@
     gstLabelNode.textContent = 'INCLUDES GST (' + gstRate + '%)';
     gstNode.textContent = money(gst);
     shippingLabelNode.textContent = 'SHIPPING · ' + method.toUpperCase();
-    shippingCostNode.textContent = !items.length ? '—' : (freeShipping ? 'FREE' : money(shipping));
+    shippingCostNode.textContent = !items.length ? '-' : (freeShipping ? 'FREE' : money(shipping));
     finalTotalNode.textContent = money(items.length ? subtotal + shipping : 0);
     payBarTotal.textContent = finalTotalNode.textContent;
     deliveryEstimateTitle.textContent = deliveryDays + '-DAY ' + method.toUpperCase() + ' DELIVERY';

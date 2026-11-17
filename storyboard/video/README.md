@@ -1,4 +1,4 @@
-# The Last Durian – storyboard video
+# The Last Durian: storyboard video
 
 `the-last-durian.mp4` is a 32 second, 1920×1080, 30 fps animated cut of the five storyboard
 frames in the parent folder. It has no audio.
