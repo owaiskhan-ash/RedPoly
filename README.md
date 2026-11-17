@@ -13,6 +13,7 @@
 | Mini Cool Car (1:20 remote-control stunt car) | `/mini-cool-car` (`products/mini-cool-car.html`) | ₹749 |
 | Gel Storm (3-in-1 M4 gel blaster, ages 14+) | `/gel-storm` (`products/gel-storm.html`) | ₹1,999 |
 | Pixel Splash (automatic pixel-block water blaster with RGB lighting and rechargeable power) | `/pixel-splash` (`products/pixel-splash.html`) | ₹1,749 |
+| Mecha Rover (2-in-1 build and transform fire rescue truck and robot, 27 pieces, ages 3+) | `/mecha-rover` (`products/mecha-rover.html`) | ₹499 |
 
 Comic Issue 1 stays online at `/stories` (files in `comics/` and `stories/`).
 
