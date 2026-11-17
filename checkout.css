@@ -148,7 +148,7 @@
 @media(max-width:440px){.checkout-line__image{width:44px;height:44px}.shipping-option{grid-template-columns:auto 31px minmax(0,1fr) auto;gap:6px;padding:7px}.shipping-option__icon{width:30px;height:30px}}
 @media(prefers-reduced-motion:reduce){.shipping-option{transition:none}}
 
-/* Checkout flow: details, then shipping, then payment. The bag is edited in the summary, and the total stays in reach. */
+/* Checkout flow: details, then shipping, then payment. The cart is edited in the summary, and the total stays in reach. */
 .shipping-step{margin-top:25px;padding:18px;background:#24201c;color:#fff4e1;border:2px solid #eac338;box-shadow:5px 5px 0 #eac338}
 .shipping-step .checkout-overline{color:#d5ff35}
 .shipping-step h2{font-size:26px}
@@ -175,7 +175,7 @@
 .checkout-undo{display:block;margin-top:12px;padding:9px 11px;border:1px dashed rgba(200,255,0,.6);background:transparent;color:#d5ff35;font-size:8px;font-weight:900;letter-spacing:.8px;text-align:left;cursor:pointer}
 .checkout-undo:hover{background:rgba(200,255,0,.12)}
 .checkout-undo[hidden]{display:none}
-.checkout-bag-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.checkout-cart-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .checkout-assurance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:6px;padding-top:15px;border-top:1px dashed #b3ac9f;list-style:none}
 .checkout-assurance li{display:flex;align-items:flex-start;gap:9px;min-width:0}
 .checkout-assurance svg{flex:none;width:22px;height:22px;margin-top:1px;fill:none;stroke:#4c6600;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}

@@ -2,11 +2,11 @@
   var cartKey = 'redpoly-cart-v1';
   var orderKey = 'redpoly-demo-order-v1';
   var shippingMethodKey = 'redpoly-shipping-method-v1';
-  // Free-shipping and free-gift thresholds on the item subtotal. Keep these in step with the bag drawer in main.js.
+  // Free-shipping and free-gift thresholds on the item subtotal. Keep these in step with the cart drawer in main.js.
   var freeStandardFrom = 1000;
   var freeExpressFrom = 5000;
   var freeGiftFrom = 3500;
-  // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved bag is dropped.
+  // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved cart is dropped.
   var catalogue = {
     'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' },
     'STUNT PET': { price:599, image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' },
@@ -22,7 +22,7 @@
   var gstRate = 12;
   var items = [];
 
-  function readBag() {
+  function readCart() {
     try {
       var parsed = JSON.parse(localStorage.getItem(cartKey) || '[]');
       if (!Array.isArray(parsed)) return [];
@@ -34,19 +34,19 @@
       });
     } catch (ignoreStorage) { return []; }
   }
-  function saveBag() {
+  function saveCart() {
     try {
       localStorage.setItem(cartKey, JSON.stringify(items.map(function (item) {
         return { id:item.id, name:item.name, price:item.price, quantity:item.quantity };
       })));
-    } catch (ignoreSave) { /* The bag still works for this page view. */ }
+    } catch (ignoreSave) { /* The cart still works for this page view. */ }
   }
-  items = readBag();
+  items = readCart();
 
   var list = document.getElementById('checkout-items');
   var countNode = document.getElementById('checkout-count');
   var undoButton = document.getElementById('checkout-undo');
-  var bagStatus = document.getElementById('checkout-bag-status');
+  var cartStatus = document.getElementById('checkout-cart-status');
   var subtotalNode = document.getElementById('checkout-subtotal');
   var gstNode = document.getElementById('checkout-gst');
   var gstLabelNode = document.getElementById('checkout-gst-label');
@@ -71,7 +71,7 @@
   var cityInput = document.getElementById('checkout-city');
   var stateInput = document.getElementById('checkout-state');
   var pinStatus = document.getElementById('pin-lookup-status');
-  var emptyBagMessage = 'Add an item to your bag before trying the demo checkout.';
+  var emptyCartMessage = 'Add an item to your cart before trying the demo checkout.';
   var lookupTimer = null;
   var activeLookup = null;
   var lookupSequence = 0;
@@ -93,7 +93,7 @@
     payBar.classList.toggle('is-visible', items.length > 0 && !placeButtonInView && !leaving);
   }
 
-  function renderBag() {
+  function renderCart() {
     subtotal = 0;
     var pieces = 0;
     list.textContent = '';
@@ -110,14 +110,14 @@
       {
         var controls = document.createElement('div'); controls.className = 'checkout-line__controls';
         var stepper = document.createElement('div'); stepper.className = 'checkout-stepper'; stepper.setAttribute('role', 'group'); stepper.setAttribute('aria-label', 'Quantity of ' + item.name);
-        [['decrease', '−', item.quantity === 1 ? 'Remove ' + item.name + ' from your bag' : 'Decrease quantity of ' + item.name], ['increase', '+', 'Increase quantity of ' + item.name]].forEach(function (control) {
+        [['decrease', '−', item.quantity === 1 ? 'Remove ' + item.name + ' from your cart' : 'Decrease quantity of ' + item.name], ['increase', '+', 'Increase quantity of ' + item.name]].forEach(function (control) {
           var button = document.createElement('button'); button.type = 'button'; button.className = 'checkout-stepper__button'; button.textContent = control[1];
-          button.setAttribute('data-bag-action', control[0]); button.setAttribute('data-bag-id', item.id); button.setAttribute('aria-label', control[2]);
+          button.setAttribute('data-cart-action', control[0]); button.setAttribute('data-cart-id', item.id); button.setAttribute('aria-label', control[2]);
           stepper.appendChild(button);
           if (control[0] === 'decrease') { var amount = document.createElement('span'); amount.className = 'checkout-stepper__amount'; amount.textContent = item.quantity; amount.setAttribute('aria-label', 'Quantity ' + item.quantity); stepper.appendChild(amount); }
         });
         var remove = document.createElement('button'); remove.type = 'button'; remove.className = 'checkout-line__remove'; remove.textContent = 'REMOVE';
-        remove.setAttribute('data-bag-action', 'remove'); remove.setAttribute('data-bag-id', item.id); remove.setAttribute('aria-label', 'Remove ' + item.name + ' from your bag');
+        remove.setAttribute('data-cart-action', 'remove'); remove.setAttribute('data-cart-id', item.id); remove.setAttribute('aria-label', 'Remove ' + item.name + ' from your cart');
         controls.appendChild(stepper); controls.appendChild(remove); copy.appendChild(controls);
       }
       var total = document.createElement('strong'); total.className = 'checkout-line__total'; total.textContent = money(item.price * item.quantity);
@@ -129,8 +129,8 @@
     payBarButton.disabled = items.length === 0;
     undoButton.hidden = !lastRemoved;
     undoButton.textContent = lastRemoved ? 'UNDO REMOVAL · ' + lastRemoved.item.name : 'UNDO REMOVAL';
-    if (!items.length) status.textContent = emptyBagMessage;
-    else if (status.textContent === emptyBagMessage) status.textContent = '';
+    if (!items.length) status.textContent = emptyCartMessage;
+    else if (status.textContent === emptyCartMessage) status.textContent = '';
     updateCheckoutTotals();
     updatePayBar();
   }
@@ -160,7 +160,7 @@
       var input = option.querySelector('input');
       option.classList.toggle('is-selected', !!input && input.checked);
     });
-    if (!items.length) shippingStatus.textContent = 'Standard shipping is free on bags of ' + money(freeStandardFrom) + ' or more, and bags over ' + money(freeGiftFrom) + ' get a free gift.';
+    if (!items.length) shippingStatus.textContent = 'Standard shipping is free on orders of ' + money(freeStandardFrom) + ' or more, and orders over ' + money(freeGiftFrom) + ' get a free gift.';
     else if (expressFree) shippingStatus.textContent = 'Free shipping unlocked on both Standard and Express.';
     else if (standardFree) shippingStatus.textContent = 'Free Standard shipping unlocked. Express is free from ' + money(freeExpressFrom) + '.';
     else shippingStatus.textContent = 'Add ' + money(freeStandardFrom - subtotal) + ' more for free Standard shipping.';
@@ -171,17 +171,17 @@
     updateCheckoutTotals();
   }); });
 
-  // Bag editing: change a quantity or remove a line without leaving checkout.
-  function commitBag(message) {
-    saveBag();
-    renderBag();
-    bagStatus.textContent = message;
+  // Cart editing: change a quantity or remove a line without leaving checkout.
+  function commitCart(message) {
+    saveCart();
+    renderCart();
+    cartStatus.textContent = message;
   }
   list.addEventListener('click', function (event) {
-    var control = event.target.closest('[data-bag-action]');
+    var control = event.target.closest('[data-cart-action]');
     if (!control || leaving) return;
-    var id = control.getAttribute('data-bag-id');
-    var action = control.getAttribute('data-bag-action');
+    var id = control.getAttribute('data-cart-id');
+    var action = control.getAttribute('data-cart-action');
     var item = items.find(function (entry) { return entry.id === id; });
     if (!item) return;
     var message;
@@ -190,11 +190,11 @@
     else {
       lastRemoved = { item:{ id:item.id, name:item.name, price:item.price, quantity:item.quantity }, index:items.indexOf(item) };
       items = items.filter(function (entry) { return entry.id !== id; });
-      message = item.name + ' removed from your bag.';
+      message = item.name + ' removed from your cart.';
     }
-    commitBag(message);
+    commitCart(message);
     // The list is rebuilt on every change, so hand keyboard focus back to the matching control.
-    var next = Array.prototype.find.call(list.querySelectorAll('[data-bag-action="' + action + '"]'), function (button) { return button.getAttribute('data-bag-id') === id; });
+    var next = Array.prototype.find.call(list.querySelectorAll('[data-cart-action="' + action + '"]'), function (button) { return button.getAttribute('data-cart-id') === id; });
     if (next) next.focus(); else if (!undoButton.hidden) undoButton.focus();
   });
   undoButton.addEventListener('click', function () {
@@ -204,13 +204,13 @@
     if (existing) existing.quantity += restored.quantity;
     else items.splice(Math.min(lastRemoved.index, items.length), 0, restored);
     lastRemoved = null;
-    commitBag(restored.name + ' is back in your bag.');
-    var back = Array.prototype.find.call(list.querySelectorAll('[data-bag-action="increase"]'), function (button) { return button.getAttribute('data-bag-id') === restored.id; });
+    commitCart(restored.name + ' is back in your cart.');
+    var back = Array.prototype.find.call(list.querySelectorAll('[data-cart-action="increase"]'), function (button) { return button.getAttribute('data-cart-id') === restored.id; });
     if (back) back.focus();
   });
   window.addEventListener('storage', function (event) {
     if (event.key !== cartKey || leaving) return;
-    items = readBag(); lastRemoved = null; renderBag();
+    items = readCart(); lastRemoved = null; renderCart();
   });
 
   // Phone pay bar: keeps the total and the order button in reach until the main button is reached.
@@ -224,7 +224,7 @@
   }
   payBarButton.addEventListener('click', function () { placeButton.click(); });
 
-  renderBag();
+  renderCart();
 
   pinInput.addEventListener('input', function () {
     var pin = pinInput.value.trim();
@@ -284,7 +284,7 @@
 
   form.addEventListener('submit', function (event) { event.preventDefault(); });
   placeButton.addEventListener('click', function () {
-    if (!items.length) { status.textContent='Your bag is empty. Add a product first.'; return; }
+    if (!items.length) { status.textContent='Your cart is empty. Add a product first.'; return; }
     if (!form.reportValidity()) return;
     var pin = form.querySelector('[name="postal-code"]').value.trim();
     var reference='RED-DEMO-' + String(Math.floor(100000 + Math.random()*900000));

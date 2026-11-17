@@ -91,7 +91,7 @@
       };
     }
     if (stickyPrice) stickyPrice.textContent = money(pick.price);
-    if (stickyButton) stickyButton.setAttribute('aria-label', 'Add ' + pick.say + ' to bag for ' + pick.price + ' rupees');
+    if (stickyButton) stickyButton.setAttribute('aria-label', 'Add ' + pick.say + ' to cart for ' + pick.price + ' rupees');
     if (!options || options.updateUrl !== false) syncUrl();
   }
 
