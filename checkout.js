@@ -3,7 +3,7 @@
   var orderKey = 'redpoly-demo-order-v1';
   var shippingMethodKey = 'redpoly-shipping-method-v1';
   // Free-shipping and free-gift thresholds on the item subtotal. Keep these in step with the cart drawer in main.js.
-  var freeStandardFrom = 1000;
+  var freeStandardFrom = 2000;
   var freeExpressFrom = 5000;
   var freeGiftFrom = 3500;
   // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved cart is dropped.
