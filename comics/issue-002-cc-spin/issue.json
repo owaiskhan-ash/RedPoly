@@ -1,0 +1,58 @@
+{
+  "id": "issue-002-cc-spin",
+  "number": "02",
+  "title": "CC Does a Spin",
+  "subtitle": "A car from the future lands on the turbo track, and nobody can sit still.",
+  "pages": [
+    {
+      "image": "/comics/issue-002-cc-spin/pages/page-01.webp?v=issue02-webp-20261125",
+      "alt": "Page 1: Poko spins a carrot combo at dusk on the turbo track, Reno drifts past with zero brakes, and the green and teal dinos argue over RPM while something burns across the sky.",
+      "shop": [
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    },
+    {
+      "image": "/comics/issue-002-cc-spin/pages/page-02.webp?v=issue02-webp-20261125",
+      "alt": "Page 2: CC-01 drops through a glowing portal, scans the sector, activates protocol zero speeding and fires a grid of light down the track while Poko keeps spinning on its nose.",
+      "shop": [
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" }
+      ]
+    },
+    {
+      "image": "/comics/issue-002-cc-spin/pages/page-03.webp?v=issue02-webp-20261125",
+      "alt": "Page 3: The green dino admires ten turbine spokes with V-lug treads, the teal dino panics about the glowing nose eye, and Reno shouts that the last one to the neon ramp is a fossil.",
+      "shop": [
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    },
+    {
+      "image": "/comics/issue-002-cc-spin/pages/page-04.webp?v=issue02-webp-20261125",
+      "alt": "Page 4: Full throttle chaos as Poko bounce boosts over the dinos, the car objects to nine laws of physics, and the crew discovers the bridge ended three seconds ago.",
+      "shop": [
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" }
+      ]
+    },
+    {
+      "image": "/comics/issue-002-cc-spin/pages/page-05.webp?v=issue02-webp-20261125",
+      "alt": "Page 5: CC overrides its own protocol, folds into a four wheel drive stunt bridge, and the dinos roll across while Poko springboards over the gap.",
+      "shop": [
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    },
+    {
+      "image": "/comics/issue-002-cc-spin/pages/page-06.webp?v=issue02-webp-20261125",
+      "alt": "Page 6: Ten out of ten, a 360 degree protocol violation, and the squad closes the night with protocol 02 uploaded: daily stunt session, do not tell the future.",
+      "shop": [
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    }
+  ]
+}

@@ -8,6 +8,19 @@
     "manifest": "/comics/issue-001-origin/issue.json",
     "pageCount": 6,
     "panelCount": 24,
-    "status": "READ ISSUE 01"
+    "status": "READ ISSUE 01",
+    "label": "THE ORIGIN ISSUE"
+  },
+  {
+    "id": "issue-002-cc-spin",
+    "number": "02",
+    "title": "CC Does a Spin",
+    "subtitle": "A car from the future lands on the turbo track, and nobody can sit still.",
+    "cover": "/comics/issue-002-cc-spin/cover.webp?v=issue02-cover-20261125",
+    "manifest": "/comics/issue-002-cc-spin/issue.json",
+    "pageCount": 6,
+    "panelCount": 24,
+    "status": "READ ISSUE 02",
+    "label": "CC DOES A SPIN"
   }
 ]
