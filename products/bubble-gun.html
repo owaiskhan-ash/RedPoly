@@ -75,7 +75,18 @@
 
       <div class="char-hero__copy">
         <p class="char-kicker"><span class="char-kicker__spark" aria-hidden="true">✦</span> 12-HOLE AUTOMATIC BUBBLE BLASTER</p>
-        <h1 id="char-title" aria-label="Bubble Gun"><span class="char-title__lead">BUBBLE</span><br /><span class="char-title__name">GUN</span><i aria-hidden="true">!</i></h1>
+        <div class="char-title-row">
+          <h1 id="char-title" aria-label="Bubble Gun"><span class="char-title__lead">BUBBLE</span><br /><span class="char-title__name">GUN</span><i aria-hidden="true">!</i></h1>
+          <div class="char-media char-media--copy">
+            <button class="char-media__card" type="button" data-media-open aria-haspopup="dialog" aria-controls="media-viewer" aria-label="Open the Bubble Gun gallery, four items">
+              <span class="char-media__thumb">
+                <img src="/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121" alt="" width="480" height="448" loading="lazy" />
+                <span class="char-media__play" aria-hidden="true">&#9654;</span>
+              </span>
+              <span class="char-media__label">GALLERY &middot; 4</span>
+            </button>
+          </div>
+        </div>
         <p class="char-intro">Pull the trigger for a continuous stream of bubbles with minimal effort. Made for parties, playdates and long afternoons outdoors.</p>
         <div class="char-tags" aria-label="Product details">
           <span>FOR KIDS</span><span>8000+ BUBBLES A MINUTE</span><span>INDOOR + OUTDOOR</span>
@@ -97,6 +108,15 @@
         <span class="char-spark char-spark--four" aria-hidden="true"></span>
         <span class="char-spark char-spark--five" aria-hidden="true"></span>
         <img class="char-stage__figure" src="/assets/images/redpoly/products/bubble-gun.png?v=bubble-20261121" alt="Blue and yellow bubble gun with a yellow wing, visible gears, a grey 12-hole bubble wand in the muzzle and a clear bottle of bubble water attached underneath." width="1200" height="1120" fetchpriority="high" />
+        <div class="char-media char-media--stage">
+          <button class="char-media__card" type="button" data-media-open aria-haspopup="dialog" aria-controls="media-viewer" aria-label="Open the Bubble Gun gallery, four items">
+            <span class="char-media__thumb">
+              <img src="/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121" alt="" width="480" height="448" loading="lazy" />
+              <span class="char-media__play" aria-hidden="true">&#9654;</span>
+            </span>
+            <span class="char-media__label">GALLERY &middot; 4</span>
+          </button>
+        </div>
         <span class="char-sticker" aria-hidden="true"><b>12</b><small>HOLE<br />WAND</small></span>
         <span class="char-stage__caption" aria-hidden="true">POINT. PULL. POP!</span>
       </div>
@@ -178,6 +198,27 @@
       <h2>FILL THE SKY<br /><span>FOR ₹499.</span></h2>
       <button class="char-buy char-buy--final add-btn" type="button" data-name="BUBBLE GUN" data-price="499">ADD THE BUBBLE GUN <span aria-hidden="true">↗</span></button>
     </section>
+
+    <div class="media-viewer" id="media-viewer" role="dialog" aria-modal="true" aria-labelledby="media-viewer-title" hidden>
+      <button class="media-viewer__backdrop" type="button" tabindex="-1" aria-hidden="true" data-media-close></button>
+      <div class="media-viewer__panel">
+        <header class="media-viewer__bar">
+          <p class="media-viewer__title" id="media-viewer-title">BUBBLE GUN GALLERY</p>
+          <p class="media-viewer__count"><span id="media-viewer-index">1</span> / <span id="media-viewer-total">4</span></p>
+          <button class="media-viewer__close" type="button" data-media-close aria-label="Close gallery">&#215;</button>
+        </header>
+        <div class="media-viewer__stage" id="media-viewer-stage"></div>
+        <p class="media-viewer__caption" id="media-viewer-caption"></p>
+        <button class="media-viewer__nav media-viewer__nav--prev" type="button" data-media-prev aria-label="Previous item">&#8592;</button>
+        <button class="media-viewer__nav media-viewer__nav--next" type="button" data-media-next aria-label="Next item">&#8594;</button>
+      </div>
+      <ul id="media-viewer-slides" hidden>
+        <li data-type="image" data-src="/assets/images/redpoly/products/bubble-gun-scene-1.png?v=bubble-scene-20261117" data-alt="Bubble Gun on a pool blue studio set with soap bubbles drifting and reflecting in the wet floor" data-caption="POOL BLUE &middot; STUDIO"></li>
+        <li data-type="image" data-src="/assets/images/redpoly/products/bubble-gun-scene-2.png?v=bubble-scene-20261117" data-alt="Bubble Gun firing a spray of bubbles across a bright blue set" data-caption="MID FIRE &middot; BUBBLES"></li>
+        <li data-type="image" data-src="/assets/images/redpoly/products/bubble-gun-scene-3.png?v=bubble-scene-20261117" data-alt="The yellow wing and gear dial of the Bubble Gun seen from the far side over wet blue" data-caption="THE WING &middot; GEARS"></li>
+        <li data-type="image" data-src="/assets/images/redpoly/products/bubble-gun.png?v=bubble-20261121" data-alt="Bubble Gun cut out, blue blaster with a yellow wing, gears and a bottle of bubble water" data-caption="OUT OF THE BOX &middot; &#8377;499"></li>
+      </ul>
+    </div>
   </main>
 
   <footer class="char-footer"><nav class="char-footer__links" aria-label="Help and policies"><a href="/help">HELP + CONTACT</a><a href="/help#shipping">SHIPPING</a><a href="/help#returns">RETURNS</a><a href="/help#cancellation">CANCEL</a><a href="/help#privacy">PRIVACY</a><a href="/help#terms">TERMS</a></nav>
