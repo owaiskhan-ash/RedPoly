@@ -582,3 +582,18 @@ html.viewer-open,html.viewer-open body{overflow:hidden}
   .char-media__card{transition:none}
   .char-media__card:hover,.char-media__card:focus-visible{transform:rotate(-5deg)}
 }
+
+/* Gallery card sits beside the product name once the hero stacks on phones */
+.char-title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.char-media--copy{display:none}
+@media(max-width:680px){
+  .char-media--stage{display:none}
+  .char-title-row{gap:10px;flex-wrap:wrap}
+  .char-title-row h1{flex:1 1 auto;min-width:0}
+  .char-media--copy{display:block;position:relative;top:auto;left:auto;bottom:auto;flex:0 0 auto;margin:0 0 6px auto;transform:rotate(-4deg)}
+  .char-media--copy .char-media__card{width:104px}
+  .char-media--copy .char-media__label{font-size:6px;letter-spacing:1px}
+}
+@media(max-width:400px){
+  .char-media--copy .char-media__card{width:92px}
+}
