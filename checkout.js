@@ -8,13 +8,13 @@
   var freeGiftFrom = 3500;
   // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved cart is dropped.
   var catalogue = {
-    'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' },
-    'STUNT PET': { price:599, image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' },
-    'MINI COOL CAR': { price:749, image:'/assets/images/redpoly/products/mini-cool-car-thumb.png?v=car-20261117' },
-    'CUTE DINOS GREEN': { price:249, image:'/assets/images/redpoly/products/cute-dinos-green-thumb.png?v=dinos-20261116' },
-    'CUTE DINOS RED': { price:249, image:'/assets/images/redpoly/products/cute-dinos-red-thumb.png?v=dinos-20261116' },
-    'CUTE DINOS TEAL': { price:249, image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.png?v=dinos-20261116' },
-    'CUTE DINOS TRIO': { price:549, image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.png?v=dinos-20261116' }
+    'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
+    'STUNT PET': { price:599, image:'/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122' },
+    'MINI COOL CAR': { price:749, image:'/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117' },
+    'CUTE DINOS GREEN': { price:249, image:'/assets/images/redpoly/products/cute-dinos-green-thumb.webp?v=dinos-20261116' },
+    'CUTE DINOS RED': { price:249, image:'/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
+    'CUTE DINOS TEAL': { price:249, image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
+    'CUTE DINOS TRIO': { price:549, image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' }
   };
   function inCatalogue(name, price) { return Object.prototype.hasOwnProperty.call(catalogue, name) && catalogue[name].price === Number(price); }
   // GST rate in percent. Shelf prices already include it, so checkout shows the GST share
