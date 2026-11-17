@@ -10,6 +10,8 @@ const closeButton = document.getElementById('reader-close');
 const prevButtons = [document.getElementById('reader-prev'), document.getElementById('reader-prev-label')];
 const nextButtons = [document.getElementById('reader-next'), document.getElementById('reader-next-label')];
 const readerStage = document.getElementById('reader-stage');
+const readerShop = document.getElementById('reader-shop');
+const readerShopItems = document.getElementById('reader-shop-items');
 
 let catalog = [];
 let activeIssue = null;
@@ -65,7 +67,7 @@ function renderIssueCard(issue) {
   image.loading = 'lazy';
   image.decoding = 'async';
   image.fetchPriority = 'low';
-  cover.append(image, make('span', 'issue-card__number', `ISSUE ${issue.number}`), make('span', 'issue-card__cover-label', 'THE ORIGIN ISSUE'));
+  cover.append(image, make('span', 'issue-card__number', `ISSUE ${issue.number}`), make('span', 'issue-card__cover-label', issue.label || `ISSUE ${issue.number}`));
 
   const body = make('span', 'issue-card__body');
   body.append(make('span', 'issue-card__eyebrow', `REDPOLY COMICS · NO. ${issue.number}`));
@@ -101,6 +103,30 @@ function updateShareUrl() {
   history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
 }
 
+function renderShop(page) {
+  const items = Array.isArray(page.shop) ? page.shop : [];
+  readerShopItems.replaceChildren();
+  if (!items.length) {
+    readerShop.hidden = true;
+    return;
+  }
+  items.forEach(item => {
+    const link = make('a', 'reader-shop__item');
+    link.href = item.href;
+    link.setAttribute('aria-label', `Shop ${item.name}, seen on this page`);
+    const thumb = make('img');
+    thumb.src = item.image;
+    thumb.alt = '';
+    thumb.loading = 'lazy';
+    thumb.decoding = 'async';
+    thumb.width = 30;
+    thumb.height = 30;
+    link.append(thumb, make('span', 'reader-shop__name', item.name), make('b', 'reader-shop__cta', '↗'));
+    readerShopItems.append(link);
+  });
+  readerShop.hidden = false;
+}
+
 function renderPage() {
   if (!activeManifest) return;
   const page = activeManifest.pages[activePage];
@@ -117,6 +143,7 @@ function renderPage() {
   readerProgress.style.width = `${(current / total) * 100}%`;
   prevButtons.forEach(button => { button.disabled = activePage === 0; });
   nextButtons.forEach(button => { button.disabled = activePage === total - 1; });
+  renderShop(page);
 }
 
 async function openIssue(issue, pageIndex = 0, trigger = null) {

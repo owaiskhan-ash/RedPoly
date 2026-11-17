@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>REDPOLY Stories: The Comic Vault</title>
-  <meta name="description" content="Read REDPOLY's original comic-book stories. Start with Issue 01: the funny, mysterious first meeting of Barsaat, Agni, Noor and Aarav." />
+  <meta name="description" content="Read REDPOLY's original comic-book stories: Issue 01, the night the crew met, and Issue 02, CC Does a Spin, with the stunt crew and the car from the future." />
   <meta name="theme-color" content="#0a0a0a" />
   <link rel="canonical" href="https://redpoly.justsimpleapps.online/stories" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/redpoly/favicon.png" />
@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=foot-20261117-v2" />
-  <link rel="stylesheet" href="/stories/stories.css?v=gst-20261116-v1" />
-  <script src="/stories/stories.js?v=stories-20261118" defer></script>
+  <link rel="stylesheet" href="/stories/stories.css?v=issue02-20261125" />
+  <script src="/stories/stories.js?v=issue02-20261125" defer></script>
 </head>
 <body class="stories-page">
   <header class="stories-header">
@@ -30,13 +30,13 @@
       <p class="stories-kicker"><span>REDPOLY COMICS</span><i aria-hidden="true"></i><span>ORIGINAL CREATURE STORIES</span></p>
       <h1 id="stories-title">THE <span>STORY VAULT</span></h1>
       <p class="stories-intro">Rainy nights. Strange arrivals. Big little adventures.<br />Pick an issue, turn a page, and meet the crew.</p>
-      <div class="stories-stamp" aria-hidden="true"><span>READ</span><strong>ISSUE<br />01</strong></div>
+      <div class="stories-stamp" aria-hidden="true"><span>READ</span><strong>2<br />ISSUES</strong></div>
     </section>
 
     <section class="issue-shelf" aria-labelledby="issue-shelf-title">
       <div class="issue-shelf__heading">
         <div><p class="stories-overline">THE COLLECTION</p><h2 id="issue-shelf-title">PICK YOUR <span>ISSUE.</span></h2></div>
-        <p id="issue-count" class="issue-count">THE FIRST SPLASH STARTS HERE</p>
+        <p id="issue-count" class="issue-count">TWO ISSUES · PICK A STORY</p>
       </div>
       <div id="issue-grid" class="issue-grid" aria-live="polite">
         <p class="shelf-status">Loading the story shelf…</p>
@@ -66,6 +66,11 @@
           <img id="reader-image" alt="" width="2048" height="2048" />
         </figure>
         <button class="reader-arrow" id="reader-next" type="button" aria-label="Next page">→</button>
+      </div>
+
+      <div class="reader-shop" id="reader-shop" hidden>
+        <p class="reader-shop__label">IN THIS SCENE</p>
+        <div class="reader-shop__items" id="reader-shop-items"></div>
       </div>
 
       <footer class="reader-footer">
