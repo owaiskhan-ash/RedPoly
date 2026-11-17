@@ -187,12 +187,13 @@ button{font-family:inherit;cursor:pointer}
 .crew__form button{background:var(--black);color:var(--lime);border:none;font-weight:900;font-size:13px;letter-spacing:.6px;padding:13px 18px;text-transform:uppercase;white-space:nowrap}
 .crew__form button:hover{background:#1a1a1a}
 .foot{background:var(--black);padding:18px 0 22px}
-.foot__inner{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.foot__inner{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:stretch;gap:14px 24px}
 .foot__brand{display:flex;flex-direction:column;align-items:flex-start;gap:7px;color:#fff}
 .foot__brand-logo{display:block;width:108px;height:auto;max-width:100%}
 .foot__brand span{font-family:'Archivo',sans-serif;font-size:11px;font-weight:600;letter-spacing:.4px;color:var(--grey);text-transform:none}
 .foot__more{font-family:'Permanent Marker',cursive;font-size:13px;line-height:1.2;color:var(--lime);text-align:right;transform:rotate(-3deg)}
-.foot__gst{margin:14px 0 0;text-align:right;font-family:'Archivo',sans-serif;font-size:7px;font-weight:700;letter-spacing:1.1px;color:#615c54}
+.foot__aside{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:8px}
+.foot__gst{margin:0;text-align:right;font-family:'Archivo',sans-serif;font-size:7px;font-weight:700;letter-spacing:1.1px;color:#615c54}
 
 /* toast */
 .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:var(--lime);color:var(--black);font-weight:900;font-size:13px;letter-spacing:.4px;text-transform:uppercase;padding:12px 18px;border:3px solid #000;box-shadow:5px 5px 0 #000;opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;z-index:50}
@@ -482,12 +483,12 @@ html.redpoly-splash-seen .brand-splash{display:none}
 @media(max-width:760px){.shop-discovery{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:13px}.shop-search{grid-column:1/-1}.shop-results{grid-column:1/-1}.shop-jumpbar{justify-content:flex-start;gap:20px;overflow-x:auto;min-height:36px;scrollbar-width:none}.shop-jumpbar::-webkit-scrollbar{display:none}.quick-view__layout{grid-template-columns:1fr;gap:15px;align-content:start;width:min(520px,100%);max-height:calc(100vh - 28px);padding:18px}.quick-view__image{max-height:42vh}.quick-view__copy h2{font-size:40px}.quick-view__price{margin-top:11px}.quick-view__actions{margin-top:13px}}
 @media(max-width:420px){.shop-discovery{grid-template-columns:1fr}.shop-search,.shop-results{grid-column:1}.shop-results{white-space:normal}.quick-view__actions{width:100%}.quick-view__add,.quick-view__details{flex:1;justify-content:center}}
 @media(prefers-reduced-motion:reduce){.shop-jumpbar a,.quick-view-trigger{transition:none}}
-.foot__links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 13px;max-width:540px}
+.foot__links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 13px;max-width:540px;align-self:end;justify-self:center}
 .foot__links a{color:#d5d0c6;font-size:8px;font-weight:900;letter-spacing:.65px}
 .foot__links a:hover,.foot__links a:focus-visible{color:var(--lime)}
 .foot__links a:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
 @media(hover:none){.quick-view-trigger{opacity:1;transform:none}}
-@media(max-width:640px){.foot__inner{align-items:flex-start;flex-direction:column}.foot__links{justify-content:flex-start}.foot__more{align-self:flex-end}}
+@media(max-width:640px){.foot__inner{grid-template-columns:1fr;align-items:flex-start;gap:12px}.foot__links{justify-content:flex-start;justify-self:start;align-self:start}.foot__aside{width:100%;gap:6px}}
 #figures,#accessories,#bundle-builder,#collections,#story{scroll-margin-top:145px}
 
 /* ===== Store UX update: one-row phone header, tappable hero boxes, limited buy button, stickers, GST-inclusive prices ===== */
