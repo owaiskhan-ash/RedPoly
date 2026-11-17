@@ -19,6 +19,7 @@ button{font-family:inherit;cursor:pointer}
 
 /* Brand-led sticky navigation for the storefront. */
 .site-header{position:sticky;top:0;z-index:80;border-bottom:1px solid rgba(244,240,230,.15);background:rgba(10,10,10,.88);backdrop-filter:blur(16px) saturate(1.15)}
+@keyframes site-menu-drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .site-header::before{content:"";position:absolute;inset:0 auto auto 0;width:100%;height:2px;background:linear-gradient(90deg,var(--lime),transparent 42%,var(--orange))}
 .site-header__inner{display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:82px}
 .site-header__brand{display:flex;flex:none;align-items:center;gap:12px;color:var(--lime)}
@@ -534,7 +535,9 @@ html.motion-ready .c-card__soon{transition:transform .2s ease}
   .site-header.is-menu-open .site-header__menu-icon i:nth-child(2){opacity:0}
   .site-header.is-menu-open .site-header__menu-icon i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
   .site-header__menu:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
-  .site-header.is-menu-open .site-menu{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding-top:12px;padding-bottom:16px;border-top:1px solid rgba(244,240,230,.14)}
+  .site-menu{position:absolute;top:100%;right:0;left:0;z-index:82;grid-template-columns:1fr 1fr;gap:9px;padding:14px max(16px,4vw) 18px;border-top:1px solid rgba(244,240,230,.14);border-bottom:2px solid var(--black);background:rgba(12,12,12,.98);box-shadow:0 18px 30px rgba(0,0,0,.5);backdrop-filter:blur(12px)}
+  .site-header.is-menu-open .site-menu{display:grid;animation:site-menu-drop .18s ease-out}
+  .site-header.is-menu-open .site-header__inner{position:relative;z-index:83}
   .site-menu a{display:flex;align-items:center;min-height:46px;padding:10px 12px;border:1px solid rgba(255,255,255,.16);background:#1c1a17;color:#fff;font-size:10px;font-weight:900;letter-spacing:1.1px;box-shadow:3px 3px 0 var(--lime)}
   .site-menu a:nth-child(even){box-shadow:3px 3px 0 var(--orange)}
   .site-menu a:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--lime)}
