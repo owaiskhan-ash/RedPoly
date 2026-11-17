@@ -7,6 +7,7 @@
     { "source": "/cute-dinos", "destination": "/products/cute-dinos" },
     { "source": "/mini-cool-car", "destination": "/products/mini-cool-car" },
     { "source": "/gel-storm", "destination": "/products/gel-storm" },
+    { "source": "/pixel-splash", "destination": "/products/pixel-splash" },
     { "source": "/help", "destination": "/help.html" }
   ],
   "redirects": [

@@ -674,14 +674,14 @@ html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out 
 @media(min-width:901px) and (max-width:1180px){.site-header__nav{gap:clamp(11px,1.5vw,20px)}}
 @media(prefers-reduced-motion:reduce){.shop-feature__swatches a{transition:none}.shop-feature__swatches a:hover,.shop-feature__swatches a:focus-visible{transform:none}}
 
-/* The whole shop in one panel: five product cards side by side */
+/* The whole shop in one panel: six product cards side by side */
 .shop-all{padding:clamp(44px,6.4vw,82px) 0;background:var(--cream)}
 .shop-all__head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 30px;margin-bottom:clamp(18px,2.6vw,28px)}
 .shop-all__eyebrow{display:inline-block;padding:6px 11px;border:2px solid var(--black);background:var(--lime);font-size:9px;font-weight:900;letter-spacing:1.7px}
 .shop-all__head h2{margin:11px 0 0;font:400 clamp(38px,5.6vw,72px)/.92 'Anton',sans-serif;letter-spacing:.4px}
 .shop-all__head h2 span{color:var(--orange)}
 .shop-all__note{max-width:36ch;margin:0;color:#4a443a;font-size:12px;font-weight:600;line-height:1.65}
-.shop-all__grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.shop-all__grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
 .shop-card{display:flex;flex-direction:column;border:2px solid var(--black);background:#fffdf7;box-shadow:6px 6px 0 var(--black);transition:transform .18s ease,box-shadow .18s ease}
 .shop-card:hover{transform:translateY(-4px);box-shadow:6px 10px 0 var(--black)}
 .shop-card__media{position:relative;display:grid;place-items:center;aspect-ratio:1;padding:9%;border-bottom:2px solid var(--black);background:var(--card-tint,#f2ece0)}
