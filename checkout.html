@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Demo Checkout | REDPOLY Creature Club</title>
-  <meta name="description" content="Review your REDPOLY bag and try the demo checkout. No payment is collected." />
+  <meta name="description" content="Review your REDPOLY cart and try the demo checkout. No payment is collected." />
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#c8ff00" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=shopgrid-20261117-v1" />
-  <link rel="stylesheet" href="/checkout.css?v=car-20261117-v1" />
-  <script src="/checkout.js?v=car-20261117-v1" defer></script>
+  <link rel="stylesheet" href="/checkout.css?v=cart-copy-20261117-v1" />
+  <script src="/checkout.js?v=cart-copy-20261117-v1" defer></script>
 </head>
 <body class="checkout-page">
   <header class="checkout-header"><a href="/" class="checkout-brand" aria-label="REDPOLY home"><img src="/assets/images/redpoly/redpoly-logo.png" alt="REDPOLY" width="1353" height="711" /><span>TOYS</span></a><a href="/#shop" class="checkout-back">KEEP EXPLORING <span aria-hidden="true">↗</span></a></header>
   <main class="checkout-main">
     <div class="checkout-kicker"><span>THE REDPOLY CHECKOUT</span><span>DEMO MODE · NO PAYMENT TAKEN</span></div>
-    <h1>YOUR BAG,<br /><span>YOUR WAY.</span></h1>
+    <h1>YOUR CART,<br /><span>YOUR WAY.</span></h1>
     <div class="checkout-layout" id="checkout-layout">
       <section class="checkout-form-panel" aria-labelledby="checkout-form-title">
         <p class="checkout-overline">01 / YOUR DETAILS</p>
@@ -66,11 +66,11 @@
         </form>
       </section>
       <aside class="checkout-summary" aria-labelledby="summary-title">
-        <div class="checkout-summary__top"><div><p class="checkout-overline">YOUR BAG</p><h2 id="summary-title">ORDER SUMMARY</h2></div><span class="checkout-summary__count" id="checkout-count"></span></div>
+        <div class="checkout-summary__top"><div><p class="checkout-overline">YOUR CART</p><h2 id="summary-title">ORDER SUMMARY</h2></div><span class="checkout-summary__count" id="checkout-count"></span></div>
         <div class="checkout-items" id="checkout-items"></div>
-        <p class="checkout-empty" id="checkout-empty" hidden>Your bag is empty. Add something from the shop first.</p>
+        <p class="checkout-empty" id="checkout-empty" hidden>Your cart is empty. Add something from the shop first.</p>
         <button class="checkout-undo" id="checkout-undo" type="button" hidden>UNDO REMOVAL</button>
-        <p class="checkout-bag-status" id="checkout-bag-status" role="status" aria-live="polite"></p>
+        <p class="checkout-cart-status" id="checkout-cart-status" role="status" aria-live="polite"></p>
         <div class="checkout-totals"><p><span>ITEMS (INCL. GST)</span><strong id="checkout-subtotal">₹0</strong></p><p class="checkout-shipping"><span id="checkout-shipping-label">SHIPPING</span><strong id="checkout-shipping-cost">₹30</strong></p><p class="checkout-gift"><span>FREE GIFT · ₹3,500+</span><strong id="checkout-gift">-</strong></p><p class="checkout-grand-total"><span>FINAL TOTAL</span><strong id="checkout-final-total">₹0</strong></p><p class="checkout-gst-note"><span id="checkout-gst-label">INCLUDES GST (12%)</span><strong id="checkout-gst">₹0</strong></p></div>
         <a class="checkout-return" href="/#shop">← ADD MORE FROM THE SHOP</a>
       </aside>

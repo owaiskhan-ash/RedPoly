@@ -68,7 +68,7 @@
   // Local cart shared across storefront and product pages. Checkout stays clearly marked as pending integration.
   // Free standard shipping starts at ₹1,000 and a free gift at ₹3,500; the same numbers live in checkout.js.
   // The catalogue is the list of products on sale. Add a product here (and in checkout.js) when it gets a page.
-  // Anything else found in a saved bag or saved list (for example an item that is no longer sold) is dropped.
+  // Anything else found in a saved cart or saved list (for example an item that is no longer sold) is dropped.
   var catalogue = {
     'BUBBLE GUN': { price:499, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' },
     'STUNT PET': { price:599, href:'/stunt-pet', image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' },
@@ -98,7 +98,7 @@
   cartToggle.className = 'cart-toggle';
   cartToggle.setAttribute('aria-haspopup', 'dialog');
   cartToggle.setAttribute('aria-expanded', 'false');
-  cartToggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 11.2h10.8L21 8H6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.5" fill="currentColor"/><circle cx="18" cy="19" r="1.5" fill="currentColor"/></svg><span>BAG</span><b class="cart-toggle__count">0</b>';
+  cartToggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 11.2h10.8L21 8H6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.5" fill="currentColor"/><circle cx="18" cy="19" r="1.5" fill="currentColor"/></svg><span>CART</span><b class="cart-toggle__count">0</b>';
   var homeHeader = document.querySelector('.site-header__inner');
   var characterHeader = document.querySelector('.char-nav');
   if (homeHeader) homeHeader.appendChild(cartToggle);
@@ -107,7 +107,7 @@
   var cartLayer = document.createElement('div');
   cartLayer.className = 'cart-layer';
   cartLayer.hidden = true;
-  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping bag"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR REDPOLY BAG</p><h2 id="cart-title">SHOPPING BAG <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping bag">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your bag is empty. Pick something from the shop to get started.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">BAG REWARDS</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE STANDARD SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free standard shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free standard shipping" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0"><span></span></div></div></div><div class="cart-reward" id="gift-reward"><span class="cart-reward__icon cart-reward__icon--gift" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11h17v9.5h-17z"/><path d="M2.5 7.5h19V11h-19z"/><path d="M12 7.5v13"/><path d="M12 7.5c-1.6 0-4.2-.6-4.2-2.6 0-1.4 1.2-2.2 2.4-2.2 1.6 0 1.8 2 1.8 4.8Zm0 0c1.6 0 4.2-.6 4.2-2.6 0-1.4-1.2-2.2-2.4-2.2-1.6 0-1.8 2-1.8 4.8Z"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE GIFT</strong><span id="gift-reward-copy">Add more to unlock a free gift</span></div><div class="cart-reward__track" id="gift-reward-track" role="progressbar" aria-label="Progress toward a free gift" aria-valuemin="0" aria-valuemax="3500" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS (INCL. GST)</span><strong id="cart-subtotal">₹0</strong></p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your bag is saved in this browser.</p></footer></aside></div>';
+  cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping cart"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR REDPOLY CART</p><h2 id="cart-title">SHOPPING CART <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping cart">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your cart is empty. Pick something from the shop to get started.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">CART REWARDS</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE STANDARD SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free standard shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free standard shipping" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0"><span></span></div></div></div><div class="cart-reward" id="gift-reward"><span class="cart-reward__icon cart-reward__icon--gift" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11h17v9.5h-17z"/><path d="M2.5 7.5h19V11h-19z"/><path d="M12 7.5v13"/><path d="M12 7.5c-1.6 0-4.2-.6-4.2-2.6 0-1.4 1.2-2.2 2.4-2.2 1.6 0 1.8 2 1.8 4.8Zm0 0c1.6 0 4.2-.6 4.2-2.6 0-1.4-1.2-2.2-2.4-2.2-1.6 0-1.8 2-1.8 4.8Z"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE GIFT</strong><span id="gift-reward-copy">Add more to unlock a free gift</span></div><div class="cart-reward__track" id="gift-reward-track" role="progressbar" aria-label="Progress toward a free gift" aria-valuemin="0" aria-valuemax="3500" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS (INCL. GST)</span><strong id="cart-subtotal">₹0</strong></p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your cart is saved in this browser.</p></footer></aside></div>';
   document.body.appendChild(cartLayer);
   var cartDrawer = cartLayer.querySelector('.cart-drawer');
   var cartItemsNode = cartLayer.querySelector('#cart-items');
@@ -145,7 +145,7 @@
     var countEls = cartLayer.querySelectorAll('.cart-drawer__count');
     Array.prototype.forEach.call(countEls, function (el) { el.textContent = quantity; });
     cartToggle.querySelector('.cart-toggle__count').textContent = quantity;
-    cartToggle.setAttribute('aria-label', 'Open shopping bag, ' + quantity + (quantity === 1 ? ' item' : ' items'));
+    cartToggle.setAttribute('aria-label', 'Open shopping cart, ' + quantity + (quantity === 1 ? ' item' : ' items'));
     cartItemsNode.textContent = '';
     cartItemsNode.style.flex = cartItems.length ? '1' : '0';
     cartEmptyNode.hidden = cartItems.length > 0;
@@ -175,7 +175,7 @@
     });
     if (availableSuggestions.length) {
       var suggestionPanel = document.createElement('section'); suggestionPanel.className = 'cart-recommendations';
-      var suggestionTitle = document.createElement('h3'); suggestionTitle.textContent = 'ADD TO YOUR BAG'; suggestionPanel.appendChild(suggestionTitle);
+      var suggestionTitle = document.createElement('h3'); suggestionTitle.textContent = 'ADD TO YOUR CART'; suggestionPanel.appendChild(suggestionTitle);
       availableSuggestions.slice(0, 2).forEach(function (suggestion) {
         var row = document.createElement('div'); row.className = 'cart-recommendation';
         var link = document.createElement('a'); link.href = suggestion.href; link.textContent = suggestion.name;
@@ -263,10 +263,10 @@
     renderCart();
   });
   renderCart();
-  var editBagUrl = new URL(window.location.href);
-  if (editBagUrl.searchParams.get('editBag') === '1') {
-    editBagUrl.searchParams.delete('editBag');
-    window.history.replaceState(null, '', editBagUrl.pathname + editBagUrl.search + editBagUrl.hash);
+  var editCartUrl = new URL(window.location.href);
+  if (editCartUrl.searchParams.get('editCart') === '1') {
+    editCartUrl.searchParams.delete('editCart');
+    window.history.replaceState(null, '', editCartUrl.pathname + editCartUrl.search + editCartUrl.hash);
     openCart();
   }
 
@@ -278,24 +278,25 @@
     stickyPrice.innerHTML='<small>YOUR PICK</small><strong></strong>';
     var priceNode = document.querySelector('.char-buy-row .char-price strong');
     if (priceNode) stickyPrice.querySelector('strong').textContent=priceNode.textContent;
-    var stickyButton = heroBuy.cloneNode(false); stickyButton.innerHTML='ADD TO BAG';
+    var stickyButton = heroBuy.cloneNode(false); stickyButton.innerHTML='ADD TO CART';
     stickyButton.classList.remove('add-btn');
     stickyButton.classList.add('mobile-buy-bar__button');
     stickyButton.type = 'button';
     stickyButton.tabIndex = -1;
-    stickyButton.setAttribute('aria-label','Add ' + (heroBuy.getAttribute('data-name') || 'product') + ' to bag');
+    stickyButton.setAttribute('aria-label','Add ' + (heroBuy.getAttribute('data-name') || 'product') + ' to cart');
     stickyButton.addEventListener('click', function () { addCartItem(heroBuy, stickyButton); });
     stickyBar.appendChild(stickyPrice); stickyBar.appendChild(stickyButton); document.body.appendChild(stickyBar);
     var finalCta = document.querySelector('.char-final-cta');
     var scrollFrame = false;
     function syncStickyBuy() {
       scrollFrame = false;
-      // On phones the photo comes first, so the bar is there whenever the main buy button is off screen
-      // (above or below), and steps aside for the bag drawer and the closing call to action.
+      // On phones the bar only appears once the main buy button has scrolled away above the viewport,
+      // so it never doubles up with the buy button that is still on screen, and it steps aside for
+      // the cart drawer and the closing call to action.
       var buyRect = heroBuy.getBoundingClientRect();
-      var buyOffScreen = buyRect.bottom < 0 || buyRect.top > window.innerHeight - 70;
+      var buyPassed = buyRect.bottom <= 0;
       var atFinal = finalCta && finalCta.getBoundingClientRect().top < window.innerHeight && finalCta.getBoundingClientRect().bottom > 0;
-      var visible = buyOffScreen && !atFinal && window.innerWidth <= 760;
+      var visible = buyPassed && !atFinal && window.innerWidth <= 760;
       stickyBar.classList.toggle('mobile-buy-bar--visible', visible);
       stickyBar.setAttribute('aria-hidden', visible ? 'false' : 'true');
       stickyButton.tabIndex = visible ? 0 : -1;
@@ -387,7 +388,7 @@
     checker.innerHTML='<div><p class="delivery-checker__eyebrow">DELIVERY CHECK</p><label for="'+id+'">Enter your 6-digit PIN code</label><p class="delivery-checker__hint">Estimated delivery: Standard 4 days · Express 2 days to valid PIN codes.</p></div><div class="delivery-checker__form"><input id="'+id+'" name="postal-code" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" placeholder="e.g. 400001" aria-describedby="'+id+'-status" /><button type="submit">CHECK PIN</button><p id="'+id+'-status" class="delivery-checker__status" role="status" aria-live="polite"></p></div>';
     policyWrap.appendChild(checker);
     var input=checker.querySelector('input'); var status=checker.querySelector('.delivery-checker__status');
-    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='Estimated delivery to PIN code ' + pin + ': Standard 4 days · Express 2 days. Standard shipping is free on bags of ₹1,000 or more, and bags of ₹3,500 or more get a free gift.';});
+    checker.addEventListener('submit',function(event){event.preventDefault();var pin=input.value.trim();if(!/^[1-9][0-9]{5}$/.test(pin)){status.textContent='Enter a valid 6-digit Indian PIN code.';input.setAttribute('aria-invalid','true');return;}input.removeAttribute('aria-invalid');status.textContent='Estimated delivery to PIN code ' + pin + ': Standard 4 days · Express 2 days. Standard shipping is free on orders of ₹1,000 or more, and orders of ₹3,500 or more get a free gift.';});
   });
 
   // Product search, category filtering, sorting, and accessible quick views on listing cards.
@@ -455,7 +456,7 @@
   var quickSubtitle = document.createElement('p'); quickSubtitle.className = 'quick-view__subtitle';
   var quickPrice = document.createElement('p'); quickPrice.className = 'quick-view__price';
   var quickActions = document.createElement('div'); quickActions.className = 'quick-view__actions';
-  var quickAdd = document.createElement('button'); quickAdd.type = 'button'; quickAdd.className = 'add-btn quick-view__add'; quickAdd.textContent = 'ADD TO BAG';
+  var quickAdd = document.createElement('button'); quickAdd.type = 'button'; quickAdd.className = 'add-btn quick-view__add'; quickAdd.textContent = 'ADD TO CART';
   var quickDetails = document.createElement('a'); quickDetails.className = 'quick-view__details'; quickDetails.textContent = 'VIEW PRODUCT DETAILS';
   quickActions.appendChild(quickAdd); quickActions.appendChild(quickDetails);
   quickCopy.appendChild(quickEyebrow); quickCopy.appendChild(quickTitle); quickCopy.appendChild(quickSubtitle); quickCopy.appendChild(quickPrice); quickCopy.appendChild(quickActions);
@@ -479,7 +480,7 @@
       quickPrice.textContent = (card.querySelector('.p-card__price') || {}).textContent || '';
       quickAdd.setAttribute('data-name', price ? price.getAttribute('data-name') : quickTitle.textContent);
       quickAdd.setAttribute('data-price', price ? price.getAttribute('data-price') : '');
-      quickAdd.setAttribute('aria-label', 'Add ' + quickTitle.textContent + ' to bag');
+      quickAdd.setAttribute('aria-label', 'Add ' + quickTitle.textContent + ' to cart');
       quickDetails.href = (card.querySelector('.p-card__product-link') || card.querySelector('.p-card__image-link')).href;
       if (quickView.showModal) quickView.showModal(); else quickView.setAttribute('open', '');
     });
@@ -487,7 +488,7 @@
   });
   quickAdd.addEventListener('click', function () { if (quickView.close) quickView.close(); });
 
-  // Add to bag and open the drawer.
+  // Add to cart and open the drawer.
   document.querySelectorAll('.add-btn').forEach(function (btn) {
     btn.addEventListener('click', function () { addCartItem(btn); });
   });
@@ -553,9 +554,9 @@
       var price = document.createElement('small'); price.textContent = money(item.price) + ' incl. GST';
       copy.appendChild(title); copy.appendChild(price); link.appendChild(copy);
       var actions = document.createElement('span'); actions.className = 'wish-item__actions';
-      var add = document.createElement('button'); add.type = 'button'; add.className = 'wish-item__add'; add.textContent = 'ADD TO BAG';
+      var add = document.createElement('button'); add.type = 'button'; add.className = 'wish-item__add'; add.textContent = 'ADD TO CART';
       add.setAttribute('data-name', item.name); add.setAttribute('data-price', String(item.price));
-      add.setAttribute('aria-label', 'Add ' + item.name + ' to bag');
+      add.setAttribute('aria-label', 'Add ' + item.name + ' to cart');
       add.addEventListener('click', function () { closeWish(); addCartItem(add); });
       var remove = document.createElement('button'); remove.type = 'button'; remove.className = 'wish-item__remove'; remove.textContent = 'REMOVE';
       remove.setAttribute('aria-label', 'Remove ' + item.name + ' from saved items');
