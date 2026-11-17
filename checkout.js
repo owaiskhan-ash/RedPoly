@@ -12,7 +12,7 @@
     'STUNT PET': { price:599, image:'/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122' },
     'MINI COOL CAR': { price:749, image:'/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117' },
     'GEL STORM': { price:1999, image:'/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121' },
-    'MECHA ROVER': { price:499, image:'/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261117' },
+    'MECHA ROVER': { price:499, image:'/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120' },
     'PIXEL SPLASH': { price:1749, image:'/assets/images/redpoly/products/pixel-splash-thumb.webp?v=pixel-20261117-v3' },
     'CUTE DINOS GREEN': { price:249, image:'/assets/images/redpoly/products/cute-dinos-green-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS RED': { price:249, image:'/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
