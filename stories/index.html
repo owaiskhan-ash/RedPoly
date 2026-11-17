@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=foot-20261117-v2" />
-  <link rel="stylesheet" href="/stories/stories.css?v=issue02-20261125" />
-  <script src="/stories/stories.js?v=issue02-20261125" defer></script>
+  <link rel="stylesheet" href="/stories/stories.css?v=comic-zoom-20261129" />
+  <script src="/stories/stories.js?v=comic-zoom-20261129" defer></script>
 </head>
 <body class="stories-page">
   <header class="stories-header">
@@ -62,10 +62,15 @@
 
       <div class="reader-stage" id="reader-stage">
         <button class="reader-arrow" id="reader-prev" type="button" aria-label="Previous page">←</button>
-        <figure class="reader-figure">
+        <figure class="reader-figure" id="reader-figure">
           <img id="reader-image" alt="" width="2048" height="2048" />
         </figure>
         <button class="reader-arrow" id="reader-next" type="button" aria-label="Next page">→</button>
+        <div class="reader-zoom" role="group" aria-label="Zoom controls">
+          <button class="reader-zoom__button" id="zoom-out" type="button" aria-label="Zoom out">−</button>
+          <button class="reader-zoom__level" id="zoom-level" type="button" aria-label="Reset zoom to fit the page">FIT</button>
+          <button class="reader-zoom__button" id="zoom-in" type="button" aria-label="Zoom in">+</button>
+        </div>
       </div>
 
       <div class="reader-shop" id="reader-shop" hidden>
