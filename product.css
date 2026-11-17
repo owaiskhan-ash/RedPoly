@@ -625,3 +625,55 @@ html.viewer-open,html.viewer-open body{overflow:hidden}
 @media(max-width:400px){
   .char-media--copy .char-media__card{width:92px}
 }
+
+/* Mecha Rover: red and blue robotic theme with panel seams, rivets and steel trims. */
+body.creature-page--mecha{--character-primary:#0f2a6b;--character-mid:#0b2055;--character-dark:#05102b;--character-deep:#081a41;--character-hot:#e2231a;--character-accent:#2f7dff;--character-light:#f2f7ff;--character-ink:#0a1a3c;--character-story:#060f28;--character-card-dark:#12306e;--character-glow:rgba(226,35,26,.5);--character-glow-soft:rgba(47,125,255,.55);--character-glow-faint:rgba(47,125,255,.22);--character-accent-soft:rgba(47,125,255,.18);--character-ring:rgba(120,175,255,.55);--character-accent-halo:rgba(226,35,26,.1);--character-accent-halo-strong:rgba(47,125,255,.06);--character-accent-inset:rgba(47,125,255,.12);--character-shadow:rgba(3,8,26,.6);--character-text-shadow:rgba(4,12,36,.5);--character-nav:rgba(5,14,40,.68);--character-soft-shade:rgba(6,16,44,.26);--character-muted:rgba(242,247,255,.78);--character-muted-strong:rgba(242,247,255,.95);--character-muted-border:rgba(242,247,255,.42);--character-muted-border-strong:rgba(242,247,255,.55);--character-card-ink:#0a1a3c;--character-button-shadow:rgba(3,8,26,.55);--character-final-ink:#0a1a3c;--character-accent-bright:#7fb3ff;--character-plate-top:#2f7dff;--character-plate-mid:#12306e;--character-plate-bottom:#05102b;--character-border:#040c22}
+body.creature-page--mecha .char-hero__texture{background-image:repeating-linear-gradient(0deg,rgba(120,175,255,.07) 0 1px,transparent 1px 46px),repeating-linear-gradient(90deg,rgba(120,175,255,.07) 0 1px,transparent 1px 46px),radial-gradient(circle at 78% 22%,rgba(226,35,26,.22),transparent 58%)}
+body.creature-page--mecha .char-hero::after{content:"";position:absolute;z-index:1;inset:auto 0 0 0;height:16px;background:repeating-linear-gradient(135deg,var(--character-hot) 0 26px,var(--character-dark) 26px 52px);opacity:.9;pointer-events:none}
+body.creature-page--mecha .char-overline,
+body.creature-page--mecha .char-kicker{color:var(--character-accent-bright)}
+body.creature-page--mecha .char-title__name{color:var(--character-light)}
+body.creature-page--mecha .char-title__lead{color:var(--character-hot)}
+body.creature-page--mecha .char-tags span{border:2px solid var(--character-ring);background:rgba(47,125,255,.16);box-shadow:inset 0 0 0 1px rgba(242,247,255,.12)}
+body.creature-page--mecha .char-price strong{color:var(--character-accent-bright)}
+body.creature-page--mecha .char-buy{background:var(--character-hot);box-shadow:0 6px 0 var(--character-dark)}
+body.creature-page--mecha .char-buy:hover,body.creature-page--mecha .char-buy:focus-visible{background:#ff3b2f}
+body.creature-page--mecha .char-stage{-webkit-mask-image:none;mask-image:none}
+/* the source photo is a white studio card, so present it as a framed lightbox instead of a floating cut-out */
+body.creature-page--mecha .char-stage__platform{display:none}
+body.creature-page--mecha .char-stage__figure--card{width:min(100%,560px);max-height:none;padding:0;border:4px solid var(--character-light);border-radius:16px;background:#fff;box-shadow:9px 9px 0 var(--character-hot),0 24px 46px var(--character-shadow);transform:rotate(-2deg);filter:none;object-fit:contain}
+body.creature-page--mecha .char-stage__figure--card::after{content:none}
+body.creature-page--mecha .figure-gallery__viewport .char-stage__figure--card,
+body.creature-page--mecha .media-viewer__stage .char-stage__figure{max-height:min(62vh,560px)}
+body.creature-page--mecha .char-detail-card{border:3px solid var(--character-dark);box-shadow:6px 6px 0 var(--character-hot)}
+body.creature-page--mecha .char-detail-card__num{font-family:'Anton',sans-serif}
+body.creature-page--mecha .char-file__stamp{background:var(--character-hot);color:var(--character-light)}
+body.creature-page--mecha .char-final-cta{background:linear-gradient(180deg,var(--character-deep),var(--character-dark))}
+body.creature-page--mecha .char-buy--final{background:var(--character-accent);box-shadow:0 6px 0 var(--character-dark)}
+body.creature-page--mecha .char-buy--final:hover,body.creature-page--mecha .char-buy--final:focus-visible{background:var(--character-accent-bright)}
+body.creature-page--mecha .char-box__photo{border:4px solid var(--character-light);box-shadow:8px 8px 0 var(--character-hot)}
+@media(max-width:900px){body.creature-page--mecha .char-hero::after{height:12px}body.creature-page--mecha .char-stage__figure--card{width:min(100%,460px)}}
+
+/* Mecha Rover uses the HD inventory gallery from the pixel theme, restyled in steel and red. */
+body.creature-page--mecha{--pixel-lime:#ffd24a;--pixel-water:#4b8dff;--pixel-ink:#040c22}
+body.creature-page--mecha .pixel-inventory{padding:0 clamp(20px,8vw,120px) 92px;background:var(--character-story);color:var(--character-light)}
+body.creature-page--mecha .pixel-inventory__head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;max-width:1220px;margin:0 auto 22px;padding-top:12px;border-top:4px solid rgba(75,141,255,.6)}
+body.creature-page--mecha .pixel-inventory__head p{margin:0;color:var(--pixel-lime);font:800 10px/1.6 'Archivo',sans-serif;letter-spacing:2px}
+body.creature-page--mecha .pixel-inventory__head h2{margin:9px 0 0;font:400 clamp(36px,5vw,66px)/.95 'Anton',sans-serif;letter-spacing:.4px;text-shadow:5px 5px 0 rgba(3,8,26,.7)}
+body.creature-page--mecha .pixel-inventory__head h2 span{color:var(--pixel-water)}
+body.creature-page--mecha .pixel-button{padding:13px 16px;border:3px solid var(--pixel-ink);border-radius:2px;background:var(--character-hot);color:var(--character-light);font:800 10px/1 'Archivo',sans-serif;letter-spacing:1.6px;box-shadow:5px 5px 0 var(--pixel-ink);cursor:pointer}
+body.creature-page--mecha .pixel-button:hover,body.creature-page--mecha .pixel-button:focus-visible{background:#ff3b2f}
+body.creature-page--mecha .pixel-inventory__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;max-width:1220px;margin:0 auto}
+body.creature-page--mecha .pixel-slot{display:block;border:5px solid var(--pixel-ink);background:#12306e;box-shadow:7px 7px 0 var(--pixel-ink);color:var(--character-light);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
+body.creature-page--mecha .pixel-slot:hover,body.creature-page--mecha .pixel-slot:focus-visible{transform:translateY(-4px);box-shadow:7px 11px 0 var(--pixel-ink);outline:none}
+body.creature-page--mecha .pixel-slot:focus-visible{border-color:var(--pixel-water)}
+body.creature-page--mecha .pixel-slot__frame{position:relative;display:grid;place-items:center;aspect-ratio:1;overflow:hidden;border-bottom:5px solid var(--pixel-ink);background:#f4f8ff}
+body.creature-page--mecha .pixel-slot__frame img{width:100%;height:100%;object-fit:contain;transition:transform .25s ease}
+body.creature-page--mecha .pixel-slot:hover .pixel-slot__frame img{transform:scale(1.04)}
+body.creature-page--mecha .pixel-slot__label{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 11px;font:800 9px/1.4 'Archivo',sans-serif;letter-spacing:1.4px}
+body.creature-page--mecha .pixel-slot__label b{color:var(--pixel-lime);font:800 10px/1 'Archivo',sans-serif}
+body.creature-page--mecha .pixel-slot__hint{position:absolute;right:8px;top:8px;padding:5px 7px;border:2px solid var(--pixel-ink);background:var(--pixel-lime);color:var(--pixel-ink);font:800 8px/1 'Archivo',sans-serif;letter-spacing:1px;box-shadow:3px 3px 0 var(--pixel-ink)}
+body.creature-page--mecha .pixel-note{max-width:1220px;margin:22px auto 0;color:rgba(242,247,255,.66);font-size:10px;font-weight:700;line-height:1.6}
+body.creature-page--mecha .media-viewer__panel{border:4px solid var(--character-hot);border-radius:4px;box-shadow:10px 10px 0 rgba(3,8,26,.7)}
+@media(max-width:900px){body.creature-page--mecha .pixel-inventory__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){body.creature-page--mecha .pixel-inventory__grid{grid-template-columns:repeat(2,minmax(0,1fr))}body.creature-page--mecha .pixel-inventory__head h2{font-size:clamp(30px,8vw,44px)}body.creature-page--mecha .pixel-slot__label{font-size:8px;letter-spacing:1px}}
