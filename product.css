@@ -384,7 +384,21 @@ html.motion-ready body.creature-page--pet .figure-gallery__viewport[data-photo="
 .char-box ul{display:grid;gap:9px;margin-top:20px;padding:0;list-style:none}
 .char-box li{position:relative;padding-left:22px;font-size:12px;font-weight:800;letter-spacing:.4px;line-height:1.45;color:var(--character-light)}
 .char-box li::before{content:"";position:absolute;left:0;top:.42em;width:9px;height:9px;border-radius:50%;background:var(--character-accent)}
+.char-video{padding:0 clamp(20px,8vw,120px) 80px;background:var(--character-story);color:var(--character-light)}
+.char-video__inner{display:grid;grid-template-columns:1.04fr .96fr;gap:clamp(26px,6vw,84px);align-items:center;max-width:1220px;margin:0 auto;padding:clamp(22px,4vw,46px);border:1px solid var(--character-muted-border);background:linear-gradient(135deg,var(--character-card-dark),var(--character-deep))}
+.char-video__copy h2{margin-top:12px;font:clamp(40px,5.2vw,70px)/.88 'Anton',sans-serif;letter-spacing:-.5px;color:var(--character-light)}
+.char-video__copy h2 span{color:var(--character-accent)}
+.char-video__copy>p:not(.char-overline){margin-top:18px;max-width:440px;color:var(--character-muted);font-size:15px;line-height:1.6}
+.char-video__list{display:grid;gap:9px;margin-top:20px;padding:0;list-style:none}
+.char-video__list li{position:relative;padding-left:22px;font-size:12px;font-weight:800;letter-spacing:.4px;line-height:1.45;color:var(--character-light)}
+.char-video__list li::before{content:"";position:absolute;left:0;top:.42em;width:9px;height:9px;border-radius:50%;background:var(--character-accent)}
+.char-video__frame{justify-self:center;width:100%;max-width:420px;margin:0}
+.char-video__frame video{display:block;width:100%;aspect-ratio:4/5;max-height:70vh;object-fit:contain;background:#05070c;border:2px solid var(--character-muted-border-strong,rgba(255,255,255,.5));box-shadow:0 18px 40px var(--character-shadow)}
+.char-video__frame figcaption{margin-top:12px;color:var(--character-muted);font-size:8px;font-weight:900;letter-spacing:1.3px;text-align:center}
 @media(max-width:860px){
+  .char-video{padding-bottom:56px}
+  .char-video__inner{grid-template-columns:1fr;gap:24px}
+  .char-video__frame{order:-1;max-width:340px}
   .char-box{padding-bottom:56px}
   .char-box__inner{grid-template-columns:1fr;gap:24px}
   .char-box__photo{max-width:520px;margin:0 auto}
