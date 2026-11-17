@@ -351,10 +351,6 @@
       controls.addEventListener('pointerenter', warmAltPhoto, { once:true });
       controls.addEventListener('focusin', warmAltPhoto, { once:true });
       controls.addEventListener('touchstart', warmAltPhoto, { once:true, passive:true });
-    } else {
-      [['full','FULL VIEW'],['detail','DETAIL CROP']].forEach(function (view, index) {
-        var button = document.createElement('button'); button.type = 'button'; button.setAttribute('data-figure-view', view[0]); button.setAttribute('aria-pressed', index === 0 ? 'true' : 'false'); button.textContent = view[1]; controls.appendChild(button);
-      });
     }
     var zoomButton = document.createElement('button'); zoomButton.type = 'button'; zoomButton.className = 'figure-gallery__zoom'; zoomButton.textContent = 'ZOOM'; zoomButton.setAttribute('aria-label', 'Open a larger view of this product'); controls.appendChild(zoomButton);
     viewport.appendChild(controls);
@@ -367,13 +363,6 @@
         controls.querySelectorAll('[data-figure-photo]').forEach(function (button) { button.setAttribute('aria-pressed', button === photoButton ? 'true' : 'false'); });
         return;
       }
-      var viewButton = event.target.closest('[data-figure-view]');
-      if (!viewButton) return;
-      viewport.setAttribute('data-view', viewButton.getAttribute('data-figure-view'));
-      controls.querySelectorAll('[data-figure-view]').forEach(function (button) {
-        var active = button === viewButton;
-        button.setAttribute('aria-pressed', active ? 'true' : 'false');
-      });
     });
     var zoom = document.createElement('dialog'); zoom.className = 'product-zoom'; zoom.setAttribute('aria-label', 'Zoomed product image');
     var close = document.createElement('button'); close.type = 'button'; close.className = 'product-zoom__close'; close.textContent = 'CLOSE ×'; close.setAttribute('aria-label', 'Close zoomed product image');
