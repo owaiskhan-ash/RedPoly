@@ -769,11 +769,106 @@
       productStage.style.setProperty('--stage-tilt-y', '0deg');
     });
   }
-  // Gallery clips autoplay silently on the product pages; leave them still for reduced-motion visitors.
-  if (reduceMotion) {
-    document.querySelectorAll('.char-gallery video[autoplay]').forEach(function (video) {
-      video.removeAttribute('autoplay');
-      video.pause();
+  // Comic media card on a product page: opens a rounded viewer with previous and next slides.
+  (function () {
+    var viewer = document.getElementById('media-viewer');
+    var slidesNode = document.getElementById('media-viewer-slides');
+    var openers = document.querySelectorAll('[data-media-open]');
+    if (!viewer || !slidesNode || !openers.length) return;
+    var stage = viewer.querySelector('#media-viewer-stage');
+    var caption = viewer.querySelector('#media-viewer-caption');
+    var indexNode = viewer.querySelector('#media-viewer-index');
+    var totalNode = viewer.querySelector('#media-viewer-total');
+    var slides = Array.prototype.map.call(slidesNode.querySelectorAll('li'), function (item) {
+      return {
+        type: item.getAttribute('data-type') === 'video' ? 'video' : 'image',
+        src: item.getAttribute('data-src') || '',
+        alt: item.getAttribute('data-alt') || '',
+        caption: item.getAttribute('data-caption') || ''
+      };
     });
-  }
+    if (!slides.length) return;
+    var index = 0;
+    var opener = null;
+
+    function clearStage() {
+      var video = stage.querySelector('video');
+      if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
+      stage.textContent = '';
+    }
+
+    function render() {
+      clearStage();
+      var slide = slides[index];
+      var media;
+      if (slide.type === 'video') {
+        media = document.createElement('video');
+        media.controls = true;
+        media.muted = true;
+        media.loop = true;
+        media.preload = 'metadata';
+        media.setAttribute('playsinline', '');
+        media.setAttribute('aria-label', slide.caption);
+        if (!reduceMotion) media.autoplay = true;
+        var source = document.createElement('source');
+        source.src = slide.src;
+        source.type = 'video/mp4';
+        media.appendChild(source);
+      } else {
+        media = document.createElement('img');
+        media.src = slide.src;
+        media.alt = slide.alt;
+        media.loading = 'lazy';
+      }
+      stage.appendChild(media);
+      caption.textContent = slide.caption;
+      indexNode.textContent = String(index + 1);
+      totalNode.textContent = String(slides.length);
+    }
+
+    function open(event) {
+      opener = event.currentTarget;
+      index = 0;
+      render();
+      viewer.hidden = false;
+      document.documentElement.classList.add('viewer-open');
+      viewer.querySelector('.media-viewer__close').focus();
+    }
+
+    function close() {
+      clearStage();
+      viewer.hidden = true;
+      document.documentElement.classList.remove('viewer-open');
+      if (opener) opener.focus();
+    }
+
+    function step(direction) {
+      index = (index + direction + slides.length) % slides.length;
+      render();
+    }
+
+    Array.prototype.forEach.call(openers, function (button) { button.addEventListener('click', open); });
+    Array.prototype.forEach.call(viewer.querySelectorAll('[data-media-close]'), function (button) {
+      button.addEventListener('click', close);
+    });
+    viewer.querySelector('[data-media-prev]').addEventListener('click', function () { step(-1); });
+    viewer.querySelector('[data-media-next]').addEventListener('click', function () { step(1); });
+    viewer.addEventListener('click', function (event) { if (event.target === viewer) close(); });
+    document.addEventListener('keydown', function (event) {
+      if (viewer.hidden) return;
+      if (event.key === 'Escape') { event.preventDefault(); close(); return; }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1); return; }
+      if (event.key === 'ArrowRight') { event.preventDefault(); step(1); return; }
+      if (event.key !== 'Tab') return;
+      var focusable = Array.prototype.filter.call(
+        viewer.querySelectorAll('button, video, [tabindex]:not([tabindex="-1"])'),
+        function (element) { return !element.disabled && element.offsetParent !== null; }
+      );
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+  })();
 })();
