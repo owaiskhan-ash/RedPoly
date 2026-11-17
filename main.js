@@ -70,14 +70,14 @@
   // The catalogue is the list of products on sale. Add a product here (and in checkout.js) when it gets a page.
   // Anything else found in a saved cart or saved list (for example an item that is no longer sold) is dropped.
   var catalogue = {
-    'BUBBLE GUN': { price:499, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' },
-    'STUNT PET': { price:599, href:'/stunt-pet', image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' },
-    'MINI COOL CAR': { price:749, href:'/mini-cool-car', image:'/assets/images/redpoly/products/mini-cool-car-thumb.png?v=car-20261117' },
+    'BUBBLE GUN': { price:499, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
+    'STUNT PET': { price:599, href:'/stunt-pet', image:'/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122' },
+    'MINI COOL CAR': { price:749, href:'/mini-cool-car', image:'/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117' },
     // Cute Dinos sells as one dino in any of three colours (₹249) or the set of all three (₹549).
-    'CUTE DINOS GREEN': { price:249, href:'/cute-dinos?colour=green', image:'/assets/images/redpoly/products/cute-dinos-green-thumb.png?v=dinos-20261116' },
-    'CUTE DINOS RED': { price:249, href:'/cute-dinos?colour=red', image:'/assets/images/redpoly/products/cute-dinos-red-thumb.png?v=dinos-20261116' },
-    'CUTE DINOS TEAL': { price:249, href:'/cute-dinos?colour=teal', image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.png?v=dinos-20261116' },
-    'CUTE DINOS TRIO': { price:549, href:'/cute-dinos?pack=trio', image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.png?v=dinos-20261116' }
+    'CUTE DINOS GREEN': { price:249, href:'/cute-dinos?colour=green', image:'/assets/images/redpoly/products/cute-dinos-green-thumb.webp?v=dinos-20261116' },
+    'CUTE DINOS RED': { price:249, href:'/cute-dinos?colour=red', image:'/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
+    'CUTE DINOS TEAL': { price:249, href:'/cute-dinos?colour=teal', image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
+    'CUTE DINOS TRIO': { price:549, href:'/cute-dinos?pack=trio', image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' }
   };
   function inCatalogue(name, price) { return Object.prototype.hasOwnProperty.call(catalogue, name) && catalogue[name].price === Number(price); }
   var cartStorageKey = 'redpoly-cart-v1';
