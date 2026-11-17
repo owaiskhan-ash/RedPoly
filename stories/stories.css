@@ -56,7 +56,8 @@
 .issue-card__cta b{font-size:17px;line-height:.8}
 .shelf-status{grid-column:1/-1;padding:25px;color:#c7c2ce;font-size:13px}
 .shelf-status--error{border:1px solid #7a3630;color:#ffd2c9}
-.stories-footer{display:flex;justify-content:space-between;gap:20px;padding:20px 0 28px;border-top:1px solid rgba(244,240,230,.16);color:#a7a3ad;font-size:8px;font-weight:900;letter-spacing:1px}
+.stories-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;padding:20px 0 28px;border-top:1px solid rgba(244,240,230,.16);color:#a7a3ad;font-size:8px;font-weight:900;letter-spacing:1px}
+.stories-footer__gst{width:100%;text-align:right;font-size:7px;font-weight:800;letter-spacing:1.1px;color:#615d69}
 .stories-footer>a{color:var(--lime)}
 .stories-footer>a span{color:#a7a3ad}
 

@@ -199,7 +199,8 @@ body.creature-page--aarav .char-detail-card:nth-child(3)::after{background:radia
 .char-final-cta h2{margin-top:14px;color:var(--character-ink);font-size:clamp(62px,9vw,115px)}
 .char-final-cta h2 span{color:var(--character-light)}
 .char-buy--final{margin-top:26px;background:var(--character-accent)}
-.char-footer{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:23px clamp(20px,5vw,76px);background:#0b0809}
+.char-footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;padding:23px clamp(20px,5vw,76px);background:#0b0809}
+.char-footer__gst{order:9;width:100%;text-align:right;font-size:7px;font-weight:800;letter-spacing:1.2px;color:#5c5750}
 .char-footer .char-wordmark__logo{width:86px}
 .char-footer .char-wordmark span{font-size:7px}
 body.creature-page--barsaat .char-hero h1{font-size:clamp(82px,12.4vw,168px)}
