@@ -1,4 +1,4 @@
-# REDPOLY — Monsoon Mischief
+# REDPOLY: Monsoon Mischief
 
 **Description:** REDPOLY is a small storefront. [Visit redpoly.justsimpleapps.online](https://redpoly.justsimpleapps.online/).
 

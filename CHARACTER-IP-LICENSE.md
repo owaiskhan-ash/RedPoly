@@ -1,4 +1,4 @@
-# REDPOLY Character IP — All Rights Reserved
+# REDPOLY Character IP: All Rights Reserved
 
 **Copyright © 2026 REDPOLY. All rights reserved.**
 
