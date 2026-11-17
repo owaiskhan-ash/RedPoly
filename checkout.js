@@ -2,13 +2,15 @@
   var cartKey = 'redpoly-cart-v1';
   var orderKey = 'redpoly-demo-order-v1';
   var shippingMethodKey = 'redpoly-shipping-method-v1';
-  // Free-shipping thresholds on the item subtotal. Keep these in step with the bag drawer in main.js.
-  var freeStandardFrom = 1499;
+  // Free-shipping and free-gift thresholds on the item subtotal. Keep these in step with the bag drawer in main.js.
+  var freeStandardFrom = 1000;
   var freeExpressFrom = 5000;
+  var freeGiftFrom = 3500;
   // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved bag is dropped.
   var catalogue = {
     'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.png?v=bubble-20261121' },
     'STUNT PET': { price:599, image:'/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122' },
+    'MINI COOL CAR': { price:749, image:'/assets/images/redpoly/products/mini-cool-car-thumb.png?v=car-20261117' },
     'CUTE DINOS GREEN': { price:249, image:'/assets/images/redpoly/products/cute-dinos-green-thumb.png?v=dinos-20261116' },
     'CUTE DINOS RED': { price:249, image:'/assets/images/redpoly/products/cute-dinos-red-thumb.png?v=dinos-20261116' },
     'CUTE DINOS TEAL': { price:249, image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.png?v=dinos-20261116' },
@@ -50,6 +52,7 @@
   var gstLabelNode = document.getElementById('checkout-gst-label');
   var shippingLabelNode = document.getElementById('checkout-shipping-label');
   var shippingCostNode = document.getElementById('checkout-shipping-cost');
+  var giftNode = document.getElementById('checkout-gift');
   var finalTotalNode = document.getElementById('checkout-final-total');
   var shippingStatus = document.getElementById('shipping-method-status');
   var shippingOptions = Array.prototype.slice.call(document.querySelectorAll('input[name="shipping-method"]'));
@@ -146,6 +149,7 @@
     subtotalNode.textContent = money(subtotal);
     gstLabelNode.textContent = 'INCLUDES GST (' + gstRate + '%)';
     gstNode.textContent = money(gst);
+    if (giftNode) giftNode.textContent = !items.length ? '-' : (subtotal >= freeGiftFrom ? 'INCLUDED' : money(freeGiftFrom - subtotal) + ' AWAY');
     shippingLabelNode.textContent = 'SHIPPING · ' + method.toUpperCase();
     shippingCostNode.textContent = !items.length ? '-' : (freeShipping ? 'FREE' : money(shipping));
     finalTotalNode.textContent = money(items.length ? subtotal + shipping : 0);
@@ -156,7 +160,7 @@
       var input = option.querySelector('input');
       option.classList.toggle('is-selected', !!input && input.checked);
     });
-    if (!items.length) shippingStatus.textContent = 'Standard shipping is free on bags of ' + money(freeStandardFrom) + ' or more.';
+    if (!items.length) shippingStatus.textContent = 'Standard shipping is free on bags of ' + money(freeStandardFrom) + ' or more, and bags over ' + money(freeGiftFrom) + ' get a free gift.';
     else if (expressFree) shippingStatus.textContent = 'Free shipping unlocked on both Standard and Express.';
     else if (standardFree) shippingStatus.textContent = 'Free Standard shipping unlocked. Express is free from ' + money(freeExpressFrom) + '.';
     else shippingStatus.textContent = 'Add ' + money(freeStandardFrom - subtotal) + ' more for free Standard shipping.';
