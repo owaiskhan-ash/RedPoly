@@ -11,6 +11,7 @@
     'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
     'STUNT PET': { price:599, image:'/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122' },
     'MINI COOL CAR': { price:749, image:'/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117' },
+    'GEL STORM': { price:1999, image:'/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261120' },
     'CUTE DINOS GREEN': { price:249, image:'/assets/images/redpoly/products/cute-dinos-green-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS RED': { price:249, image:'/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TEAL': { price:249, image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
