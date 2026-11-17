@@ -365,7 +365,7 @@ body.creature-page--bubble .char-final-cta h2 span{color:#1034c4}
 body.creature-page--pet .char-hero h1{font-size:clamp(82px,12.4vw,168px);line-height:.8}
 body.creature-page--pet .char-stage__figure{width:min(108%,600px);max-height:470px;transform:none}
 body.creature-page--pet .figure-gallery__viewport[data-photo="1"] .char-stage__figure{width:min(104%,580px)}
-body.creature-page--pet .char-file__portrait img{filter:drop-shadow(0 12px 10px rgba(0,0,0,.35))}
+body.creature-page--pet .char-file__portrait img:not(.char-file__photo){filter:drop-shadow(0 12px 10px rgba(0,0,0,.35))}
 body.creature-page--pet .char-sticker b{font-size:30px}
 body.creature-page--pet .char-final-cta h2 span{color:#b3243f}
 html.motion-ready body.creature-page--pet .char-stage__figure{animation-name:stunt-pet-roll;animation-duration:2.6s}
@@ -517,12 +517,19 @@ html.motion-ready body.creature-page--dino .char-stage__tracks i:nth-child(3){an
   58%{opacity:.52;transform:scale(1) rotate(var(--tilt,0deg))}
   76%,100%{opacity:0;transform:scale(1) rotate(var(--tilt,0deg))}
 }
+body.creature-page--pet .char-file__portrait{display:block;min-height:472px;padding:0;background:#2a0f1c}
+body.creature-page--pet .char-file__photo{position:absolute;inset:0;z-index:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:50% 62%;border:0;box-shadow:none;transform:none;filter:none}
+body.creature-page--pet .char-file__portrait::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(30,10,21,.42),rgba(30,10,21,0) 24%),linear-gradient(0deg,rgba(30,10,21,.52),rgba(30,10,21,0) 28%)}
+body.creature-page--pet .char-file__no{top:14px;left:16px;z-index:3}
+body.creature-page--pet .char-file__stamp{z-index:3;bottom:16px;right:16px;background:rgba(30,10,21,.42)}
 @media(max-width:680px){
   body.creature-page--dino .char-file__portrait{min-height:400px;padding:0}
   body.creature-page--dino .char-file__brandmark{top:12px;width:min(52%,142px)}
   body.creature-page--dino .char-file__no{bottom:12px;left:14px;font-size:44px}
   body.creature-page--dino .char-file__stamp{bottom:14px;right:14px}
   body.creature-page--dino .char-file__photo{object-position:50% 44%}
+  body.creature-page--pet .char-file__portrait{min-height:400px}
+  body.creature-page--pet .char-file__no{font-size:44px}
   .char-stage__tracks i{width:22px;height:26px}
   .char-stage__stomp{bottom:4%}
   .char-stage__tracks{bottom:4%}
@@ -530,6 +537,7 @@ html.motion-ready body.creature-page--dino .char-stage__tracks i:nth-child(3){an
 @media(max-width:380px){
   body.creature-page--car .char-file__portrait{min-height:340px}
   body.creature-page--dino .char-file__portrait{min-height:352px}
+  body.creature-page--pet .char-file__portrait{min-height:340px}
   body.creature-page--dino .char-file__brandmark{width:min(56%,126px)}
   body.creature-page--dino .char-file__no{font-size:38px}
 }
