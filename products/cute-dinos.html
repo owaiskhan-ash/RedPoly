@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=car-20261117-v1" />
-  <link rel="stylesheet" href="/product.css?v=car-stage-20261117-v1" />
+  <link rel="stylesheet" href="/product.css?v=gallery-media-20261117-v1" />
   <link rel="stylesheet" href="/accessories.css?v=car-20261117-v1" />
   <meta property="og:type" content="product" />
   <meta property="og:site_name" content="REDPOLY" />
@@ -172,6 +172,36 @@
       <div class="char-hero__scribble" aria-hidden="true">NO BATTERIES</div>
     </section>
 
+    <section class="char-gallery" id="gallery" aria-labelledby="gallery-title">
+      <div class="char-gallery__inner">
+        <header class="char-gallery__head">
+          <div>
+            <p class="char-gallery__eyebrow">IN MOTION</p>
+            <h2 id="gallery-title">SEE IT <span>WALK.</span></h2>
+          </div>
+          <p class="char-gallery__note">Press play for the walk, or flip through the stills of the same toy.</p>
+        </header>
+        <div class="char-gallery__grid">
+          <figure class="char-gallery__frame char-gallery__video">
+            <video controls playsinline muted loop autoplay preload="metadata" aria-label="Cute Dinos walking clip">
+              <source src="https://vycvmsqjseeiiotjjbep.supabase.co/storage/v1/object/public/Red%20POly%20Website/Prodcuts/Dino%20Walk/Dino%20Vi.mp4" type="video/mp4" />
+            </video>
+            <figcaption class="char-gallery__strip"><span>DINO WALK · CLIP</span><span>SOUND OFF</span></figcaption>
+          </figure>
+          <div class="char-gallery__col">
+            <figure class="char-gallery__frame char-gallery__still">
+              <img src="/assets/images/redpoly/products/cute-dinos-trio.png?v=dinos-20261116" alt="Cute Dinos in green, red and teal, lined up together." width="1560" height="980" loading="lazy" />
+              <figcaption class="char-gallery__strip"><span>THE CREW</span><span>3 COLOURS</span></figcaption>
+            </figure>
+            <figure class="char-gallery__frame char-gallery__still char-gallery__still--photo">
+              <img src="/assets/images/redpoly/products/cute-dinos-sand.jpg?v=dinos-immersive-20261116" alt="The three Cute Dinos standing together on a sunlit sandbank." width="900" height="1206" loading="lazy" />
+              <figcaption class="char-gallery__strip"><span>SAND DAY</span><span>STILL</span></figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="char-story" id="char-story" aria-labelledby="char-story-title">
       <div class="char-story__eyebrow"><span>HOW IT WORKS</span><span>REDPOLY / TOYS</span></div>
       <div class="char-story__grid">
@@ -260,7 +290,7 @@
     <span class="char-footer__gst">GSTIN 27BJGPK5062E1ZB</span>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/main.js?v=car-20261117-v1" defer></script>
+  <script src="/main.js?v=gallery-media-20261117-v1" defer></script>
   <script src="/products/cute-dinos.js?v=dinos-launch-20261116-v1" defer></script>
 </body>
 </html>

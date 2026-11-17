@@ -769,4 +769,11 @@
       productStage.style.setProperty('--stage-tilt-y', '0deg');
     });
   }
+  // Gallery clips autoplay silently on the product pages; leave them still for reduced-motion visitors.
+  if (reduceMotion) {
+    document.querySelectorAll('.char-gallery video[autoplay]').forEach(function (video) {
+      video.removeAttribute('autoplay');
+      video.pause();
+    });
+  }
 })();
