@@ -78,7 +78,18 @@
 
       <div class="char-hero__copy">
         <p class="char-kicker"><span class="char-kicker__spark" aria-hidden="true">✦</span> VOICE CONTROL ROLLING TOY</p>
-        <h1 id="char-title" aria-label="Stunt Pet"><span class="char-title__lead">STUNT</span><br /><span class="char-title__name">PET</span><i aria-hidden="true">!</i></h1>
+        <div class="char-title-row">
+          <h1 id="char-title" aria-label="Stunt Pet"><span class="char-title__lead">STUNT</span><br /><span class="char-title__name">PET</span><i aria-hidden="true">!</i></h1>
+          <div class="char-media char-media--copy">
+            <button class="char-media__card" type="button" data-media-open aria-haspopup="dialog" aria-controls="media-viewer" aria-label="Open the Stunt Pet gallery, five items including the box">
+              <span class="char-media__thumb">
+                <img src="/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122" alt="" width="480" height="367" loading="lazy" />
+                <span class="char-media__play" aria-hidden="true">&#9654;</span>
+              </span>
+              <span class="char-media__label">GALLERY &middot; 5</span>
+            </button>
+          </div>
+        </div>
         <p class="char-intro">Clap your hands or call out, and this little rabbit gets moving. It rolls along on two big carrot wheels, with light and music.</p>
         <div class="char-tags" aria-label="Product details">
           <span>CLAP OR CALL</span><span>LIGHT + MUSIC</span><span>AGES 3+</span>
@@ -100,6 +111,15 @@
         <span class="char-spark char-spark--four" aria-hidden="true">♪</span>
         <span class="char-spark char-spark--five" aria-hidden="true">✦</span>
         <img class="char-stage__figure" src="/assets/images/redpoly/products/stunt-pet.png?v=pet-20261122" alt="Stunt Pet out of the box: a coral rabbit toy with a winking cream face and white ears, holding two large orange carrot wheels on white arms." width="1300" height="993" fetchpriority="high" data-label="IN ACTION" data-alt-label="IN THE BOX" data-alt-src="/assets/images/redpoly/products/stunt-pet-box.png?v=pet-20261122" data-alt-text="Stunt Pet in its blue retail box. The box reads Stunt Pets, voice control, clap your hands or call out to me, get me moving, and 3+ years." />
+        <div class="char-media char-media--stage">
+          <button class="char-media__card" type="button" data-media-open aria-haspopup="dialog" aria-controls="media-viewer" aria-label="Open the Stunt Pet gallery, five items including the box">
+            <span class="char-media__thumb">
+              <img src="/assets/images/redpoly/products/stunt-pet-thumb.png?v=pet-20261122" alt="" width="480" height="367" loading="lazy" />
+              <span class="char-media__play" aria-hidden="true">&#9654;</span>
+            </span>
+            <span class="char-media__label">GALLERY &middot; 5</span>
+          </button>
+        </div>
         <span class="char-sticker" aria-hidden="true"><b>CLAP</b><small>TO<br />START</small></span>
         <span class="char-stage__caption" aria-hidden="true">CLAP. CALL. GO!</span>
       </div>
@@ -200,6 +220,28 @@
       <h2>GET IT MOVING<br /><span>FOR ₹599.</span></h2>
       <button class="char-buy char-buy--final add-btn" type="button" data-name="STUNT PET" data-price="599">ADD THE STUNT PET <span aria-hidden="true">↗</span></button>
     </section>
+
+    <div class="media-viewer" id="media-viewer" role="dialog" aria-modal="true" aria-labelledby="media-viewer-title" hidden>
+      <button class="media-viewer__backdrop" type="button" tabindex="-1" aria-hidden="true" data-media-close></button>
+      <div class="media-viewer__panel">
+        <header class="media-viewer__bar">
+          <p class="media-viewer__title" id="media-viewer-title">STUNT PET GALLERY</p>
+          <p class="media-viewer__count"><span id="media-viewer-index">1</span> / <span id="media-viewer-total">5</span></p>
+          <button class="media-viewer__close" type="button" data-media-close aria-label="Close gallery">&#215;</button>
+        </header>
+        <div class="media-viewer__stage" id="media-viewer-stage"></div>
+        <p class="media-viewer__caption" id="media-viewer-caption"></p>
+        <button class="media-viewer__nav media-viewer__nav--prev" type="button" data-media-prev aria-label="Previous item">&#8592;</button>
+        <button class="media-viewer__nav media-viewer__nav--next" type="button" data-media-next aria-label="Next item">&#8594;</button>
+      </div>
+      <ul id="media-viewer-slides" hidden>
+        <li data-type="image" data-src="/assets/images/redpoly/products/stunt-pet-scene-1.png?v=pet-scene-20261117" data-alt="Stunt Pet standing front on, in front of a lime green disc on a sunlit sand backdrop" data-caption="FRONT &middot; STUDIO"></li>
+        <li data-type="image" data-src="/assets/images/redpoly/products/stunt-pet-scene-2.png?v=pet-scene-20261117" data-alt="The back of Stunt Pet with its carrot wheels, paw prints trailing across the sand" data-caption="PAW PRINTS &middot; STUDIO"></li>
+        <li data-type="image" data-src="/assets/images/redpoly/products/stunt-pet-scene-3-box.png?v=pet-scene-20261117" data-alt="Stunt Pet on the sand beside its blue window box" data-caption="WITH THE BOX &middot; &#8377;599"></li>
+        <li data-type="image" data-src="/assets/images/redpoly/products/stunt-pet-box.png?v=pet-20261122" data-alt="The Stunt Pets window box, blue sleeve with the toy visible through the window" data-caption="RETAIL BOX &middot; AGES 3+"></li>
+        <li data-type="image" data-src="/assets/images/redpoly/products/stunt-pet.png?v=pet-20261122" data-alt="Stunt Pet out of the box, coral rabbit toy with carrot wheels" data-caption="OUT OF THE BOX &middot; &#8377;599"></li>
+      </ul>
+    </div>
   </main>
 
   <footer class="char-footer"><nav class="char-footer__links" aria-label="Help and policies"><a href="/help">HELP + CONTACT</a><a href="/help#shipping">SHIPPING</a><a href="/help#returns">RETURNS</a><a href="/help#cancellation">CANCEL</a><a href="/help#privacy">PRIVACY</a><a href="/help#terms">TERMS</a></nav>
