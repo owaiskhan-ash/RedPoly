@@ -540,3 +540,31 @@ html.motion-ready body.creature-page--dino .char-stage__tracks i:nth-child(3){an
   html.motion-ready body.creature-page--dino .char-stage__stomp i,
   html.motion-ready body.creature-page--dino .char-stage__tracks i{opacity:0}
 }
+
+/* Gallery: media for the toy, between the hero and the how-it-works section */
+.char-gallery{padding:clamp(30px,4.4vw,58px) clamp(20px,8vw,120px) clamp(38px,5.4vw,66px);background:var(--character-story);color:var(--character-light);border-bottom:1px solid rgba(255,255,255,.07)}
+.char-gallery__inner{max-width:1160px;margin:0 auto}
+.char-gallery__head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 24px;margin-bottom:16px}
+.char-gallery__eyebrow{font-size:9px;font-weight:900;letter-spacing:1.9px;color:var(--character-accent)}
+.char-gallery h2{margin:6px 0 0;font:400 clamp(30px,4.4vw,52px)/.92 'Anton',sans-serif;letter-spacing:.3px}
+.char-gallery h2 span{color:var(--character-accent)}
+.char-gallery__note{max-width:34ch;margin:0;color:var(--character-muted);font-size:12px;line-height:1.6}
+.char-gallery__grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:13px;align-items:start}
+.char-gallery__frame{position:relative;margin:0;border:2px solid #0d0d0d;background:#0d0d0d;box-shadow:6px 6px 0 var(--character-shadow)}
+.char-gallery__video{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;min-height:220px}
+.char-gallery__video video{display:block;width:auto;max-width:100%;max-height:min(64vh,540px);margin:0 auto;background:#0d0d0d}
+.char-gallery__col{display:grid;gap:13px}
+.char-gallery__still{display:flex;flex-direction:column;aspect-ratio:4/3;padding:7%;background:radial-gradient(circle at 50% 44%,var(--character-glow-soft),transparent 66%),var(--character-deep)}
+.char-gallery__still--photo{padding:0;overflow:hidden}
+.char-gallery__still img{flex:1 1 auto;min-height:0;width:100%;object-fit:contain}
+.char-gallery__still--photo img{height:100%;object-fit:cover;object-position:50% 46%}
+.char-gallery__strip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;background:#0d0d0d;color:var(--character-muted-strong);font-size:8px;font-weight:900;letter-spacing:1.4px}
+.char-gallery__video .char-gallery__strip{flex:1 0 100%}
+.char-gallery__still .char-gallery__strip{flex:0 0 auto}
+@media(max-width:820px){
+  .char-gallery__grid{grid-template-columns:1fr}
+  .char-gallery__col{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){
+  .char-gallery__col{grid-template-columns:1fr}
+}
