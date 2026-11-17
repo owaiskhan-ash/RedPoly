@@ -769,4 +769,15 @@
       productStage.style.setProperty('--stage-tilt-y', '0deg');
     });
   }
+
+  // The shelf gallery: play or pause the studio loop on a product page.
+  Array.prototype.forEach.call(document.querySelectorAll('[data-motion]'), function (figure) {
+    var button = figure.querySelector('.gallery-motion__play');
+    if (!button) return;
+    button.addEventListener('click', function () {
+      var playing = figure.classList.toggle('is-playing');
+      button.setAttribute('aria-pressed', playing ? 'true' : 'false');
+      button.innerHTML = playing ? '<span aria-hidden="true">\u275A\u275A</span> PAUSE' : '<span aria-hidden="true">\u25B6</span> PLAY';
+    });
+  });
 })();
