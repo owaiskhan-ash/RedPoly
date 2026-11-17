@@ -638,13 +638,6 @@ body.creature-page--mecha .char-tags span{border:2px solid var(--character-ring)
 body.creature-page--mecha .char-price strong{color:var(--character-accent-bright)}
 body.creature-page--mecha .char-buy{background:var(--character-hot);box-shadow:0 6px 0 var(--character-dark)}
 body.creature-page--mecha .char-buy:hover,body.creature-page--mecha .char-buy:focus-visible{background:#ff3b2f}
-body.creature-page--mecha .char-stage{-webkit-mask-image:none;mask-image:none}
-/* the source photo is a white studio card, so present it as a framed lightbox instead of a floating cut-out */
-body.creature-page--mecha .char-stage__platform{display:none}
-body.creature-page--mecha .char-stage__figure--card{width:min(100%,560px);max-height:none;padding:0;border:4px solid var(--character-light);border-radius:16px;background:#fff;box-shadow:9px 9px 0 var(--character-hot),0 24px 46px var(--character-shadow);transform:rotate(-2deg);filter:none;object-fit:contain}
-body.creature-page--mecha .char-stage__figure--card::after{content:none}
-body.creature-page--mecha .figure-gallery__viewport .char-stage__figure--card,
-body.creature-page--mecha .media-viewer__stage .char-stage__figure{max-height:min(62vh,560px)}
 body.creature-page--mecha .char-detail-card{border:3px solid var(--character-dark);box-shadow:6px 6px 0 var(--character-hot)}
 body.creature-page--mecha .char-detail-card__num{font-family:'Anton',sans-serif}
 body.creature-page--mecha .char-file__stamp{background:var(--character-hot);color:var(--character-light)}
@@ -652,7 +645,7 @@ body.creature-page--mecha .char-final-cta{background:linear-gradient(180deg,var(
 body.creature-page--mecha .char-buy--final{background:var(--character-accent);box-shadow:0 6px 0 var(--character-dark)}
 body.creature-page--mecha .char-buy--final:hover,body.creature-page--mecha .char-buy--final:focus-visible{background:var(--character-accent-bright)}
 body.creature-page--mecha .char-box__photo{border:4px solid var(--character-light);box-shadow:8px 8px 0 var(--character-hot)}
-@media(max-width:900px){body.creature-page--mecha .char-hero::after{height:12px}body.creature-page--mecha .char-stage__figure--card{width:min(100%,460px)}}
+@media(max-width:900px){body.creature-page--mecha .char-hero::after{height:12px}}
 
 /* Mecha Rover uses the HD inventory gallery from the pixel theme, restyled in steel and red. */
 body.creature-page--mecha{--pixel-lime:#ffd24a;--pixel-water:#4b8dff;--pixel-ink:#040c22}
@@ -677,3 +670,8 @@ body.creature-page--mecha .pixel-note{max-width:1220px;margin:22px auto 0;color:
 body.creature-page--mecha .media-viewer__panel{border:4px solid var(--character-hot);border-radius:4px;box-shadow:10px 10px 0 rgba(3,8,26,.7)}
 @media(max-width:900px){body.creature-page--mecha .pixel-inventory__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){body.creature-page--mecha .pixel-inventory__grid{grid-template-columns:repeat(2,minmax(0,1fr))}body.creature-page--mecha .pixel-inventory__head h2{font-size:clamp(30px,8vw,44px)}body.creature-page--mecha .pixel-slot__label{font-size:8px;letter-spacing:1px}}
+
+/* Mecha Rover details panel: the portrait becomes a full-bleed poster image. */
+body.creature-page--mecha .char-file__portrait{display:block;min-height:0;padding:0;background:#0b1a42}
+body.creature-page--mecha .char-file__photo{position:absolute;inset:0;z-index:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:50% 50%;border:0;box-shadow:none;transform:none;filter:none}
+@media(max-width:900px){body.creature-page--mecha .char-file__portrait{min-height:0;aspect-ratio:1600/2200}}
