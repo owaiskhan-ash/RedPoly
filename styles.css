@@ -664,4 +664,12 @@ html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out 
 .shop-feature__swatches a:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
 .shop-feature__swatch-note{margin-top:7px;text-align:center;font-size:8px;font-weight:900;letter-spacing:1.3px;color:#3b4636}
 @media(max-width:560px){.shop-feature--dino .shop-feature__image img{max-height:280px}}
+/* Fourth product on the home page: the Mini Cool Car R/C on a cool showroom panel */
+.shop-feature--car{background:#e8ecef;border-top:3px dashed rgba(10,10,10,.16)}
+.shop-feature--car .t-orange{color:#e2571a}
+.shop-feature--car .shop-feature__image img{max-height:400px}
+.shop-feature--car .limited__feats svg{color:#e2571a}
+@media(max-width:560px){.shop-feature--car .shop-feature__image img{max-height:280px}}
+/* Seven header links: pull the gaps in before the row can run off the edge */
+@media(min-width:901px) and (max-width:1180px){.site-header__nav{gap:clamp(11px,1.5vw,20px)}}
 @media(prefers-reduced-motion:reduce){.shop-feature__swatches a{transition:none}.shop-feature__swatches a:hover,.shop-feature__swatches a:focus-visible{transform:none}}

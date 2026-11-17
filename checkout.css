@@ -59,6 +59,8 @@
 .checkout-totals>p strong{font:23px/.9 'Anton',sans-serif;letter-spacing:0}
 .checkout-shipping{color:#c8ff00}
 .checkout-shipping strong{max-width:150px;text-align:right;font:700 9px/1.4 'Archivo',sans-serif!important;letter-spacing:0}
+.checkout-gift{color:#ffb066}
+.checkout-gift strong{max-width:150px;text-align:right;font:700 9px/1.4 'Archivo',sans-serif!important;letter-spacing:0}
 .checkout-return{display:inline-block;margin-top:25px;color:#ff9a69;font-size:9px;font-weight:900;letter-spacing:1px}
 .checkout-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:15px;padding:18px clamp(18px,5vw,72px);border-top:1px solid rgba(255,255,255,.13);color:#a7a094;font-size:8px;font-weight:800;letter-spacing:1px}
 .checkout-footer__gst{width:100%;text-align:right;font-size:7px;font-weight:800;letter-spacing:1.1px;color:#6d685f}
