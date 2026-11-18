@@ -84,35 +84,45 @@
   var leaving = false;
   var subtotal = 0;
   var accountBox = document.getElementById('checkout-account');
+  var guestAddressKey = 'redpoly-guest-address-v1';
   var saveProfileChecked = true;
   var googleIconSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.9z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.3a12 12 0 0 0 0 10.8l4-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A11.9 11.9 0 0 0 12 0 12 12 0 0 0 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9z"/></svg>';
 
+  function readGuestAddressFallback() {
+    try {
+      var raw = JSON.parse(window.localStorage.getItem(guestAddressKey) || 'null');
+      return raw && typeof raw === 'object' ? raw : null;
+    } catch (e) { return null; }
+  }
+
   function applyProfileAutofill(user, profile) {
     if (!form) return;
+    var fallback = (!user && !profile) ? readGuestAddressFallback() : null;
+    var source = profile || fallback;
     var nameInput = form.querySelector('[name="customer-name"]');
     var emailInput = form.querySelector('[name="email"]');
     var phoneInput = form.querySelector('[name="phone"]');
     var addressInput = form.querySelector('[name="address"]');
     if (nameInput && !nameInput.value.trim()) {
-      nameInput.value = (profile && profile.fullName) || (user && user.displayName) || '';
+      nameInput.value = (source && source.fullName) || (user && user.displayName) || '';
     }
     if (emailInput && !emailInput.value.trim()) {
-      emailInput.value = (profile && profile.email) || (user && user.email) || '';
+      emailInput.value = (source && source.email) || (user && user.email) || '';
     }
-    if (phoneInput && !phoneInput.value.trim() && profile && profile.phone) {
-      phoneInput.value = profile.phone;
+    if (phoneInput && !phoneInput.value.trim() && source && source.phone) {
+      phoneInput.value = source.phone;
     }
-    if (addressInput && !addressInput.value.trim() && profile && profile.address) {
-      addressInput.value = profile.address;
+    if (addressInput && !addressInput.value.trim() && source && source.address) {
+      addressInput.value = source.address;
     }
-    if (pinInput && !pinInput.value.trim() && profile && profile.pinCode) {
-      pinInput.value = profile.pinCode;
+    if (pinInput && !pinInput.value.trim() && source && source.pinCode) {
+      pinInput.value = source.pinCode;
     }
-    if (cityInput && !cityInput.value.trim() && profile && profile.city) {
-      cityInput.value = profile.city;
+    if (cityInput && !cityInput.value.trim() && source && source.city) {
+      cityInput.value = source.city;
     }
-    if (stateInput && !stateInput.value.trim() && profile && profile.state) {
-      stateInput.value = profile.state;
+    if (stateInput && !stateInput.value.trim() && source && source.state) {
+      stateInput.value = source.state;
     }
   }
 
@@ -150,8 +160,17 @@
         });
       });
 
+      var accountActions = document.createElement('div');
+      accountActions.className = 'checkout-account__actions';
+      var myAccountLink = document.createElement('a');
+      myAccountLink.className = 'checkout-account__btn checkout-account__btn--link';
+      myAccountLink.href = '/account';
+      myAccountLink.textContent = 'MY ACCOUNT ↗';
+      accountActions.appendChild(myAccountLink);
+      accountActions.appendChild(signOutBtn);
+
       row.appendChild(copy);
-      row.appendChild(signOutBtn);
+      row.appendChild(accountActions);
       accountBox.appendChild(row);
 
       var saveLabel = document.createElement('label');
@@ -232,9 +251,19 @@
         }
       });
 
+      var guestActions = document.createElement('div');
+      guestActions.className = 'checkout-account__actions';
+      var guestAccountLink = document.createElement('a');
+      guestAccountLink.className = 'checkout-account__btn checkout-account__btn--link';
+      guestAccountLink.href = '/account';
+      guestAccountLink.textContent = 'MY ACCOUNT ↗';
+      guestActions.appendChild(guestAccountLink);
+      guestActions.appendChild(signInBtn);
+
       row.appendChild(copy);
-      row.appendChild(signInBtn);
+      row.appendChild(guestActions);
       accountBox.appendChild(row);
+      applyProfileAutofill(null, null);
     }
   }
   try {

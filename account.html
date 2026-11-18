@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Account | REDPOLY Creature Club</title>
+  <meta name="description" content="Manage your saved REDPOLY delivery address, view order history, revisit saved favorites, and jump straight to checkout." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#c8ff00" />
+  <link rel="canonical" href="https://redpoly.justsimpleapps.online/account" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/redpoly/favicon.png?v=logo-puff-20261118" />
+  <link rel="shortcut icon" href="/assets/images/redpoly/favicon.ico?v=logo-puff-20261118" />
+  <link rel="apple-touch-icon" href="/assets/images/redpoly/favicon.png?v=logo-puff-20261118" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=account-page-20261118" />
+  <link rel="stylesheet" href="/account.css?v=account-page-20261118" />
+</head>
+<body class="account-page">
+<header class="site-header">
+  <div class="site-header__inner wrap">
+    <a class="site-header__brand" href="/" aria-label="REDPOLY home">
+      <img src="/assets/images/redpoly/redpoly-logo-320.webp?v=logo-puff-20261118" srcset="/assets/images/redpoly/redpoly-logo-320.webp?v=logo-puff-20261118 320w, /assets/images/redpoly/redpoly-logo-880.webp?v=logo-puff-20261118 880w" sizes="(max-width:640px) 82px, (max-width:1024px) 94px, 108px" alt="REDPOLY" width="320" height="162" />
+      <span>TOYS</span>
+    </a>
+    <nav class="site-header__nav" aria-label="Main navigation">
+      <a href="/#shop">SHOP</a>
+      <a href="/stories">COMIC</a>
+      <a href="/account" aria-current="page">ACCOUNT</a>
+      <a href="/help">HELP</a>
+      <a href="/help#shipping">POLICIES</a>
+    </nav>
+    <button class="site-header__menu" id="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><span class="site-header__menu-icon" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only">Menu</span></button>
+  </div>
+  <nav class="site-menu wrap" id="site-menu" aria-label="Menu">
+    <a href="/#shop">SHOP</a><a href="/stories">COMIC</a><a href="/account" aria-current="page">ACCOUNT</a><a href="/help">HELP</a><a href="/help#shipping">POLICIES</a>
+  </nav>
+</header>
+
+<main class="account-main">
+  <p class="account-kicker"><span>REDPOLY CREW CLUB · ACCOUNT HUB</span><span class="account-kicker__right">ADDRESS · ORDERS · FAVORITES · CART</span></p>
+
+  <header class="account-hero">
+    <div>
+      <h1>MY<br /><span>ACCOUNT.</span></h1>
+      <p class="account-hero__sub">Everything you save across REDPOLY in one place—your delivery address for fast checkout autofill, past demo order receipts, hearted favorites, and your live shopping bag.</p>
+    </div>
+    <div class="account-hero__actions">
+      <a class="account-btn account-btn--dark" href="/#shop">BROWSE TOYS →</a>
+      <a class="account-btn" href="/checkout">GO TO CHECKOUT ↗</a>
+    </div>
+  </header>
+
+  <section class="account-identity" id="account-identity" aria-live="polite"></section>
+
+  <section class="account-stats" aria-label="Account summary">
+    <a class="account-stat" href="#address">
+      <span>DELIVERY ADDRESS</span>
+      <strong id="stat-address">—</strong>
+      <small id="stat-address-sub">Ready for checkout</small>
+    </a>
+    <a class="account-stat" href="#orders">
+      <span>ORDERS PLACED</span>
+      <strong id="stat-orders">0</strong>
+      <small id="stat-orders-sub">Cloud &amp; session receipts</small>
+    </a>
+    <a class="account-stat" href="#favorites">
+      <span>SAVED FAVORITES</span>
+      <strong id="stat-favorites">0</strong>
+      <small>Synced hearts &amp; picks</small>
+    </a>
+    <a class="account-stat" href="#cart">
+      <span>SHOPPING BAG</span>
+      <strong id="stat-cart">₹0</strong>
+      <small id="stat-cart-sub">0 items in cart</small>
+    </a>
+  </section>
+
+  <nav class="account-tabs" id="account-tabs" aria-label="Account sections">
+    <button type="button" class="is-active" data-tab="all">ALL SECTIONS</button>
+    <button type="button" data-tab="address">SAVED ADDRESS</button>
+    <button type="button" data-tab="orders">ORDERS <b id="tab-orders-count">0</b></button>
+    <button type="button" data-tab="favorites">FAVORITES <b id="tab-fav-count">0</b></button>
+    <button type="button" data-tab="cart">ACTIVE CART <b id="tab-cart-count">0</b></button>
+  </nav>
+
+  <div class="account-sections">
+    <!-- 01 / SAVED DELIVERY ADDRESS -->
+    <section class="account-card account-card--cream" id="address" data-section="address" aria-labelledby="address-heading">
+      <div class="account-card__head">
+        <div>
+          <p class="account-card__eyebrow">01 / FAST CHECKOUT AUTOFILL</p>
+          <h2 id="address-heading">SAVED DELIVERY ADDRESS</h2>
+        </div>
+        <span class="account-badge" id="address-sync-badge">CHECKING SYNC…</span>
+      </div>
+      <p class="account-card__lead">Save your recipient details once and REDPOLY automatically fills them whenever you open checkout. Enter any 6-digit Indian PIN code to look up your city and state.</p>
+
+      <div class="address-grid">
+        <aside class="address-preview" id="address-preview" aria-live="polite"></aside>
+
+        <form class="address-form" id="account-address-form" novalidate>
+          <label class="address-field address-field--wide">FULL NAME
+            <input id="acc-fullName" name="fullName" type="text" autocomplete="name" maxlength="120" required placeholder="Your full name" />
+          </label>
+          <label class="address-field">EMAIL ADDRESS
+            <input id="acc-email" name="email" type="email" autocomplete="email" maxlength="200" required placeholder="you@example.com" />
+          </label>
+          <label class="address-field">MOBILE NUMBER (10 DIGITS)
+            <input id="acc-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" pattern="[6-9][0-9]{9}" maxlength="10" required placeholder="9876543210" />
+          </label>
+          <label class="address-field address-field--wide">STREET ADDRESS, HOUSE / FLAT, AREA
+            <textarea id="acc-address" name="address" autocomplete="street-address" maxlength="300" required placeholder="House / flat no., building, street, landmark"></textarea>
+          </label>
+          <label class="address-field">6-DIGIT PIN CODE
+            <input id="acc-pinCode" name="pinCode" type="text" inputmode="numeric" autocomplete="postal-code" pattern="[1-9][0-9]{5}" maxlength="6" required placeholder="400001" />
+          </label>
+          <label class="address-field">CITY / DISTRICT
+            <input id="acc-city" name="city" type="text" autocomplete="address-level2" maxlength="100" required placeholder="Auto-filled from PIN or type" />
+          </label>
+          <label class="address-field address-field--wide">STATE
+            <input id="acc-state" name="state" type="text" autocomplete="address-level1" maxlength="100" required placeholder="Auto-filled from PIN or type" />
+          </label>
+          <p class="address-pin-status" id="account-pin-status" role="status" aria-live="polite"></p>
+          <div class="address-form__footer">
+            <p class="address-form__status" id="account-address-status" role="status" aria-live="polite"></p>
+            <button type="submit" class="account-btn account-btn--orange" id="account-address-save">SAVE DELIVERY ADDRESS</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 02 / ORDER HISTORY -->
+    <section class="account-card account-card--indigo" id="orders" data-section="orders" aria-labelledby="orders-heading">
+      <div class="account-card__head">
+        <div>
+          <p class="account-card__eyebrow">02 / ORDER ARCHIVE</p>
+          <h2 id="orders-heading">YOUR ORDERS</h2>
+        </div>
+        <span class="account-badge account-badge--dark" id="orders-sync-badge">0 ORDERS</span>
+      </div>
+      <p class="account-card__lead">Every demo order placed while signed in with Google is saved here with line items, GST breakdown, and a one-click Buy Again button.</p>
+      <div id="account-orders-container"></div>
+    </section>
+
+    <!-- 03 / SAVED FAVORITES -->
+    <section class="account-card" id="favorites" data-section="favorites" aria-labelledby="favorites-heading">
+      <div class="account-card__head">
+        <div>
+          <p class="account-card__eyebrow">03 / HEARTED TOYS</p>
+          <h2 id="favorites-heading">SAVED FAVORITES</h2>
+        </div>
+        <span class="account-badge account-badge--dark" id="favorites-count-badge">0 SAVED</span>
+      </div>
+      <p class="account-card__lead">Heart toys anywhere on REDPOLY to keep them on your shelf here. Move any pick straight into your cart whenever you are ready.</p>
+      <div id="account-favorites-container"></div>
+    </section>
+
+    <!-- 04 / ACTIVE CART -->
+    <section class="account-card account-card--aqua" id="cart" data-section="cart" aria-labelledby="cart-heading">
+      <div class="account-card__head">
+        <div>
+          <p class="account-card__eyebrow">04 / READY FOR CHECKOUT</p>
+          <h2 id="cart-heading">YOUR ACTIVE CART</h2>
+        </div>
+        <span class="account-badge account-badge--dark" id="cart-count-badge">0 ITEMS</span>
+      </div>
+      <div id="account-cart-container"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <a class="site-footer__brand" href="/" aria-label="REDPOLY home"><img class="site-footer__logo" src="/assets/images/redpoly/redpoly-logo-320.webp?v=logo-puff-20261118" srcset="/assets/images/redpoly/redpoly-logo-320.webp?v=logo-puff-20261118 320w, /assets/images/redpoly/redpoly-logo-880.webp?v=logo-puff-20261118 880w" sizes="104px" alt="" width="320" height="162" loading="lazy" decoding="async" /><span>COLLECT. EXPLORE. DISPLAY.</span></a>
+    <nav class="site-footer__links" aria-label="Help and policies"><a href="/account">MY ACCOUNT</a><a href="/help">HELP + POLICIES</a><a href="/help#shipping">SHIPPING</a><a href="/help#returns">RETURNS</a><a href="/help#cancellation">CANCELLATION</a><a href="/privacy">PRIVACY</a><a href="/terms">TERMS</a></nav>
+    <p class="site-footer__legal">GSTIN 27BJGPK5062E1ZB</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/firebase-client.js" defer></script>
+<script src="/main.js?v=account-page-20261118" defer></script>
+<script src="/account.js?v=account-page-20261118" defer></script>
+</body>
+</html>
