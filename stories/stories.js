@@ -97,7 +97,7 @@ function renderCatalog(items) {
     return;
   }
   items.forEach(issue => grid.append(renderIssueCard(issue)));
-  issueCount.textContent = items.length === 1 ? 'ISSUE 01 · THE FIRST SPLASH STARTS HERE' : `${items.length} ISSUES · PICK A STORY`;
+  issueCount.textContent = items.length === 1 ? `ISSUE ${items[0].number} · ONE STORY, SIX PAGES` : `${items.length} ISSUES · PICK A STORY`;
 }
 
 function updateShareUrl() {
