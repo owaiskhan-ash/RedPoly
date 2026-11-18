@@ -736,3 +736,78 @@ html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out 
   .shop-card:hover{transform:none;box-shadow:6px 6px 0 var(--black)}
   .shop-card:hover .shop-card__media img{transform:none}
 }
+
+/* ===== Account button in shared header and Google Sign-In / Order History modal ===== */
+.site-header__inner>.auth-toggle{flex:none;margin-left:10px}
+.auth-toggle{position:relative;display:inline-flex;flex:none;align-items:center;gap:7px;min-height:42px;padding:8px 12px;border:1px solid rgba(244,240,230,.45);background:#171717;color:#fff;font-size:9px;font-weight:900;letter-spacing:1px;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease}
+.auth-toggle:hover{border-color:var(--lime);color:var(--lime);transform:translateY(-1px)}
+.auth-toggle.is-signed-in{border-color:var(--lime);background:rgba(200,255,0,.1);color:#fff}
+.auth-toggle svg{width:16px;height:16px;flex:none}
+.auth-toggle__avatar{width:20px;height:20px;border:1px solid var(--lime);border-radius:50%;object-fit:cover;flex:none}
+.auth-toggle__initial{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--lime);color:#111;font-size:10px;font-weight:900;flex:none}
+.auth-toggle__label{max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auth-toggle:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+body.creature-page .auth-toggle{border-color:var(--character-muted-border-strong,rgba(255,255,255,.45));background:var(--character-story,#171717);color:var(--character-light,#fff)}
+body.creature-page .auth-toggle.is-signed-in{border-color:var(--character-accent,var(--lime))}
+body.creature-page .auth-toggle__initial{background:var(--character-accent,var(--lime));color:var(--character-ink,#111)}
+@media(max-width:640px){
+  .site-header .auth-toggle>span.auth-toggle__label{display:none}
+  .site-header .auth-toggle{min-width:44px;justify-content:center;padding:8px}
+}
+@media(max-width:360px){
+  .site-header .auth-toggle{min-width:0;padding:8px 7px}
+}
+
+.account-panel{width:min(540px,calc(100vw - 24px));max-height:min(720px,calc(100dvh - 32px));margin:auto;padding:26px 22px 24px;border:3px solid #111;background:#f4f0e6;color:#171512;box-shadow:9px 9px 0 #c8ff00;overflow:auto}
+.account-panel::backdrop{background:rgba(8,8,8,.74);backdrop-filter:blur(3px)}
+.account-panel__close{position:absolute;top:10px;right:10px;display:grid;place-items:center;width:42px;height:42px;border:2px solid #171512;background:#f4f0e6;color:#171512;font-size:26px;line-height:1;cursor:pointer}
+.account-panel__close:hover{background:#171512;color:#fff}
+.account-panel__eyebrow{color:#b8430b;font-size:9px;font-weight:900;letter-spacing:1.6px;text-transform:uppercase}
+.account-panel h2{margin-top:5px;padding-right:48px;font:400 34px/.95 'Anton',sans-serif;letter-spacing:.3px;text-transform:uppercase}
+.account-panel__copy{margin-top:12px;color:#4a443a;font-size:13px;line-height:1.55;font-weight:600}
+.account-panel__perks{display:grid;gap:8px;margin:16px 0 0;padding:13px 14px;list-style:none;border:2px solid #171512;background:#fff}
+.account-panel__perks li{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:800;letter-spacing:.4px}
+.account-panel__perks li::before{content:"✓";display:grid;place-items:center;width:18px;height:18px;background:#c8ff00;border:1px solid #171512;font-size:11px;font-weight:900;flex:none}
+.google-signin-btn{display:inline-flex;align-items:center;justify-content:center;gap:11px;width:100%;margin-top:18px;padding:14px 16px;border:2px solid #171512;background:#c8ff00;color:#111;font:900 12px/1 'Archivo',sans-serif;letter-spacing:1px;text-transform:uppercase;box-shadow:4px 4px 0 #171512;cursor:pointer;transition:transform .16s ease,background .16s ease}
+.google-signin-btn:hover:not(:disabled){background:#d9ff55;transform:translate(-1px,-1px)}
+.google-signin-btn:disabled{opacity:.65;cursor:wait}
+.google-signin-btn svg{width:18px;height:18px;flex:none}
+.account-panel__status{min-height:16px;margin-top:11px;color:#a52b18;font-size:11px;font-weight:800;line-height:1.45}
+.account-panel__status.is-ok{color:#355900}
+
+.account-user-card{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:13px;border:2px solid #171512;background:#fff;box-shadow:4px 4px 0 #171512}
+.account-user-card__info{display:flex;align-items:center;gap:11px;min-width:0}
+.account-user-card__avatar{width:44px;height:44px;border:2px solid #171512;border-radius:50%;object-fit:cover;flex:none;background:#c8ff00}
+.account-user-card__initial{display:grid;place-items:center;width:44px;height:44px;border:2px solid #171512;border-radius:50%;background:#c8ff00;color:#111;font:400 22px/1 'Anton',sans-serif;flex:none}
+.account-user-card__text{min-width:0}
+.account-user-card__text strong{display:block;font:400 20px/1.05 'Anton',sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+.account-user-card__text span{display:block;margin-top:3px;color:#5b554c;font-size:11px;font-weight:700;overflow-wrap:anywhere}
+.account-signout-btn{flex:none;padding:9px 11px;border:2px solid #171512;background:#171512;color:#fff;font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+.account-signout-btn:hover{background:#ff6b1a;color:#111}
+
+.account-section{margin-top:20px;padding-top:16px;border-top:2px solid rgba(23,21,18,.18)}
+.account-section__title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.account-section__title h3{font:400 22px/1 'Anton',sans-serif;text-transform:uppercase}
+.account-section__badge{padding:4px 7px;background:#171512;color:#c8ff00;font-size:8px;font-weight:900;letter-spacing:1px}
+.account-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.account-field{display:flex;flex-direction:column;gap:4px;font-size:8px;font-weight:900;letter-spacing:1px;color:#5b554d}
+.account-field--wide{grid-column:1/-1}
+.account-field input{width:100%;padding:9px 10px;border:1px solid #9e978d;background:#fff;color:#161512;font:600 12px 'Archivo',sans-serif}
+.account-field input:focus{outline:2px solid #ff6b1a;outline-offset:1px}
+.account-save-btn{margin-top:10px;padding:11px 14px;border:2px solid #171512;background:#ff6b1a;color:#111;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+.account-save-btn:hover:not(:disabled){background:#ff8438}
+.account-orders-list{display:grid;gap:10px;padding:0;margin:0;list-style:none}
+.account-order-card{padding:12px;border:2px solid #171512;background:#fff;box-shadow:3px 3px 0 #171512}
+.account-order-card__top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.account-order-card__ref{font:900 10px/1 'Archivo',sans-serif;letter-spacing:.9px;color:#4439b8}
+.account-order-card__total{font:400 20px/1 'Anton',sans-serif;color:#171512}
+.account-order-card__meta{margin-top:5px;color:#5b554c;font-size:10px;font-weight:700;line-height:1.45}
+.account-order-card__items{margin-top:7px;padding-top:7px;border-top:1px dashed #ccc5b8;font-size:11px;font-weight:700;color:#2b2722;line-height:1.45}
+.account-empty-orders{padding:12px;border:2px dashed #b9b1a4;font-size:12px;font-weight:600;color:#5b554c}
+.account-panel button:focus-visible{outline:3px solid #ff6b1a;outline-offset:2px}
+@media(max-width:480px){
+  .account-profile-grid{grid-template-columns:1fr}
+  .account-field--wide{grid-column:1}
+  .account-user-card{flex-direction:column;align-items:flex-start}
+}
+

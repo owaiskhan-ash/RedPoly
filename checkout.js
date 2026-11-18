@@ -83,6 +83,119 @@
   var placeButtonInView = false;
   var leaving = false;
   var subtotal = 0;
+  var accountBox = document.getElementById('checkout-account');
+  var saveProfileChecked = true;
+  var googleIconSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.7v3h3.9c2.3-2.1 3.5-5.2 3.5-8.9z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.3a12 12 0 0 0 0 10.8l4-3.1z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A11.9 11.9 0 0 0 12 0 12 12 0 0 0 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9z"/></svg>';
+
+  function applyProfileAutofill(user, profile) {
+    if (!form) return;
+    var nameInput = form.querySelector('[name="customer-name"]');
+    var emailInput = form.querySelector('[name="email"]');
+    var phoneInput = form.querySelector('[name="phone"]');
+    var addressInput = form.querySelector('[name="address"]');
+    if (nameInput && !nameInput.value.trim()) {
+      nameInput.value = (profile && profile.fullName) || (user && user.displayName) || '';
+    }
+    if (emailInput && !emailInput.value.trim()) {
+      emailInput.value = (profile && profile.email) || (user && user.email) || '';
+    }
+    if (phoneInput && !phoneInput.value.trim() && profile && profile.phone) {
+      phoneInput.value = profile.phone;
+    }
+    if (addressInput && !addressInput.value.trim() && profile && profile.address) {
+      addressInput.value = profile.address;
+    }
+    if (pinInput && !pinInput.value.trim() && profile && profile.pinCode) {
+      pinInput.value = profile.pinCode;
+    }
+    if (cityInput && !cityInput.value.trim() && profile && profile.city) {
+      cityInput.value = profile.city;
+    }
+    if (stateInput && !stateInput.value.trim() && profile && profile.state) {
+      stateInput.value = profile.state;
+    }
+  }
+
+  function renderCheckoutAccount() {
+    if (!accountBox) return;
+    var fb = window.RedpolyFirebase;
+    var user = fb ? fb.getUser() : null;
+    var profile = fb ? fb.getProfile() : null;
+    accountBox.textContent = '';
+
+    var row = document.createElement('div');
+    row.className = 'checkout-account__row';
+
+    var copy = document.createElement('div');
+    copy.className = 'checkout-account__copy';
+    var strong = document.createElement('strong');
+    var span = document.createElement('span');
+
+    if (user) {
+      strong.textContent = 'SIGNED IN AS ' + (user.displayName || 'REDPOLY MEMBER');
+      span.textContent = (user.email || '') + ' · Your cart and demo order history sync to your Google account.';
+      copy.appendChild(strong);
+      copy.appendChild(span);
+
+      var signOutBtn = document.createElement('button');
+      signOutBtn.type = 'button';
+      signOutBtn.className = 'checkout-account__btn';
+      signOutBtn.textContent = 'SIGN OUT';
+      signOutBtn.addEventListener('click', function () {
+        if (!window.RedpolyFirebase) return;
+        signOutBtn.disabled = true;
+        window.RedpolyFirebase.signOut().catch(function (err) {
+          console.error(err);
+          signOutBtn.disabled = false;
+        });
+      });
+
+      row.appendChild(copy);
+      row.appendChild(signOutBtn);
+      accountBox.appendChild(row);
+
+      var saveLabel = document.createElement('label');
+      saveLabel.className = 'checkout-account__save';
+      var saveBox = document.createElement('input');
+      saveBox.type = 'checkbox';
+      saveBox.id = 'checkout-save-profile';
+      saveBox.checked = saveProfileChecked;
+      saveBox.addEventListener('change', function () {
+        saveProfileChecked = saveBox.checked;
+      });
+      var saveText = document.createElement('span');
+      saveText.textContent = 'Save delivery details to my REDPOLY account';
+      saveLabel.appendChild(saveBox);
+      saveLabel.appendChild(saveText);
+      accountBox.appendChild(saveLabel);
+
+      applyProfileAutofill(user, profile);
+    } else {
+      strong.textContent = 'EXPRESS CHECKOUT WITH GOOGLE';
+      span.textContent = 'Sign in with Google to autofill saved delivery details and keep your order history in the cloud.';
+      copy.appendChild(strong);
+      copy.appendChild(span);
+
+      var signInBtn = document.createElement('button');
+      signInBtn.type = 'button';
+      signInBtn.className = 'checkout-account__btn';
+      signInBtn.innerHTML = googleIconSvg + '<span>SIGN IN WITH GOOGLE</span>';
+      signInBtn.addEventListener('click', function () {
+        if (!window.RedpolyFirebase) return;
+        signInBtn.disabled = true;
+        window.RedpolyFirebase.signInWithGoogle().catch(function (err) {
+          console.error(err);
+          if (status) status.textContent = 'Could not complete Google sign-in. Please try again.';
+        }).finally(function () {
+          signInBtn.disabled = false;
+        });
+      });
+
+      row.appendChild(copy);
+      row.appendChild(signInBtn);
+      accountBox.appendChild(row);
+    }
+  }
   try {
     var savedShippingMethod = sessionStorage.getItem(shippingMethodKey);
     if (savedShippingMethod === 'standard' || savedShippingMethod === 'express') {
@@ -188,12 +301,19 @@
     var item = items.find(function (entry) { return entry.id === id; });
     if (!item) return;
     var message;
-    if (action === 'increase') { item.quantity += 1; message = item.name + ' quantity is now ' + item.quantity + '.'; }
-    else if (action === 'decrease' && item.quantity > 1) { item.quantity -= 1; message = item.name + ' quantity is now ' + item.quantity + '.'; }
-    else {
+    if (action === 'increase') {
+      item.quantity += 1;
+      message = item.name + ' quantity is now ' + item.quantity + '.';
+      if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(item).catch(function (err) { console.error(err); });
+    } else if (action === 'decrease' && item.quantity > 1) {
+      item.quantity -= 1;
+      message = item.name + ' quantity is now ' + item.quantity + '.';
+      if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(item).catch(function (err) { console.error(err); });
+    } else {
       lastRemoved = { item:{ id:item.id, name:item.name, price:item.price, quantity:item.quantity }, index:items.indexOf(item) };
       items = items.filter(function (entry) { return entry.id !== id; });
       message = item.name + ' removed from your cart.';
+      if (window.RedpolyFirebase) window.RedpolyFirebase.removeCartItem(item.name).catch(function (err) { console.error(err); });
     }
     commitCart(message);
     // The list is rebuilt on every change, so hand keyboard focus back to the matching control.
@@ -205,9 +325,13 @@
     var restored = lastRemoved.item;
     var existing = items.find(function (entry) { return entry.id === restored.id; });
     if (existing) existing.quantity += restored.quantity;
-    else items.splice(Math.min(lastRemoved.index, items.length), 0, restored);
+    else {
+      existing = restored;
+      items.splice(Math.min(lastRemoved.index, items.length), 0, existing);
+    }
     lastRemoved = null;
     commitCart(restored.name + ' is back in your cart.');
+    if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(existing).catch(function (err) { console.error(err); });
     var back = Array.prototype.find.call(list.querySelectorAll('[data-cart-action="increase"]'), function (button) { return button.getAttribute('data-cart-id') === restored.id; });
     if (back) back.focus();
   });
@@ -215,6 +339,15 @@
     if (event.key !== cartKey || leaving) return;
     items = readCart(); lastRemoved = null; renderCart();
   });
+  window.addEventListener('redpoly:cart-updated', function (event) {
+    if (leaving || !event.detail || !Array.isArray(event.detail.items)) return;
+    items = event.detail.items.slice();
+    lastRemoved = null;
+    renderCart();
+  });
+  window.addEventListener('redpoly:firebase-ready', renderCheckoutAccount);
+  window.addEventListener('redpoly:auth-changed', renderCheckoutAccount);
+  window.addEventListener('redpoly:profile-updated', renderCheckoutAccount);
 
   // Phone pay bar: keeps the total and the order button in reach until the main button is reached.
   if ('IntersectionObserver' in window) {
@@ -228,6 +361,7 @@
   payBarButton.addEventListener('click', function () { placeButton.click(); });
 
   renderCart();
+  renderCheckoutAccount();
 
   pinInput.addEventListener('input', function () {
     var pin = pinInput.value.trim();
@@ -286,26 +420,72 @@
   });
 
   form.addEventListener('submit', function (event) { event.preventDefault(); });
-  placeButton.addEventListener('click', function () {
+  placeButton.addEventListener('click', async function () {
     if (!items.length) { status.textContent='Your cart is empty. Add a product first.'; return; }
     if (!form.reportValidity()) return;
+    var customerName = form.querySelector('[name="customer-name"]').value.trim();
+    var email = form.querySelector('[name="email"]').value.trim();
+    var phone = form.querySelector('[name="phone"]').value.trim();
+    var address = form.querySelector('[name="address"]').value.trim();
     var pin = form.querySelector('[name="postal-code"]').value.trim();
+    var city = form.querySelector('[name="city"]').value.trim();
+    var state = form.querySelector('[name="state"]').value.trim();
     var reference='RED-DEMO-' + String(Math.floor(100000 + Math.random()*900000));
     var totals=updateCheckoutTotals();
-    var demoOrder={ reference:reference, pin:pin, deliveryDays:totals.deliveryDays, subtotal:subtotal, gstRate:gstRate, gstIncluded:true, gst:totals.gst, shippingMethod:totals.method, shippingCost:totals.shipping, freeShipping:totals.freeShipping, total:totals.total, items:items };
+    var freeGift = subtotal >= freeGiftFrom;
+    var demoOrder={ reference:reference, pin:pin, deliveryDays:totals.deliveryDays, subtotal:subtotal, gstRate:gstRate, gstIncluded:true, gst:totals.gst, shippingMethod:totals.method, shippingCost:totals.shipping, freeShipping:totals.freeShipping, freeGift:freeGift, total:totals.total, items:items };
+
+    placeButton.disabled = true;
+    payBarButton.disabled = true;
+    placeButton.setAttribute('aria-busy', 'true');
+
+    var fb = window.RedpolyFirebase;
+    if (fb && fb.getUser()) {
+      status.textContent = 'Saving order to your REDPOLY account…';
+      try {
+        await fb.placeOrder({
+          reference: reference,
+          customerName: customerName,
+          email: email,
+          phone: phone,
+          address: address,
+          pin: pin,
+          city: city,
+          state: state,
+          shippingMethod: totals.method,
+          shippingCost: totals.shipping,
+          freeShipping: totals.freeShipping,
+          freeGift: freeGift,
+          subtotal: subtotal,
+          gstRate: gstRate,
+          gst: totals.gst,
+          total: totals.total,
+          items: items,
+          saveProfile: saveProfileChecked
+        });
+      } catch (err) {
+        console.error(err);
+        placeButton.disabled = false;
+        payBarButton.disabled = false;
+        placeButton.removeAttribute('aria-busy');
+        status.textContent = 'Could not save your order to the cloud. Please check your details and try again.';
+        return;
+      }
+    }
+
     try {
       sessionStorage.setItem(orderKey,JSON.stringify(demoOrder));
       localStorage.removeItem(cartKey);
       sessionStorage.removeItem(shippingMethodKey);
     } catch (ignoreOrderStorage) {
+      placeButton.disabled = false;
+      payBarButton.disabled = false;
+      placeButton.removeAttribute('aria-busy');
       status.textContent='Your demo order summary could not be saved in this browser. Please try again.';
       return;
     }
     var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     leaving = true;
-    placeButton.disabled = true;
-    payBarButton.disabled = true;
-    placeButton.setAttribute('aria-busy', 'true');
     updatePayBar();
     status.textContent = 'Moving to your demo thank-you page…';
     document.body.classList.add('checkout-page--leaving');

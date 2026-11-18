@@ -1,0 +1,224 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Core primitives
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isVerifiedOwner(userId) {
+      return isVerified() && request.auth.uid == userId;
+    }
+
+    function isValidCatalogueItem(name, price) {
+      return (name == 'BUBBLE GUN' && price == 499) ||
+        (name == 'STUNT PET' && price == 599) ||
+        (name == 'MINI COOL CAR' && price == 749) ||
+        (name == 'GEL STORM' && price == 1999) ||
+        (name == 'MECHA ROVER' && price == 499) ||
+        (name == 'PIXEL SPLASH' && price == 1749) ||
+        (name == 'CUTE DINOS GREEN' && price == 249) ||
+        (name == 'CUTE DINOS RED' && price == 249) ||
+        (name == 'CUTE DINOS TEAL' && price == 249) ||
+        (name == 'CUTE DINOS TRIO' && price == 549);
+    }
+
+    function isValidUserAccount(data, userId) {
+      return data.keys().hasAll(['uid', 'displayName', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'displayName', 'photoURL', 'createdAt', 'updatedAt']) &&
+        data.uid is string && data.uid == userId && data.uid == request.auth.uid && isValidId(data.uid) &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120 &&
+        (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 500 && (data.photoURL == '' || data.photoURL.matches('^https://.*')))) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidPrivateProfile(data, userId) {
+      return data.keys().hasAll(['uid', 'email', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'fullName', 'phone', 'address', 'pinCode', 'city', 'state', 'updatedAt']) &&
+        data.uid is string && data.uid == userId && data.uid == request.auth.uid && isValidId(data.uid) &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 200 &&
+        (!('fullName' in data) || (data.fullName is string && data.fullName.size() <= 120)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 10 && data.phone.matches('^$|^[6-9][0-9]{9}$'))) &&
+        (!('address' in data) || (data.address is string && data.address.size() <= 300)) &&
+        (!('pinCode' in data) || (data.pinCode is string && data.pinCode.size() <= 6 && data.pinCode.matches('^$|^[1-9][0-9]{5}$'))) &&
+        (!('city' in data) || (data.city is string && data.city.size() <= 100)) &&
+        (!('state' in data) || (data.state is string && data.state.size() <= 100)) &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCartItem(data, userId) {
+      return data.keys().hasAll(['uid', 'name', 'price', 'quantity', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'name', 'price', 'quantity', 'updatedAt']) &&
+        data.uid is string && data.uid == userId && data.uid == request.auth.uid && isValidId(data.uid) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 80 &&
+        (data.price is int || data.price is float) &&
+        isValidCatalogueItem(data.name, data.price) &&
+        data.quantity is int && data.quantity >= 1 && data.quantity <= 99 &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidWishlistItem(data, userId) {
+      return data.keys().hasAll(['uid', 'name', 'href', 'price', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'name', 'href', 'image', 'price', 'createdAt']) &&
+        data.uid is string && data.uid == userId && data.uid == request.auth.uid && isValidId(data.uid) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 80 &&
+        data.href is string && data.href.size() >= 1 && data.href.size() <= 200 && data.href.matches('^/[a-zA-Z0-9_\\-/?=&]+$') &&
+        (!('image' in data) || (data.image is string && data.image.size() <= 300 && (data.image == '' || data.image.matches('^/[a-zA-Z0-9_\\-./?=&]+$')))) &&
+        (data.price is int || data.price is float) &&
+        isValidCatalogueItem(data.name, data.price) &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidOrder(data, userId) {
+      return data.keys().hasAll([
+          'uid', 'reference', 'customerName', 'email', 'phone', 'address', 'pin', 'city', 'state',
+          'shippingMethod', 'shippingCost', 'freeShipping', 'freeGift', 'subtotal', 'gstRate', 'gst',
+          'total', 'itemCount', 'status', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'uid', 'reference', 'customerName', 'email', 'phone', 'address', 'pin', 'city', 'state',
+          'shippingMethod', 'shippingCost', 'freeShipping', 'freeGift', 'subtotal', 'gstRate', 'gst',
+          'total', 'itemCount', 'status', 'createdAt'
+        ]) &&
+        data.uid is string && data.uid == userId && data.uid == request.auth.uid && isValidId(data.uid) &&
+        data.reference is string && data.reference.size() == 15 && data.reference.matches('^RED-DEMO-[0-9]{6}$') &&
+        data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 120 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 200 &&
+        data.phone is string && data.phone.size() == 10 && data.phone.matches('^[6-9][0-9]{9}$') &&
+        data.address is string && data.address.size() >= 1 && data.address.size() <= 300 &&
+        data.pin is string && data.pin.size() == 6 && data.pin.matches('^[1-9][0-9]{5}$') &&
+        data.city is string && data.city.size() >= 1 && data.city.size() <= 100 &&
+        data.state is string && data.state.size() >= 1 && data.state.size() <= 100 &&
+        data.shippingMethod in ['standard', 'express'] &&
+        (data.shippingCost is int || data.shippingCost is float) && data.shippingCost >= 0 && data.shippingCost <= 500 &&
+        data.freeShipping is bool &&
+        data.freeGift is bool &&
+        (data.subtotal is int || data.subtotal is float) && data.subtotal > 0 && data.subtotal <= 1000000 &&
+        (data.gstRate is int || data.gstRate is float) && data.gstRate == 12 &&
+        (data.gst is int || data.gst is float) && data.gst >= 0 && data.gst <= data.subtotal &&
+        (data.total is int || data.total is float) && data.total == data.subtotal + data.shippingCost &&
+        data.itemCount is int && data.itemCount >= 1 && data.itemCount <= 500 &&
+        data.status == 'placed' &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidOrderItem(data, userId, orderId) {
+      return data.keys().hasAll(['uid', 'orderId', 'name', 'price', 'quantity']) &&
+        data.keys().hasOnly(['uid', 'orderId', 'name', 'price', 'quantity']) &&
+        data.uid is string && data.uid == userId && data.uid == request.auth.uid && isValidId(data.uid) &&
+        data.orderId is string && data.orderId == orderId && isValidId(data.orderId) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 80 &&
+        (data.price is int || data.price is float) &&
+        isValidCatalogueItem(data.name, data.price) &&
+        data.quantity is int && data.quantity >= 1 && data.quantity <= 99;
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isOwner(userId);
+      allow list: if false;
+      allow create: if isVerifiedOwner(userId) && isValidId(userId) &&
+        isValidUserAccount(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerifiedOwner(userId) && isValidId(userId) &&
+        isValidUserAccount(incoming(), userId) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'updatedAt']);
+      allow delete: if false;
+
+      match /private/{docId} {
+        allow get: if isValidId(userId) && docId == 'profile' && isOwner(userId);
+        allow list: if false;
+        allow create: if isVerifiedOwner(userId) && isValidId(userId) && docId == 'profile' &&
+          isValidPrivateProfile(incoming(), userId) &&
+          incoming().updatedAt == request.time;
+        allow update: if isVerifiedOwner(userId) && isValidId(userId) && docId == 'profile' &&
+          isValidPrivateProfile(incoming(), userId) &&
+          incoming().uid == existing().uid &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['email', 'fullName', 'phone', 'address', 'pinCode', 'city', 'state', 'updatedAt']);
+        allow delete: if false;
+      }
+
+      match /cart/{itemId} {
+        allow get: if isValidId(userId) && isValidId(itemId) && isOwner(userId);
+        allow list: if isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow create: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(itemId) &&
+          isValidCartItem(incoming(), userId) &&
+          incoming().updatedAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(itemId) &&
+          isValidCartItem(incoming(), userId) &&
+          incoming().uid == existing().uid &&
+          incoming().name == existing().name &&
+          incoming().price == existing().price &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['quantity', 'updatedAt']) &&
+          exists(/databases/$(database)/documents/users/$(userId));
+        allow delete: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(itemId);
+      }
+
+      match /wishlist/{itemId} {
+        allow get: if isValidId(userId) && isValidId(itemId) && isOwner(userId);
+        allow list: if isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow create: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(itemId) &&
+          isValidWishlistItem(incoming(), userId) &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if false;
+        allow delete: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(itemId);
+      }
+
+      match /orders/{orderId} {
+        allow get: if isValidId(userId) && isValidId(orderId) && isOwner(userId);
+        allow list: if isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow create: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(orderId) &&
+          isValidOrder(incoming(), userId) &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if false;
+        allow delete: if false;
+
+        match /items/{itemId} {
+          allow get: if isValidId(userId) && isValidId(orderId) && isValidId(itemId) && isOwner(userId) &&
+            get(/databases/$(database)/documents/users/$(userId)/orders/$(orderId)).data.uid == request.auth.uid;
+          allow list: if isOwner(userId) && resource.data.uid == request.auth.uid;
+          allow create: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(orderId) && isValidId(itemId) &&
+            isValidOrderItem(incoming(), userId, orderId) &&
+            existsAfter(/databases/$(database)/documents/users/$(userId)/orders/$(orderId)) &&
+            getAfter(/databases/$(database)/documents/users/$(userId)/orders/$(orderId)).data.uid == request.auth.uid;
+          allow update: if false;
+          allow delete: if false;
+        }
+      }
+    }
+  }
+}

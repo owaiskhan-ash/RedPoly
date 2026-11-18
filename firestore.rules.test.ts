@@ -1,0 +1,91 @@
+// Security Rules Test Suite for REDPOLY Storefront (Dirty Dozen Verification)
+// Run against Firebase Emulator Suite with @firebase/rules-unit-testing if emulator is available.
+import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
+
+export const dirtyDozenPayloads = {
+  crossUserAccountSpoof: {
+    path: 'users/userB',
+    payload: { uid: 'userB', displayName: 'Attacker', createdAt: 'SERVER_TIME', updatedAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  ghostFieldInjection: {
+    path: 'users/userA',
+    payload: { uid: 'userA', displayName: 'Alice', isAdmin: true, createdAt: 'SERVER_TIME', updatedAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  unverifiedEmailWrite: {
+    auth: { uid: 'userA', email_verified: false },
+    path: 'users/userA',
+    payload: { uid: 'userA', displayName: 'Alice', createdAt: 'SERVER_TIME', updatedAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  immutableFieldMutation: {
+    path: 'users/userA',
+    updatePayload: { uid: 'userA', displayName: 'Alice', createdAt: '2020-01-01T00:00:00Z', updatedAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  piiReadByNonOwner: {
+    auth: { uid: 'userB', email_verified: true },
+    path: 'users/userA/private/profile',
+    operation: 'get',
+    expected: 'PERMISSION_DENIED',
+  },
+  cartPriceTampering: {
+    path: 'users/userA/cart/gel-storm',
+    payload: { uid: 'userA', name: 'GEL STORM', price: 1, quantity: 1, updatedAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  cartQuantityAndIdPoisoning: {
+    path: `users/userA/cart/${'a'.repeat(200)}`,
+    payload: { uid: 'userA', name: 'BUBBLE GUN', price: 499, quantity: 5000, updatedAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  wishlistExternalHrefInjection: {
+    path: 'users/userA/wishlist/bad',
+    payload: { uid: 'userA', name: 'BUBBLE GUN', href: 'https://evil.example', price: 499, createdAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  timestampSpoofing: {
+    path: 'users/userA/cart/bubble-gun',
+    payload: { uid: 'userA', name: 'BUBBLE GUN', price: 499, quantity: 1, updatedAt: '2020-01-01T00:00:00Z' },
+    expected: 'PERMISSION_DENIED',
+  },
+  orderTotalTampering: {
+    path: 'users/userA/orders/ord-1',
+    payload: {
+      uid: 'userA',
+      reference: 'RED-DEMO-123456',
+      customerName: 'Alice',
+      email: 'alice@example.com',
+      phone: '9876543210',
+      address: '12 Main St',
+      pin: '400001',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      shippingMethod: 'standard',
+      shippingCost: 30,
+      freeShipping: false,
+      freeGift: false,
+      subtotal: 499,
+      gstRate: 12,
+      gst: 53,
+      total: 1,
+      itemCount: 1,
+      status: 'placed',
+      createdAt: 'SERVER_TIME',
+    },
+    expected: 'PERMISSION_DENIED',
+  },
+  orderMutationAfterPlacement: {
+    path: 'users/userA/orders/ord-1',
+    updatePayload: { status: 'cancelled' },
+    expected: 'PERMISSION_DENIED',
+  },
+  orphanedOrderItem: {
+    path: 'users/userA/orders/missing-order/items/bubble-gun',
+    payload: { uid: 'userA', orderId: 'missing-order', name: 'BUBBLE GUN', price: 499, quantity: 1 },
+    expected: 'PERMISSION_DENIED',
+  },
+};
+
+export { assertFails, assertSucceeds };

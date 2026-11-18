@@ -1,0 +1,320 @@
+{
+  "entities": {
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Non-PII user account record for a signed-in REDPOLY customer.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "photoURL": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "displayName", "createdAt", "updatedAt"]
+    },
+    "PrivateProfile": {
+      "title": "PrivateProfile",
+      "description": "Isolated PII delivery profile for a signed-in REDPOLY customer.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 200
+        },
+        "fullName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 10,
+          "pattern": "^$|^[6-9][0-9]{9}$"
+        },
+        "address": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "pinCode": {
+          "type": "string",
+          "maxLength": 6,
+          "pattern": "^$|^[1-9][0-9]{5}$"
+        },
+        "city": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "state": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "updatedAt"]
+    },
+    "CartItem": {
+      "title": "CartItem",
+      "description": "A single product line item in a user's synced shopping cart.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "price": {
+          "type": "number"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "name", "price", "quantity", "updatedAt"]
+    },
+    "WishlistItem": {
+      "title": "WishlistItem",
+      "description": "A product saved for later by a signed-in customer.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "href": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^/[a-zA-Z0-9_\\-/?=&]+$"
+        },
+        "image": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "price": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "name", "href", "price", "createdAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer demo order record placed at checkout.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 15,
+          "maxLength": 15,
+          "pattern": "^RED-DEMO-[0-9]{6}$"
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 200
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^[6-9][0-9]{9}$"
+        },
+        "address": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "pin": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 6,
+          "pattern": "^[1-9][0-9]{5}$"
+        },
+        "city": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "state": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "shippingMethod": {
+          "type": "string",
+          "enum": ["standard", "express"]
+        },
+        "shippingCost": {
+          "type": "number"
+        },
+        "freeShipping": {
+          "type": "boolean"
+        },
+        "freeGift": {
+          "type": "boolean"
+        },
+        "subtotal": {
+          "type": "number"
+        },
+        "gstRate": {
+          "type": "number"
+        },
+        "gst": {
+          "type": "number"
+        },
+        "total": {
+          "type": "number"
+        },
+        "itemCount": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["placed"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "reference",
+        "customerName",
+        "email",
+        "phone",
+        "address",
+        "pin",
+        "city",
+        "state",
+        "shippingMethod",
+        "shippingCost",
+        "freeShipping",
+        "freeGift",
+        "subtotal",
+        "gstRate",
+        "gst",
+        "total",
+        "itemCount",
+        "status",
+        "createdAt"
+      ]
+    },
+    "OrderItem": {
+      "title": "OrderItem",
+      "description": "Line item belonging to a placed order.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "price": {
+          "type": "number"
+        },
+        "quantity": {
+          "type": "integer"
+        }
+      },
+      "required": ["uid", "orderId", "name", "price", "quantity"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserAccount" },
+      "description": "Non-PII customer account root document."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/PrivateProfile" },
+      "description": "Owner-only PII delivery profile stored at docId 'profile'."
+    },
+    "/users/{userId}/cart/{itemId}": {
+      "schema": { "$ref": "#/entities/CartItem" },
+      "description": "Synced shopping cart line items for a customer."
+    },
+    "/users/{userId}/wishlist/{itemId}": {
+      "schema": { "$ref": "#/entities/WishlistItem" },
+      "description": "Synced saved-for-later wishlist items for a customer."
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Immutable demo orders placed by a customer."
+    },
+    "/users/{userId}/orders/{orderId}/items/{itemId}": {
+      "schema": { "$ref": "#/entities/OrderItem" },
+      "description": "Line items belonging to a customer order."
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "redpoly",
+  "version": "1.0.0",
+  "private": true,
+  "description": "REDPOLY storefront static server",
+  "main": "server.js",
+  "scripts": {
+    "dev": "esbuild src/firebase-client.ts --bundle --format=iife --platform=browser --outfile=dist/firebase-client.js && node server.js",
+    "start": "node server.js",
+    "build": "tsc --noEmit && esbuild src/firebase-client.ts --bundle --format=iife --platform=browser --minify --outfile=dist/firebase-client.js && node --check server.js",
+    "lint": "tsc --noEmit && eslint firestore.rules && node --check server.js"
+  },
+  "dependencies": {
+    "@firebase/eslint-plugin-security-rules": "^0.0.2",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.15.0",
+    "express": "^4.21.2",
+    "firebase": "^13.4.0",
+    "typescript": "^7.0.2"
+  }
+}
