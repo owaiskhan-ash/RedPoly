@@ -1001,26 +1001,12 @@
       authToggle.textContent = '';
       if (user) {
         authToggle.classList.add('is-signed-in');
-        var firstName = (user.displayName || 'ACCOUNT').split(/\s+/)[0].toUpperCase();
-        authToggle.setAttribute('aria-label', 'Open account for ' + (user.displayName || user.email));
-        if (user.photoURL) {
-          var img = document.createElement('img');
-          img.className = 'auth-toggle__avatar';
-          img.src = user.photoURL;
-          img.alt = '';
-          img.referrerPolicy = 'no-referrer';
-          authToggle.appendChild(img);
-        } else {
-          var initial = document.createElement('span');
-          initial.className = 'auth-toggle__initial';
-          initial.textContent = firstName.charAt(0) || 'R';
-          authToggle.appendChild(initial);
-        }
-        var lbl = document.createElement('span');
-        lbl.className = 'auth-toggle__label';
-        lbl.textContent = firstName;
-        authToggle.appendChild(lbl);
+        authToggle.hidden = true;
+        authToggle.setAttribute('aria-hidden', 'true');
+        authToggle.setAttribute('aria-label', 'Signed in as ' + (user.displayName || user.email || 'REDPOLY Member'));
       } else {
+        authToggle.hidden = false;
+        authToggle.removeAttribute('aria-hidden');
         authToggle.classList.remove('is-signed-in');
         authToggle.setAttribute('aria-label', 'Sign in with Google');
         authToggle.innerHTML = googleSvg + '<span class="auth-toggle__label">SIGN IN</span>';
@@ -1684,23 +1670,8 @@
     }
     function isWished(name) { return wishItems.some(function (item) { return item.name === name; }); }
 
-    if (!document.querySelector('.add-btn')) return;   // help/checkout style pages: no saved-items panel
-    var wishToggle = document.createElement('button');
-    wishToggle.type = 'button';
-    wishToggle.className = 'wish-toggle';
-    wishToggle.setAttribute('aria-haspopup', 'dialog');
-    wishToggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span>SAVED</span><b class="wish-toggle__count">0</b>';
-    if (cartToggle.parentNode) cartToggle.parentNode.insertBefore(wishToggle, cartToggle);
-
-    var wishPanel = document.createElement('dialog');
-    wishPanel.className = 'wish-panel';
-    wishPanel.setAttribute('aria-labelledby', 'wish-panel-title');
-    wishPanel.innerHTML = '<button class="wish-panel__close" type="button" aria-label="Close saved items">×</button><p class="wish-panel__eyebrow">KEPT FOR LATER</p><h2 id="wish-panel-title">YOUR SAVED ITEMS</h2><p class="wish-panel__empty">Nothing saved yet. Tap the heart on anything you like and it will wait here, on this device.</p><ul class="wish-panel__list"></ul>';
-    document.body.appendChild(wishPanel);
-    var wishList = wishPanel.querySelector('.wish-panel__list');
-    var wishEmpty = wishPanel.querySelector('.wish-panel__empty');
+    if (!document.querySelector('.add-btn')) return;   // help/checkout style pages: no saved-items controls
     var wishButtons = [];
-    function closeWish() { if (wishPanel.open && wishPanel.close) wishPanel.close(); else wishPanel.removeAttribute('open'); }
     function syncWishButton(button) {
       var saved = isWished(button.wishData.name);
       button.classList.toggle('is-favorite', saved);
@@ -1709,31 +1680,6 @@
       if (label) label.textContent = saved ? 'SAVED' : 'SAVE FOR LATER';
     }
     function renderWish() {
-      var count = wishItems.length;
-      wishToggle.querySelector('.wish-toggle__count').textContent = count;
-      wishToggle.classList.toggle('has-items', count > 0);
-      wishToggle.setAttribute('aria-label', 'Open saved items, ' + count + (count === 1 ? ' item' : ' items'));
-      wishEmpty.hidden = count > 0;
-      wishList.textContent = '';
-      wishItems.forEach(function (item) {
-        var row = document.createElement('li'); row.className = 'wish-item';
-        var link = document.createElement('a'); link.className = 'wish-item__link'; link.href = item.href;
-        if (item.image) { var image = document.createElement('img'); image.src = item.image; image.alt = ''; link.appendChild(image); }
-        var copy = document.createElement('span'); copy.className = 'wish-item__copy';
-        var title = document.createElement('strong'); title.textContent = item.name;
-        var price = document.createElement('small'); price.textContent = money(item.price) + ' incl. GST';
-        copy.appendChild(title); copy.appendChild(price); link.appendChild(copy);
-        var actions = document.createElement('span'); actions.className = 'wish-item__actions';
-        var add = document.createElement('button'); add.type = 'button'; add.className = 'wish-item__add'; add.textContent = 'ADD TO CART';
-        add.setAttribute('data-name', item.name); add.setAttribute('data-price', String(item.price));
-        add.setAttribute('aria-label', 'Add ' + item.name + ' to cart');
-        add.addEventListener('click', function () { closeWish(); addCartItem(add); });
-        var remove = document.createElement('button'); remove.type = 'button'; remove.className = 'wish-item__remove'; remove.textContent = 'REMOVE';
-        remove.setAttribute('aria-label', 'Remove ' + item.name + ' from saved items');
-        remove.addEventListener('click', function () { toggleWish(item, true); });
-        actions.appendChild(add); actions.appendChild(remove);
-        row.appendChild(link); row.appendChild(actions); wishList.appendChild(row);
-      });
       wishButtons.forEach(syncWishButton);
     }
     function toggleWish(data, quiet) {
@@ -1747,7 +1693,7 @@
         if (window.RedpolyFirebase) window.RedpolyFirebase.saveWishlistItem(entry).catch(function (err) { console.error(err); });
       }
       persistWish(); renderWish();
-      if (!quiet) showToast(saved ? data.name + ' removed from saved' : data.name + ' saved for later');
+      if (!quiet) showToast(saved ? data.name + ' removed from favorites' : data.name + ' saved to favorites');
     }
     function registerWishButton(button, data) {
       button.wishData = data;
@@ -1783,9 +1729,6 @@
       pageBuyRow.insertAdjacentElement('afterend', saveButton);
       registerWishButton(saveButton, { name:pageBuy.getAttribute('data-name'), href:window.location.pathname.replace(/\.html$/, ''), image:pageImage ? localPath(pageImage.getAttribute('src')) : '', price:Number(pageBuy.getAttribute('data-price')) });
     }
-    wishToggle.addEventListener('click', function () { renderWish(); if (wishPanel.showModal) wishPanel.showModal(); else wishPanel.setAttribute('open', ''); });
-    wishPanel.querySelector('.wish-panel__close').addEventListener('click', closeWish);
-    wishPanel.addEventListener('click', function (event) { if (event.target === wishPanel) closeWish(); });
     window.addEventListener('storage', function (event) {
       if (event.key !== wishKey) return;
       wishItems = parseWish(event.newValue); renderWish();

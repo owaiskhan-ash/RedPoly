@@ -126,6 +126,12 @@ export const dirtyDozenPayloads = {
     },
     expected: 'PERMISSION_DENIED',
   },
+  wishlistReadByNonAdminRejected: {
+    auth: { uid: 'userB', email_verified: true, email: 'userb@example.com' },
+    path: 'users/userA/wishlist/stunt-pet',
+    operation: 'get',
+    expected: 'PERMISSION_DENIED',
+  },
 };
 
 export { assertFails, assertSucceeds };

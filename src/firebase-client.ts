@@ -163,6 +163,19 @@ export interface SubmitReviewInput {
   body: string;
 }
 
+export interface AdminWishlistItem {
+  id: string;
+  uid: string;
+  userName: string;
+  userEmail: string;
+  userPhotoURL: string;
+  productName: string;
+  href: string;
+  image: string;
+  price: number;
+  createdAtMs: number;
+}
+
 export interface UpdateOrderDetailsInput {
   customerName?: string;
   email?: string;
@@ -1432,6 +1445,92 @@ export async function submitProductReview(input: SubmitReviewInput): Promise<Rev
   }
 }
 
+export async function listAllWishlists(): Promise<AdminWishlistItem[]> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to view customer favorites.');
+  }
+  const cgPath = 'wishlist';
+  try {
+    const snap = await getDocs(collectionGroup(db, 'wishlist'));
+    const rawItems: Array<{
+      id: string;
+      uid: string;
+      productName: string;
+      href: string;
+      image: string;
+      price: number;
+      createdAtMs: number;
+    }> = [];
+    const uidSet = new Set<string>();
+
+    snap.forEach((docSnap) => {
+      const d = docSnap.data();
+      const parentUid = docSnap.ref.parent.parent?.id || '';
+      const uid = String(d.uid || parentUid || '');
+      const productName = typeof d.name === 'string' ? d.name : '';
+      if (!uid || !productName) return;
+      if (LIMITS.ID_PATTERN.test(uid)) uidSet.add(uid);
+      const ts = d.createdAt as Timestamp | undefined;
+      const createdAtMs = ts && typeof ts.toMillis === 'function' ? ts.toMillis() : 0;
+      const catEntry = CATALOGUE[productName];
+      rawItems.push({
+        id: docSnap.id,
+        uid,
+        productName,
+        href:
+          typeof d.href === 'string' && LIMITS.HREF_PATTERN.test(d.href)
+            ? d.href
+            : catEntry?.href || '/',
+        image:
+          typeof d.image === 'string' && LIMITS.IMAGE_PATTERN.test(d.image)
+            ? d.image
+            : catEntry?.image || '',
+        price: Number(d.price || catEntry?.price || 0),
+        createdAtMs,
+      });
+    });
+
+    const userMap = new Map<string, { name: string; email: string; photoURL: string }>();
+    await Promise.all(
+      Array.from(uidSet).map(async (uid) => {
+        const [accountSnap, profileSnap] = await Promise.all([
+          getDoc(doc(db, 'users', uid)).catch(() => null),
+          getDoc(doc(db, 'users', uid, 'private', 'profile')).catch(() => null),
+        ]);
+        const accountData = accountSnap && accountSnap.exists() ? accountSnap.data() : {};
+        const profileData = profileSnap && profileSnap.exists() ? profileSnap.data() : {};
+        const name = String(profileData.fullName || accountData.displayName || 'REDPOLY Member');
+        const email = String(profileData.email || '');
+        const photoURL = sanitizeUrl(
+          typeof accountData.photoURL === 'string' ? accountData.photoURL : null
+        );
+        userMap.set(uid, { name, email, photoURL });
+      })
+    );
+
+    const results: AdminWishlistItem[] = rawItems.map((item) => {
+      const userMeta = userMap.get(item.uid);
+      return {
+        id: item.id,
+        uid: item.uid,
+        userName: userMeta?.name || 'REDPOLY Member',
+        userEmail: userMeta?.email || '',
+        userPhotoURL: userMeta?.photoURL || '',
+        productName: item.productName,
+        href: item.href,
+        image: item.image,
+        price: item.price,
+        createdAtMs: item.createdAtMs,
+      };
+    });
+
+    results.sort((a, b) => b.createdAtMs - a.createdAtMs);
+    return results;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, cgPath);
+  }
+}
+
 export async function listAllReviews(): Promise<ReviewRecord[]> {
   if (!isAdminUser()) {
     throw new Error('Admin access required to manage product reviews.');
@@ -1519,6 +1618,7 @@ const api = {
   updateOrderDetails,
   listProductReviews,
   submitProductReview,
+  listAllWishlists,
   listAllReviews,
   moderateReview,
   deleteReview,

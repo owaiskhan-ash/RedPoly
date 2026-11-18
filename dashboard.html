@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/dashboard.css?v=orders-reviews-20261119" />
+  <link rel="stylesheet" href="/dashboard.css?v=header-cleanup-20261120" />
 </head>
 <body>
   <header class="top-bar">
@@ -61,6 +61,13 @@
           </svg>
           <span>Reviews</span>
           <span class="sidebar__count" id="sidebar-reviews-count">0</span>
+        </a>
+        <a class="sidebar__link" href="#favorites" id="nav-favorites" data-view="favorites">
+          <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 17s-6-3.85-7.65-7.65C1.35 7.05 2.75 4.25 5.3 4.25c1.5 0 2.9 1.15 4.7 2.95 1.8-1.8 3.2-2.95 4.7-2.95 2.55 0 3.95 2.8 2.95 5.1C16 13.15 10 17 10 17z" />
+          </svg>
+          <span>Favorites</span>
+          <span class="sidebar__count" id="sidebar-favorites-count">0</span>
         </a>
       </nav>
 
@@ -278,6 +285,95 @@
               </div>
             </section>
           </div>
+
+          <!-- Customer Favorites View -->
+          <div id="favorites-view" hidden>
+            <section class="metrics-strip" aria-label="Favorites summary">
+              <div class="metric-cell">
+                <span class="metric-cell__label">Total favorites</span>
+                <strong class="metric-cell__value" id="metric-total-favorites">0</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Customers with favorites</span>
+                <strong class="metric-cell__value" id="metric-favorite-users">0</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Products saved</span>
+                <strong class="metric-cell__value" id="metric-favorite-products">0</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Most favorited</span>
+                <strong class="metric-cell__value" id="metric-top-favorite">—</strong>
+              </div>
+            </section>
+
+            <div class="inline-alert" id="favorites-error-banner" hidden role="alert">
+              <p id="favorites-error-text"></p>
+              <button type="button" class="btn btn--secondary btn--sm" id="favorites-retry-btn">Try again</button>
+            </div>
+
+            <section class="orders-card" aria-label="Customer product favorites">
+              <div class="orders-tabs" id="favorites-product-tabs" role="tablist" aria-label="Filter favorites by product">
+                <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-fav-product="all">All <span id="fav-tab-all">0</span></button>
+              </div>
+
+              <div class="orders-toolbar">
+                <div class="search-field">
+                  <svg class="search-field__icon" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="7" cy="7" r="4.5" />
+                    <path d="M10.5 10.5L14 14" />
+                  </svg>
+                  <input type="search" id="favorites-search" placeholder="Search favorites by customer name, email, UID, or product" aria-label="Search customer favorites" />
+                  <button type="button" class="search-field__clear" id="favorites-search-clear" hidden aria-label="Clear favorites search">×</button>
+                </div>
+                <div class="toolbar-controls">
+                  <label class="sort-control" for="favorites-sort">
+                    <span class="sr-only">Sort favorites</span>
+                    <select id="favorites-sort" aria-label="Sort favorites">
+                      <option value="newest">Newest first</option>
+                      <option value="customer-asc">Customer: A to Z</option>
+                      <option value="product-asc">Product: A to Z</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div class="table-skeleton" id="favorites-skeleton" hidden aria-hidden="true">
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+              </div>
+
+              <div class="empty-state" id="favorites-empty" hidden>
+                <div class="empty-state__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" />
+                  </svg>
+                </div>
+                <h2 class="empty-state__title" id="favorites-empty-title">No customer favorites yet</h2>
+                <p class="empty-state__copy" id="favorites-empty-copy">When signed-in customers save toys as favorites, you will see who favorited each product here.</p>
+              </div>
+
+              <div class="table-scroll" id="favorites-table-wrap" hidden>
+                <table class="orders-table favorites-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Customer</th>
+                      <th scope="col">Product</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Favorited</th>
+                    </tr>
+                  </thead>
+                  <tbody id="favorites-tbody"></tbody>
+                </table>
+              </div>
+
+              <div class="table-footer" id="favorites-footer" hidden>
+                <span id="favorites-showing-text">Showing 0 favorites</span>
+                <span>Shows every signed-in customer who saved a toy</span>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </main>
@@ -455,7 +551,7 @@
 
   <div class="dash-toast" id="dash-toast" role="status" aria-live="polite"></div>
 
-  <script src="/firebase-client.js?v=orders-reviews-20261119" defer></script>
-  <script src="/dashboard.js?v=orders-reviews-20261119" defer></script>
+  <script src="/firebase-client.js?v=header-cleanup-20261120" defer></script>
+  <script src="/dashboard.js?v=header-cleanup-20261120" defer></script>
 </body>
 </html>

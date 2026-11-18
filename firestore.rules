@@ -203,7 +203,7 @@ service cloud.firestore {
         data.createdAt == request.time;
     }
 
-    // Collection-group read access for verified store admin to list all placed orders & customer reviews
+    // Collection-group read access for verified store admin to list all placed orders, customer reviews & customer wishlists
     match /{path=**}/orders/{orderId} {
       allow get: if isValidId(orderId) && isAdmin();
       allow list: if isAdmin();
@@ -211,6 +211,11 @@ service cloud.firestore {
 
     match /{path=**}/reviews/{reviewId} {
       allow get: if isValidId(reviewId) && isAdmin();
+      allow list: if isAdmin();
+    }
+
+    match /{path=**}/wishlist/{itemId} {
+      allow get: if isValidId(itemId) && isAdmin();
       allow list: if isAdmin();
     }
 
@@ -251,7 +256,7 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow get: if isValidId(userId) && isOwner(userId);
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
       allow list: if false;
       allow create: if isVerifiedOwner(userId) && isValidId(userId) &&
         isValidUserAccount(incoming(), userId) &&
@@ -266,7 +271,7 @@ service cloud.firestore {
       allow delete: if false;
 
       match /private/{docId} {
-        allow get: if isValidId(userId) && docId == 'profile' && isOwner(userId);
+        allow get: if isValidId(userId) && docId == 'profile' && (isOwner(userId) || isAdmin());
         allow list: if false;
         allow create: if isVerifiedOwner(userId) && isValidId(userId) && docId == 'profile' &&
           isValidPrivateProfile(incoming(), userId) &&
@@ -298,8 +303,8 @@ service cloud.firestore {
       }
 
       match /wishlist/{itemId} {
-        allow get: if isValidId(userId) && isValidId(itemId) && isOwner(userId);
-        allow list: if isOwner(userId) && resource.data.uid == request.auth.uid;
+        allow get: if isValidId(userId) && isValidId(itemId) && (isOwner(userId) || isAdmin());
+        allow list: if isAdmin() || (isOwner(userId) && resource.data.uid == request.auth.uid);
         allow create: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(itemId) &&
           isValidWishlistItem(incoming(), userId) &&
           incoming().createdAt == request.time &&
