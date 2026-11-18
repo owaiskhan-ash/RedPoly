@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 
@@ -95,7 +96,14 @@ Object.entries(rewrites).forEach(([routePath, filePath]) => {
 });
 
 app.get('/firebase-client.js', (req, res) => {
-  res.sendFile(path.join(ROOT, 'firebase-client.js'));
+  const bundlePath = path.join(ROOT, 'firebase-client.js');
+  if (!fs.existsSync(bundlePath)) {
+    return res
+      .status(404)
+      .type('application/javascript')
+      .send('// firebase-client.js has not been built yet; run npm run build.\n');
+  }
+  res.sendFile(bundlePath);
 });
 
 app.use(

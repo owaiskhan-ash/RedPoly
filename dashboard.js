@@ -78,16 +78,6 @@
         throw new Error(JSON.stringify(errInfo));
       }
 
-      (async function testConnection() {
-        try {
-          await fsMod.getDocFromServer(fsMod.doc(db, 'test', 'connection'));
-        } catch (error) {
-          if (error instanceof Error && error.message.indexOf('the client is offline') !== -1) {
-            console.error('Please check your Firebase configuration.');
-          }
-        }
-      })();
-
       function sanitizePhoto(url) {
         if (!url || typeof url !== 'string') return '';
         var trimmed = url.trim().slice(0, 500);
@@ -193,7 +183,7 @@
                 gstRate: Number(d.gstRate || 12),
                 gst: Number(d.gst || 0),
                 total: Number(d.total || 0),
-                itemCount: Number(d.itemCount || lineItems.length),
+                itemCount: Number(d.itemCount || lineItems.reduce(function (sum, item) { return sum + Number(item.quantity || 0); }, 0)),
                 status: statusVal,
                 createdAtMs: createdAtMs,
                 items: lineItems
@@ -639,6 +629,7 @@
     rows.forEach(function (order) {
       var tr = document.createElement('tr');
       var key = orderCompositeKey(order);
+      tr.setAttribute('data-order-key', key);
       if (key === selectedOrderKey) tr.classList.add('is-selected');
       tr.tabIndex = 0;
       tr.setAttribute('aria-label', 'Inspect order ' + order.reference + ' from ' + order.customerName);
@@ -851,11 +842,23 @@
 
   function closeOrderDrawer() {
     if (drawerLayer.hidden) return;
+    var previousKey = selectedOrderKey;
     drawerLayer.hidden = true;
     selectedOrderKey = null;
     renderTable();
-    if (lastFocusedRow && typeof lastFocusedRow.focus === 'function') {
-      lastFocusedRow.focus();
+    var targetRow = null;
+    if (lastFocusedRow && document.contains(lastFocusedRow)) {
+      targetRow = lastFocusedRow;
+    } else if (previousKey && tbody) {
+      targetRow = Array.prototype.find.call(tbody.querySelectorAll('tr[data-order-key]'), function (tr) {
+        return tr.getAttribute('data-order-key') === previousKey;
+      }) || null;
+    }
+    var fallbackFocus = (filterTabsEl && filterTabsEl.querySelector('.orders-tab.is-active')) || refreshBtn;
+    if (targetRow && typeof targetRow.focus === 'function') {
+      targetRow.focus();
+    } else if (fallbackFocus && typeof fallbackFocus.focus === 'function') {
+      fallbackFocus.focus();
     }
     lastFocusedRow = null;
   }
@@ -950,6 +953,9 @@
 
   function escapeCsvCell(val) {
     var str = String(val == null ? '' : val);
+    if (/^[=+\-@\t\r]/.test(str)) {
+      str = "'" + str;
+    }
     if (/[",\n\r]/.test(str)) {
       return '"' + str.replace(/"/g, '""') + '"';
     }
@@ -1044,6 +1050,27 @@
         closeOrderDrawer();
       } else if (sidebar && sidebar.classList.contains('is-open')) {
         setSidebarOpen(false);
+      }
+      return;
+    }
+    if (event.key === 'Tab' && !drawerLayer.hidden && drawerEl) {
+      var focusable = Array.prototype.filter.call(
+        drawerEl.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'),
+        function (el) { return !el.hidden && el.offsetParent !== null; }
+      );
+      if (!focusable.length) {
+        event.preventDefault();
+        drawerEl.focus();
+        return;
+      }
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === drawerEl)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
     }
   });

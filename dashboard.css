@@ -1242,3 +1242,18 @@ tr[tabindex]:focus-visible {
     align-items: flex-start;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-row {
+    animation: none;
+  }
+
+  .top-bar__store-link,
+  .btn,
+  .orders-table tbody tr,
+  .dash-toast,
+  .sidebar {
+    transition: none;
+  }
+}
+

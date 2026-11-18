@@ -38,11 +38,13 @@
     } catch (ignoreStorage) { return []; }
   }
   function saveCart() {
+    var snapshot = items.map(function (item) {
+      return { id:item.id, name:item.name, price:item.price, quantity:item.quantity };
+    });
     try {
-      localStorage.setItem(cartKey, JSON.stringify(items.map(function (item) {
-        return { id:item.id, name:item.name, price:item.price, quantity:item.quantity };
-      })));
+      localStorage.setItem(cartKey, JSON.stringify(snapshot));
     } catch (ignoreSave) { /* The cart still works for this page view. */ }
+    window.dispatchEvent(new CustomEvent('redpoly:cart-local-sync', { detail: { items: snapshot, source: 'checkout' } }));
   }
   items = readCart();
 
@@ -411,6 +413,12 @@
   });
   window.addEventListener('redpoly:cart-updated', function (event) {
     if (leaving || !event.detail || !Array.isArray(event.detail.items)) return;
+    items = event.detail.items.slice();
+    lastRemoved = null;
+    renderCart();
+  });
+  window.addEventListener('redpoly:cart-local-sync', function (event) {
+    if (leaving || !event.detail || event.detail.source === 'checkout' || !Array.isArray(event.detail.items)) return;
     items = event.detail.items.slice();
     lastRemoved = null;
     renderCart();
