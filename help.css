@@ -30,10 +30,11 @@
 .help-policy .help-placeholder-note{color:#f5c79e}
 .help-legal-note{margin-top:18px;color:#9c958a;font-size:10px;line-height:1.6}
 .help-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;align-items:center;padding:20px clamp(18px,5vw,72px);border-top:1px solid rgba(255,255,255,.15);color:#c8ff00;font-size:9px;font-weight:900;letter-spacing:.7px}
-.help-footer__gst{width:100%;text-align:right;font-size:7px;font-weight:800;letter-spacing:1.1px;color:#6d685f}
-.help-footer nav{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:13px}
-.help-footer nav a{color:#d9d4ca;font-size:8px}
-@media(max-width:700px){.help-main{padding:30px 0 58px}.help-policy-grid{grid-template-columns:1fr}.help-contact{align-items:flex-start;gap:14px;padding:18px}.help-business>div{grid-template-columns:104px 1fr;gap:10px}.help-contact__spark{width:45px;height:45px;font-size:24px}.help-contact h2{font-size:25px}.help-contents{margin-top:23px}.help-footer{align-items:flex-start;flex-direction:column}.help-footer nav{justify-content:flex-start}}
+.help-footer__gst{width:100%;text-align:right;font-size:6px;font-weight:800;letter-spacing:.9px;color:#8d877d}
+.help-footer nav{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:11px}
+.help-footer nav a{color:#d9d4ca;font-size:7px;letter-spacing:.4px;white-space:nowrap}
+@media(max-width:700px){.help-main{padding:30px 0 58px}.help-policy-grid{grid-template-columns:1fr}.help-contact{align-items:flex-start;gap:14px;padding:18px}.help-business>div{grid-template-columns:104px 1fr;gap:10px}.help-contact__spark{width:45px;height:45px;font-size:24px}.help-contact h2{font-size:25px}.help-contents{margin-top:23px}.help-footer{gap:9px;padding:16px 16px 18px;font-size:8px;letter-spacing:.3px}.help-footer nav{flex-wrap:nowrap;justify-content:space-between;width:100%;gap:4px}.help-footer nav a{font-size:7px;letter-spacing:0}}
+@media(max-width:360px){.help-footer nav a{font-size:6px}.help-footer{font-size:7px}}
 @media(prefers-reduced-motion:reduce){.help-contents a{transition:none}}
 .checkout-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(18px,5vw,72px);border-bottom:1px solid rgba(255,255,255,.13);background:rgba(10,10,10,.72)}
 .checkout-brand{display:flex;align-items:center;gap:12px;color:#c8ff00;font-size:8px;font-weight:900;letter-spacing:2px}
