@@ -343,7 +343,8 @@
             "gel-storm",
             "mecha-rover",
             "pixel-splash",
-            "cute-dinos"
+            "cute-dinos",
+            "magnetic-blocks"
           ]
         },
         "itemSlug": {
@@ -425,7 +426,11 @@
             "cute-dinos-green",
             "cute-dinos-red",
             "cute-dinos-teal",
-            "cute-dinos-trio"
+            "cute-dinos-trio",
+            "magnetic-blocks-25-pcs",
+            "magnetic-blocks-36-pcs",
+            "magnetic-blocks-42-pcs",
+            "magnetic-blocks-64-pcs"
           ]
         },
         "name": {

@@ -18,7 +18,11 @@
     'CUTE DINOS GREEN': { price:249, image:'/assets/images/redpoly/products/cute-dinos-green-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS RED': { price:249, image:'/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TEAL': { price:249, image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
-    'CUTE DINOS TRIO': { price:549, image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' }
+    'CUTE DINOS TRIO': { price:549, image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' },
+    'MAGNETIC BLOCKS 25 PCS': { price:399, image:'/assets/images/redpoly/products/magnetic-blocks-25pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 36 PCS': { price:549, image:'/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 42 PCS': { price:599, image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 64 PCS': { price:799, image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' }
   };
   var liveCatalogMap = {};
   (function hydrateCatalogFromCache() {

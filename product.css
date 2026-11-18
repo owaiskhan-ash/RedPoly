@@ -745,4 +745,52 @@ body.creature-page--mecha .char-file__photo{position:absolute;inset:0;z-index:0;
 .char-market-compare__tag{display:inline-flex;align-items:center;padding:5px 9px;border:1px solid var(--character-muted-border);border-radius:3px;background:transparent;color:var(--character-muted-strong);font:800 10px/1.2 'Archivo',sans-serif;letter-spacing:.6px}
 .char-buy:disabled,.char-buy.is-out-of-stock{background:#cfc7b9!important;color:#4f493f!important;border-color:#7a7266!important;box-shadow:none!important;cursor:not-allowed;transform:none!important;animation:none!important}
 
+/* Magnetic Blocks: deep cobalt + warm cream STEM palette with 4-pack selector */
+body.creature-page--magnetic{--character-primary:#0f3d68;--character-mid:#0c3156;--character-dark:#05182b;--character-deep:#072340;--character-hot:#ff5b54;--character-accent:#ffd22e;--character-light:#fff9ec;--character-ink:#071e36;--character-story:#06182c;--character-card-dark:#134a7e;--character-glow:rgba(79,195,247,.46);--character-glow-soft:rgba(255,210,46,.42);--character-glow-faint:rgba(79,195,247,.22);--character-accent-soft:rgba(255,210,46,.16);--character-ring:rgba(255,210,46,.52);--character-accent-halo:rgba(255,210,46,.09);--character-accent-halo-strong:rgba(79,195,247,.06);--character-accent-inset:rgba(255,210,46,.11);--character-shadow:rgba(3,12,24,.58);--character-text-shadow:rgba(4,16,32,.48);--character-nav:rgba(5,20,38,.66);--character-soft-shade:rgba(5,20,38,.25);--character-muted:rgba(255,249,236,.78);--character-muted-strong:rgba(255,249,236,.96);--character-muted-border:rgba(255,249,236,.42);--character-muted-border-strong:rgba(255,249,236,.56);--character-card-ink:#071e36;--character-button-shadow:rgba(3,12,24,.55);--character-final-ink:#071e36;--character-accent-bright:#ffe470;--character-plate-top:#4fc3f7;--character-plate-mid:#1864a8;--character-plate-bottom:#061b31;--character-border:#041526}
+body.creature-page--magnetic .char-hero h1{font-size:clamp(74px,11.2vw,152px);line-height:.8}
+body.creature-page--magnetic .char-stage__figure{width:min(104%,560px);max-height:520px;filter:drop-shadow(0 26px 20px var(--character-shadow))}
+body.creature-page--magnetic .char-final-cta h2 span{color:#fff9ec}
+body.creature-page--magnetic .char-box__photo{border:4px solid var(--character-light);background:#fff;box-shadow:8px 8px 0 var(--character-accent);overflow:hidden}
+body.creature-page--magnetic .char-box__photo img{filter:none}
+body.creature-page--magnetic .char-box__badge{display:inline-block;margin-bottom:10px;padding:4px 9px;border:2px solid #041526;background:var(--character-accent);color:#071e36;font:900 9px/1 'Archivo',sans-serif;letter-spacing:1.3px;text-transform:uppercase;box-shadow:3px 3px 0 #041526}
+body.creature-page--magnetic .char-file__portrait{display:block;min-height:472px;padding:0;background:#1a120c}
+body.creature-page--magnetic .char-file__photo{position:absolute;inset:0;z-index:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:50% 50%;border:0;box-shadow:none;transform:none;filter:none}
+body.creature-page--magnetic .char-file__portrait::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(6,24,44,.52),rgba(6,24,44,0) 24%),linear-gradient(0deg,rgba(6,24,44,.62),rgba(6,24,44,0) 28%)}
+body.creature-page--magnetic .char-file__no{top:14px;left:16px;z-index:3}
+body.creature-page--magnetic .char-file__stamp{z-index:3;bottom:16px;right:16px;background:rgba(6,24,44,.52)}
+
+.magnetic-picker{max-width:480px;margin-top:20px;padding:15px 15px 14px;border:2px solid var(--character-border);background:rgba(4,21,38,.62);box-shadow:5px 5px 0 var(--character-button-shadow)}
+.magnetic-picker__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.magnetic-picker__title{font-size:9px;font-weight:900;letter-spacing:2px;color:var(--character-accent)}
+.magnetic-picker__state{font-size:9px;font-weight:900;letter-spacing:1.1px;color:var(--character-muted-strong)}
+.magnetic-picker__group{min-width:0;margin:11px 0 0;padding:0;border:0}
+.magnetic-picker__group legend{padding:0;font-size:8px;font-weight:900;letter-spacing:1.6px;color:var(--character-muted)}
+.magnetic-packs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.magnetic-pack{position:relative;display:grid;gap:4px;padding:10px 11px;background:var(--character-light);color:var(--character-card-ink);border:2px solid transparent;cursor:pointer;transition:transform .16s ease,background-color .16s ease,box-shadow .16s ease}
+.magnetic-pack:hover{transform:translateY(-2px)}
+.magnetic-pack input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.magnetic-pack__top{display:flex;align-items:baseline;justify-content:space-between;gap:6px;padding-right:16px}
+.magnetic-pack__name{font:400 17px/1 'Anton',sans-serif;letter-spacing:.4px}
+.magnetic-pack__amount{font:400 20px/1 'Anton',sans-serif;letter-spacing:-.3px;color:#0b4f8a}
+.magnetic-pack__meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.magnetic-pack small{font-size:8.5px;font-weight:800;line-height:1.3;color:#3d4d5e}
+.magnetic-pack__badge{padding:2px 5px;background:#0f3d68;color:#ffd22e;font:900 7px/1.2 'Archivo',sans-serif;letter-spacing:.7px;text-transform:uppercase;white-space:nowrap}
+.magnetic-pack:has(input:checked){background:#fff;border-color:#041526;box-shadow:3px 3px 0 var(--character-accent)}
+.magnetic-pack:has(input:checked)::after{content:"✓";position:absolute;top:7px;right:7px;font-size:11px;font-weight:900;color:#0b4f8a}
+.magnetic-pack:has(input:focus-visible){outline:3px solid var(--character-hot);outline-offset:2px}
+.magnetic-picker__hint{margin-top:9px;font-size:9px;font-weight:700;line-height:1.5;color:var(--character-muted)}
+
+@media(max-width:680px){
+  body.creature-page--magnetic .char-hero h1{font-size:clamp(56px,17vw,108px)}
+  body.creature-page--magnetic .char-file__portrait{min-height:400px}
+  body.creature-page--magnetic .char-file__no{font-size:44px}
+  .magnetic-picker{padding:13px 12px 12px}
+  .magnetic-pack__name{font-size:15px}
+  .magnetic-pack__amount{font-size:18px}
+}
+@media(max-width:380px){
+  body.creature-page--magnetic .char-file__portrait{min-height:340px}
+  .magnetic-packs{grid-template-columns:1fr}
+}
+
 
