@@ -63,6 +63,8 @@
   function apply(options) {
     var pick = current();
     var trio = isTrio();
+    var singleRef = read(checkedColour());
+    var trioRef = read(trioInput);
 
     if (figure) {
       if (figure.getAttribute('src') !== pick.image) figure.setAttribute('src', pick.image);
@@ -74,7 +76,7 @@
     if (state) state.textContent = pick.label;
     if (hint) hint.textContent = trio
       ? 'One of each colour in the set. Pick a colour to go back to a single dino.'
-      : 'Pick one colour for ₹249, or take all three for ₹549.';
+      : 'Pick one colour for ' + money(singleRef.price) + ', or take all three for ' + money(trioRef.price) + '.';
 
     colourGroup.disabled = trio;
     buy.setAttribute('data-name', pick.name);
@@ -93,7 +95,16 @@
     if (stickyPrice) stickyPrice.textContent = money(pick.price);
     if (stickyButton) stickyButton.setAttribute('aria-label', 'Add ' + pick.say + ' to cart for ' + pick.price + ' rupees');
     if (!options || options.updateUrl !== false) syncUrl();
+    if (!options || options.notifyCatalog !== false) {
+      window.dispatchEvent(new CustomEvent('redpoly:product-variant-changed', {
+        detail: { name: pick.name, price: pick.price }
+      }));
+    }
   }
+
+  window.addEventListener('redpoly:cute-dinos-catalog-sync', function () {
+    apply({ updateUrl: false, notifyCatalog: false });
+  });
 
   Array.prototype.forEach.call(colourInputs, function (input) {
     input.addEventListener('change', function () { apply(); });

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/dashboard.css?v=header-cleanup-20261120" />
+  <link rel="stylesheet" href="/dashboard.css?v=products-admin-20261121" />
 </head>
 <body>
   <header class="top-bar">
@@ -54,6 +54,14 @@
           </svg>
           <span>Orders</span>
           <span class="sidebar__count" id="sidebar-orders-count">0</span>
+        </a>
+        <a class="sidebar__link" href="#products" id="nav-products" data-view="products">
+          <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3.5 6.5L10 3l6.5 3.5v7L10 17l-6.5-3.5v-7Z" />
+            <path d="M3.5 6.5L10 10l6.5-3.5M10 10v7" />
+          </svg>
+          <span>Products</span>
+          <span class="sidebar__count" id="sidebar-products-count">10</span>
         </a>
         <a class="sidebar__link" href="#reviews" id="nav-reviews" data-view="reviews">
           <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -374,6 +382,109 @@
               </div>
             </section>
           </div>
+
+          <!-- Products Catalog & Inventory View -->
+          <div id="products-view" hidden>
+            <section class="metrics-strip" aria-label="Catalog and inventory summary">
+              <div class="metric-cell">
+                <span class="metric-cell__label">Active SKUs</span>
+                <strong class="metric-cell__value" id="metric-total-products">10</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Total stock units</span>
+                <strong class="metric-cell__value" id="metric-total-units">—</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Low stock alerts</span>
+                <strong class="metric-cell__value" id="metric-low-stock-products">0</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Out of stock</span>
+                <strong class="metric-cell__value" id="metric-out-stock-products">0</strong>
+              </div>
+            </section>
+
+            <div class="inline-alert" id="products-error-banner" hidden role="alert">
+              <p id="products-error-text"></p>
+              <button type="button" class="btn btn--secondary btn--sm" id="products-retry-btn">Try again</button>
+            </div>
+
+            <section class="orders-card" aria-label="Product catalog and inventory">
+              <div class="orders-tabs" id="products-filter-tabs" role="tablist" aria-label="Filter products">
+                <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-product-filter="all">All <span id="prod-tab-all">10</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-product-filter="in_stock">In stock <span id="prod-tab-in-stock">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-product-filter="low_stock">Low stock <span id="prod-tab-low-stock">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-product-filter="out_of_stock">Out of stock <span id="prod-tab-out-stock">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-product-filter="tagged">With card tag <span id="prod-tab-tagged">0</span></button>
+              </div>
+
+              <div class="orders-toolbar">
+                <div class="search-field">
+                  <svg class="search-field__icon" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="7" cy="7" r="4.5" />
+                    <path d="M10.5 10.5L14 14" />
+                  </svg>
+                  <input type="search" id="products-search" placeholder="Search by product name, SKU, card tag, or comparison platform" aria-label="Search products" />
+                  <button type="button" class="search-field__clear" id="products-search-clear" hidden aria-label="Clear product search">×</button>
+                </div>
+                <div class="toolbar-controls">
+                  <label class="sort-control" for="products-sort">
+                    <span class="sr-only">Sort products</span>
+                    <select id="products-sort" aria-label="Sort products">
+                      <option value="catalog">Catalog order</option>
+                      <option value="stock-asc">Stock: low to high</option>
+                      <option value="stock-desc">Stock: high to low</option>
+                      <option value="price-desc">Price: high to low</option>
+                      <option value="price-asc">Price: low to high</option>
+                      <option value="name-asc">Name: A to Z</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div class="table-skeleton" id="products-skeleton" hidden aria-hidden="true">
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+              </div>
+
+              <div class="empty-state" id="products-empty" hidden>
+                <div class="empty-state__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7.5L12 3l8 4.5v9L12 21l-8-4.5v-9Z" />
+                    <path d="M4 7.5L12 12l8-4.5M12 12v9" />
+                  </svg>
+                </div>
+                <h2 class="empty-state__title" id="products-empty-title">No matching products</h2>
+                <p class="empty-state__copy" id="products-empty-copy">Try clearing your search or switching back to the All products tab.</p>
+                <div class="empty-state__actions">
+                  <button type="button" class="btn btn--secondary btn--sm" id="products-reset-btn">Clear filters</button>
+                </div>
+              </div>
+
+              <div class="table-scroll" id="products-table-wrap">
+                <table class="orders-table products-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col">Price &amp; MRP</th>
+                      <th scope="col">Card tag</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Stock level</th>
+                      <th scope="col" class="col-num">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-tbody"></tbody>
+                </table>
+              </div>
+
+              <div class="table-footer" id="products-footer" hidden>
+                <span id="products-showing-text">Showing 0 products</span>
+                <span>Changes update the live storefront immediately and validate orders atomically</span>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </main>
@@ -549,9 +660,110 @@
     </aside>
   </div>
 
+  <!-- Product Edit Slide-Over Drawer -->
+  <div class="drawer-layer" id="product-drawer-layer" hidden>
+    <div class="drawer-backdrop" id="product-drawer-backdrop"></div>
+    <aside class="drawer" id="product-drawer" role="dialog" aria-modal="true" aria-labelledby="product-drawer-title" tabindex="-1">
+      <header class="drawer__header">
+        <div>
+          <div class="drawer__title-row">
+            <h2 class="drawer__title" id="product-drawer-title">Product</h2>
+            <span class="status-badge" id="product-drawer-stock-badge">In stock</span>
+          </div>
+          <p class="drawer__sub" id="product-drawer-sku">sku-slug</p>
+        </div>
+        <div class="drawer__head-actions">
+          <a class="btn btn--secondary btn--sm" id="product-drawer-store-link" href="/" target="_blank" rel="noopener">View page ↗</a>
+          <button type="button" class="drawer__close" id="product-drawer-close" aria-label="Close product editor">×</button>
+        </div>
+      </header>
+
+      <div class="drawer__body">
+        <form id="product-edit-form" class="drawer-edit-form" novalidate>
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Pricing</h3>
+              <span class="drawer-section__meta">INR · incl. GST</span>
+            </div>
+            <div class="edit-grid">
+              <label class="dash-field">
+                <span>Selling price (₹)</span>
+                <input type="number" id="prod-edit-price" min="1" max="100000" step="1" required />
+              </label>
+              <label class="dash-field">
+                <span>Compare-at MRP (₹, optional)</span>
+                <input type="number" id="prod-edit-compare-at" min="0" max="200000" step="1" placeholder="0 = hidden" />
+              </label>
+            </div>
+            <p class="edit-totals-note">Leave Compare-at MRP at 0 or below selling price to hide strike-through pricing on cards and product pages.</p>
+          </section>
+
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Inventory</h3>
+              <span class="drawer-section__meta" id="prod-edit-stock-meta">Live count</span>
+            </div>
+            <div class="edit-grid">
+              <label class="dash-field">
+                <span>Stock quantity</span>
+                <input type="number" id="prod-edit-stock" min="0" max="100000" step="1" required />
+              </label>
+              <label class="dash-field">
+                <span>Low stock badge at (≤)</span>
+                <input type="number" id="prod-edit-threshold" min="0" max="1000" step="1" required />
+              </label>
+            </div>
+            <div class="prod-quick-chips" id="prod-drawer-stock-chips" aria-label="Quick stock adjustments">
+              <button type="button" class="btn btn--secondary btn--sm" data-stock-nudge="-5">-5</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-stock-nudge="-1">-1</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-stock-nudge="1">+1</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-stock-nudge="5">+5</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-stock-nudge="10">+10</button>
+            </div>
+          </section>
+
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Homepage card tag (sticker)</h3>
+              <span class="drawer-section__meta">Max 28 chars</span>
+            </div>
+            <label class="dash-field">
+              <span>Corner badge text</span>
+              <input type="text" id="prod-edit-card-tag" maxlength="28" placeholder="Leave blank for no sticker" />
+            </label>
+            <div class="prod-quick-chips" id="prod-tag-presets" aria-label="Tag presets">
+              <button type="button" class="btn btn--secondary btn--sm" data-tag-preset="">None</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-tag-preset="IN STORE NOW">IN STORE NOW</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-tag-preset="NEW IN STORE">NEW IN STORE</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-tag-preset="JUST LANDED">JUST LANDED</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-tag-preset="BESTSELLER">BESTSELLER</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-tag-preset="LIMITED BATCH">LIMITED BATCH</button>
+            </div>
+          </section>
+
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Marketplace price comparisons</h3>
+              <button type="button" class="btn btn--secondary btn--sm" id="prod-add-comp-btn">+ Add platform</button>
+            </div>
+            <div class="prod-comp-list" id="prod-comparisons-list"></div>
+            <p class="edit-totals-note">Shown on product pages as small transparent non-linked tags (for example: “₹749 on Amazon”). Max 6 entries.</p>
+          </section>
+
+          <p class="drawer-status-error" id="prod-edit-error" hidden></p>
+
+          <div class="drawer-edit-actions">
+            <button type="button" class="btn btn--secondary" id="product-drawer-cancel">Cancel</button>
+            <button type="submit" class="btn btn--primary" id="product-drawer-save">Save product</button>
+          </div>
+        </form>
+      </div>
+    </aside>
+  </div>
+
   <div class="dash-toast" id="dash-toast" role="status" aria-live="polite"></div>
 
-  <script src="/firebase-client.js?v=header-cleanup-20261120" defer></script>
-  <script src="/dashboard.js?v=header-cleanup-20261120" defer></script>
+  <script src="/firebase-client.js?v=products-admin-20261121" defer></script>
+  <script src="/dashboard.js?v=products-admin-20261121" defer></script>
 </body>
 </html>

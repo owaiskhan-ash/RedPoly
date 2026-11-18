@@ -1,5 +1,6 @@
 (function () {
   var cartKey = 'redpoly-cart-v1';
+  var catalogCacheKey = 'redpoly-catalog-cache-v1';
   var orderKey = 'redpoly-demo-order-v1';
   var shippingMethodKey = 'redpoly-shipping-method-v1';
   // Free-shipping and free-gift thresholds on the item subtotal. Keep these in step with the cart drawer in main.js.
@@ -19,7 +20,43 @@
     'CUTE DINOS TEAL': { price:249, image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TRIO': { price:549, image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' }
   };
-  function inCatalogue(name, price) { return Object.prototype.hasOwnProperty.call(catalogue, name) && catalogue[name].price === Number(price); }
+  var liveCatalogMap = {};
+  (function hydrateCatalogFromCache() {
+    try {
+      var cached = JSON.parse(window.sessionStorage.getItem(catalogCacheKey) || '{}');
+      if (cached && typeof cached === 'object') {
+        Object.keys(cached).forEach(function (key) {
+          var rec = cached[key];
+          if (rec && rec.name && Object.prototype.hasOwnProperty.call(catalogue, rec.name)) {
+            if (Number.isFinite(Number(rec.price)) && Number(rec.price) > 0) {
+              catalogue[rec.name].price = Math.round(Number(rec.price));
+            }
+            liveCatalogMap[rec.name] = rec;
+            if (rec.sku) liveCatalogMap[rec.sku] = rec;
+          }
+        });
+      }
+    } catch (ignoreCatalogCache) {}
+  })();
+  function isKnownProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
+  function getLiveProduct(name) {
+    var fb = window.RedpolyFirebase;
+    if (fb && typeof fb.getProduct === 'function') {
+      var rec = fb.getProduct(name);
+      if (rec) return rec;
+    }
+    return liveCatalogMap[name] || null;
+  }
+  function syncCatalogueMap(map) {
+    if (!map || typeof map !== 'object') return;
+    liveCatalogMap = map;
+    Object.keys(catalogue).forEach(function (name) {
+      var rec = map[name];
+      if (rec && Number.isFinite(Number(rec.price)) && Number(rec.price) > 0) {
+        catalogue[name].price = Math.round(Number(rec.price));
+      }
+    });
+  }
   // GST rate in percent. Shelf prices already include it, so checkout shows the GST share
   // inside the total instead of adding it on top. Change the rate here only; the labels follow.
   var gstRate = 12;
@@ -30,9 +67,9 @@
       var parsed = JSON.parse(localStorage.getItem(cartKey) || '[]');
       if (!Array.isArray(parsed)) return [];
       return parsed.filter(function (item) {
-        return item && typeof item.name === 'string' && inCatalogue(item.name, item.price) && Number(item.quantity) >= 1;
+        return item && typeof item.name === 'string' && isKnownProduct(item.name) && Number(item.quantity) >= 1;
       }).map(function (item) {
-        var price = Number(item.price);
+        var price = catalogue[item.name].price;
         return { id:item.name.toLowerCase() + '|' + price, name:item.name, price:price, quantity:Math.floor(Number(item.quantity)) };
       });
     } catch (ignoreStorage) { return []; }
@@ -284,8 +321,16 @@
   function renderCart() {
     subtotal = 0;
     var pieces = 0;
+    var anyStockBlocked = false;
     list.textContent = '';
     items.forEach(function (item) {
+      var rec = getLiveProduct(item.name);
+      var stockManaged = Boolean(rec && rec.initialized);
+      var availStock = stockManaged ? rec.stock : null;
+      var isOut = stockManaged && availStock === 0;
+      var exceedsStock = stockManaged && item.quantity > availStock;
+      if (isOut || exceedsStock) anyStockBlocked = true;
+
       subtotal += item.price * item.quantity;
       pieces += item.quantity;
       var row = document.createElement('article'); row.className = 'checkout-line';
@@ -295,12 +340,31 @@
       var title = document.createElement('h3'); title.textContent = item.name;
       var each = document.createElement('p'); each.textContent = money(item.price) + ' EACH';
       copy.appendChild(title); copy.appendChild(each);
+      if (isOut) {
+        var outNote = document.createElement('p');
+        outNote.className = 'checkout-line__stock checkout-line__stock--out';
+        outNote.textContent = 'OUT OF STOCK — remove to check out';
+        copy.appendChild(outNote);
+      } else if (exceedsStock) {
+        var overNote = document.createElement('p');
+        overNote.className = 'checkout-line__stock checkout-line__stock--out';
+        overNote.textContent = 'ONLY ' + availStock + ' LEFT IN STOCK — reduce quantity';
+        copy.appendChild(overNote);
+      } else if (stockManaged && availStock <= rec.lowStockThreshold) {
+        var lowNote = document.createElement('p');
+        lowNote.className = 'checkout-line__stock checkout-line__stock--low';
+        lowNote.textContent = 'ONLY ' + availStock + ' LEFT IN STOCK!';
+        copy.appendChild(lowNote);
+      }
       {
         var controls = document.createElement('div'); controls.className = 'checkout-line__controls';
         var stepper = document.createElement('div'); stepper.className = 'checkout-stepper'; stepper.setAttribute('role', 'group'); stepper.setAttribute('aria-label', 'Quantity of ' + item.name);
         [['decrease', '−', item.quantity === 1 ? 'Remove ' + item.name + ' from your cart' : 'Decrease quantity of ' + item.name], ['increase', '+', 'Increase quantity of ' + item.name]].forEach(function (control) {
           var button = document.createElement('button'); button.type = 'button'; button.className = 'checkout-stepper__button'; button.textContent = control[1];
           button.setAttribute('data-cart-action', control[0]); button.setAttribute('data-cart-id', item.id); button.setAttribute('aria-label', control[2]);
+          if (control[0] === 'increase' && stockManaged && item.quantity >= availStock) {
+            button.disabled = true;
+          }
           stepper.appendChild(button);
           if (control[0] === 'decrease') { var amount = document.createElement('span'); amount.className = 'checkout-stepper__amount'; amount.textContent = item.quantity; amount.setAttribute('aria-label', 'Quantity ' + item.quantity); stepper.appendChild(amount); }
         });
@@ -313,12 +377,13 @@
     });
     countNode.textContent = pieces ? pieces + (pieces === 1 ? ' ITEM' : ' ITEMS') : '';
     emptyNode.hidden = items.length > 0;
-    placeButton.disabled = items.length === 0;
-    payBarButton.disabled = items.length === 0;
+    placeButton.disabled = items.length === 0 || anyStockBlocked;
+    payBarButton.disabled = items.length === 0 || anyStockBlocked;
     undoButton.hidden = !lastRemoved;
     undoButton.textContent = lastRemoved ? 'UNDO REMOVAL · ' + lastRemoved.item.name : 'UNDO REMOVAL';
     if (!items.length) status.textContent = emptyCartMessage;
-    else if (status.textContent === emptyCartMessage) status.textContent = '';
+    else if (anyStockBlocked) status.textContent = 'Please remove out-of-stock items or reduce quantities before checking out.';
+    else if (status.textContent === emptyCartMessage || status.textContent === 'Please remove out-of-stock items or reduce quantities before checking out.') status.textContent = '';
     updateCheckoutTotals();
     updatePayBar();
   }
@@ -374,6 +439,11 @@
     if (!item) return;
     var message;
     if (action === 'increase') {
+      var rec = getLiveProduct(item.name);
+      if (rec && rec.initialized && item.quantity + 1 > rec.stock) {
+        cartStatus.textContent = 'Only ' + rec.stock + ' left in stock for ' + item.name + '.';
+        return;
+      }
       item.quantity += 1;
       message = item.name + ' quantity is now ' + item.quantity + '.';
       if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(item).catch(function (err) { console.error(err); });
@@ -395,6 +465,11 @@
   undoButton.addEventListener('click', function () {
     if (!lastRemoved || leaving) return;
     var restored = lastRemoved.item;
+    var rec = getLiveProduct(restored.name);
+    if (rec && rec.initialized && rec.stock <= 0) {
+      cartStatus.textContent = restored.name + ' is currently out of stock.';
+      return;
+    }
     var existing = items.find(function (entry) { return entry.id === restored.id; });
     if (existing) existing.quantity += restored.quantity;
     else {
@@ -423,7 +498,21 @@
     lastRemoved = null;
     renderCart();
   });
-  window.addEventListener('redpoly:firebase-ready', renderCheckoutAccount);
+  window.addEventListener('redpoly:catalog-updated', function (event) {
+    if (leaving) return;
+    if (event.detail && event.detail.map) syncCatalogueMap(event.detail.map);
+    items = items.map(function (entry) {
+      var livePrice = catalogue[entry.name] ? catalogue[entry.name].price : entry.price;
+      return livePrice !== entry.price ? { id: entry.name.toLowerCase() + '|' + livePrice, name: entry.name, price: livePrice, quantity: entry.quantity } : entry;
+    });
+    renderCart();
+  });
+  window.addEventListener('redpoly:firebase-ready', function () {
+    var fb = window.RedpolyFirebase;
+    if (fb && typeof fb.getCatalogMap === 'function') syncCatalogueMap(fb.getCatalogMap());
+    renderCheckoutAccount();
+    renderCart();
+  });
   window.addEventListener('redpoly:auth-changed', renderCheckoutAccount);
   window.addEventListener('redpoly:profile-updated', renderCheckoutAccount);
 
@@ -500,6 +589,20 @@
   form.addEventListener('submit', function (event) { event.preventDefault(); });
   placeButton.addEventListener('click', async function () {
     if (!items.length) { status.textContent='Your cart is empty. Add a product first.'; return; }
+    for (var sIdx = 0; sIdx < items.length; sIdx += 1) {
+      var sItem = items[sIdx];
+      var sRec = getLiveProduct(sItem.name);
+      if (sRec && sRec.initialized) {
+        if (sRec.stock <= 0) {
+          status.textContent = sItem.name + ' is currently out of stock. Remove it to continue.';
+          return;
+        }
+        if (sItem.quantity > sRec.stock) {
+          status.textContent = 'Only ' + sRec.stock + ' left in stock for ' + sItem.name + '. Please adjust quantity.';
+          return;
+        }
+      }
+    }
     if (!form.reportValidity()) return;
     var customerName = form.querySelector('[name="customer-name"]').value.trim();
     var email = form.querySelector('[name="email"]').value.trim();
@@ -543,10 +646,20 @@
         });
       } catch (err) {
         console.error(err);
+        if (fb && typeof fb.loadPublicCatalog === 'function') {
+          fb.loadPublicCatalog().then(function () {
+            if (typeof fb.getCatalogMap === 'function') syncCatalogueMap(fb.getCatalogMap());
+            items = readCart();
+            renderCart();
+          }).catch(function () {});
+        }
         placeButton.disabled = false;
         payBarButton.disabled = false;
         placeButton.removeAttribute('aria-busy');
-        status.textContent = 'Could not save your order to the cloud. Please check your details and try again.';
+        var errMsg = err && typeof err.message === 'string' && err.message.trim() && err.message.charAt(0) !== '{'
+          ? err.message
+          : 'Could not save your order to the cloud. Please check your details and try again.';
+        status.textContent = errMsg;
         return;
       }
     }
