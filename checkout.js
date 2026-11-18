@@ -180,13 +180,40 @@
       signInBtn.type = 'button';
       signInBtn.className = 'checkout-account__btn';
       signInBtn.innerHTML = googleIconSvg + '<span>SIGN IN WITH GOOGLE</span>';
-      signInBtn.addEventListener('click', function () {
+      signInBtn.addEventListener('click', async function () {
+        signInBtn.disabled = true;
         if (!window.RedpolyFirebase) {
-          if (status) status.textContent = 'Could not load /firebase-client.js. Please refresh or ensure the latest build is deployed.';
+          if (status) status.textContent = 'Loading Google authentication…';
+          if (typeof window.RedpolyEnsureFirebase === 'function') {
+            await window.RedpolyEnsureFirebase().catch(function () {});
+          } else {
+            await new Promise(function (resolve) {
+              var settled = false;
+              function done() {
+                if (settled) return;
+                settled = true;
+                resolve();
+              }
+              window.addEventListener('redpoly:firebase-ready', done, { once: true });
+              setTimeout(async function () {
+                if (!window.RedpolyFirebase && typeof window.RedpolyEnsureFirebase === 'function') {
+                  await window.RedpolyEnsureFirebase().catch(function () {});
+                }
+                done();
+              }, 150);
+              setTimeout(done, 5000);
+            });
+          }
+        }
+        if (!window.RedpolyFirebase) {
+          signInBtn.disabled = false;
+          if (status) status.textContent = 'Could not initialize Firebase authentication. Please check your connection and refresh.';
           return;
         }
-        signInBtn.disabled = true;
-        window.RedpolyFirebase.signInWithGoogle().catch(function (err) {
+        if (status) status.textContent = '';
+        try {
+          await window.RedpolyFirebase.signInWithGoogle();
+        } catch (err) {
           console.error(err);
           var code = err && err.code ? String(err.code) : '';
           var msg = err && err.message ? err.message : '';
@@ -195,12 +222,14 @@
             status.textContent = 'This domain (' + window.location.hostname + ') must be added to Firebase Console → Authentication → Settings → Authorized domains.';
           } else if (code === 'auth/popup-blocked' || msg.indexOf('popup-blocked') !== -1) {
             status.textContent = 'Popup was blocked by your browser. Please allow popups and try again.';
+          } else if (code === 'auth/operation-not-allowed') {
+            status.textContent = 'Google Sign-In is not enabled in Firebase Authentication for this project.';
           } else {
             status.textContent = 'Could not complete Google sign-in. Please try again.';
           }
-        }).finally(function () {
+        } finally {
           signInBtn.disabled = false;
-        });
+        }
       });
 
       row.appendChild(copy);

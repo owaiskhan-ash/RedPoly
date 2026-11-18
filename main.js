@@ -107,6 +107,543 @@
   var homeHeader = document.querySelector('.site-header__inner');
   if (homeHeader) homeHeader.appendChild(cartToggle);
 
+  var firebaseBootstrapPromise = null;
+  function ensureFirebaseClient() {
+    if (window.RedpolyFirebase) return Promise.resolve(window.RedpolyFirebase);
+    if (firebaseBootstrapPromise) return firebaseBootstrapPromise;
+    firebaseBootstrapPromise = (async function () {
+      var FIREBASE_VER = '13.4.0';
+      var CDN = 'https://www.gstatic.com/firebasejs/' + FIREBASE_VER;
+      var cfgRes = await fetch('/firebase-applet-config.json', { cache: 'no-store' });
+      if (!cfgRes.ok) throw new Error('Could not load /firebase-applet-config.json (' + cfgRes.status + ')');
+      var firebaseConfig = await cfgRes.json();
+
+      var mods = await Promise.all([
+        import(CDN + '/firebase-app.js'),
+        import(CDN + '/firebase-auth.js'),
+        import(CDN + '/firebase-firestore.js')
+      ]);
+      if (window.RedpolyFirebase) return window.RedpolyFirebase;
+
+      var appMod = mods[0];
+      var authMod = mods[1];
+      var fsMod = mods[2];
+
+      var app = appMod.initializeApp(firebaseConfig);
+      var db = firebaseConfig.firestoreDatabaseId
+        ? fsMod.getFirestore(app, firebaseConfig.firestoreDatabaseId)
+        : fsMod.getFirestore(app);
+      var auth = authMod.getAuth(app);
+      var googleProvider = new authMod.GoogleAuthProvider();
+      googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+      var LIMITS = {
+        ID_MAX: 128,
+        ID_PATTERN: /^[a-zA-Z0-9_\-]+$/,
+        DISPLAY_NAME_MAX: 120,
+        PHOTO_URL_MAX: 500,
+        EMAIL_MAX: 200,
+        FULL_NAME_MAX: 120,
+        PHONE_PATTERN: /^[6-9][0-9]{9}$/,
+        ADDRESS_MAX: 300,
+        PIN_PATTERN: /^[1-9][0-9]{5}$/,
+        CITY_MAX: 100,
+        STATE_MAX: 100,
+        HREF_MAX: 200,
+        HREF_PATTERN: /^\/[a-zA-Z0-9_\-/?=&]+$/,
+        IMAGE_MAX: 300,
+        IMAGE_PATTERN: /^\/[a-zA-Z0-9_\-./?=&]+$/,
+        QTY_MIN: 1,
+        QTY_MAX: 99
+      };
+      var WISH_KEY = 'redpoly-wishlist-v1';
+
+      function handleFirestoreError(error, operationType, path) {
+        var u = auth.currentUser;
+        var errInfo = {
+          error: error instanceof Error ? error.message : String(error),
+          authInfo: {
+            userId: u ? u.uid : undefined,
+            email: u ? u.email : undefined,
+            emailVerified: u ? u.emailVerified : undefined,
+            isAnonymous: u ? u.isAnonymous : undefined,
+            tenantId: u ? u.tenantId : undefined,
+            providerInfo: (u && u.providerData ? u.providerData : []).map(function (p) {
+              return { providerId: p.providerId, email: p.email };
+            })
+          },
+          operationType: operationType,
+          path: path
+        };
+        console.error('Firestore Error: ', JSON.stringify(errInfo));
+        throw new Error(JSON.stringify(errInfo));
+      }
+
+      (async function testConnection() {
+        try {
+          await fsMod.getDocFromServer(fsMod.doc(db, 'test', 'connection'));
+        } catch (error) {
+          if (error instanceof Error && error.message.indexOf('the client is offline') !== -1) {
+            console.error('Please check your Firebase configuration.');
+          }
+        }
+      })();
+
+      function itemSlug(name) {
+        return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, LIMITS.ID_MAX);
+      }
+      function sanitizeUrl(url) {
+        if (!url || typeof url !== 'string') return '';
+        var trimmed = url.trim().slice(0, LIMITS.PHOTO_URL_MAX);
+        return trimmed.indexOf('https://') === 0 ? trimmed : '';
+      }
+      function clampQty(qty) {
+        var n = Math.floor(Number(qty) || 1);
+        return Math.max(LIMITS.QTY_MIN, Math.min(LIMITS.QTY_MAX, n));
+      }
+      function dispatch(name, detail) {
+        window.dispatchEvent(new CustomEvent(name, { detail: detail }));
+      }
+      function readLocalCartForSync() {
+        try {
+          var raw = JSON.parse(window.localStorage.getItem(cartStorageKey) || '[]');
+          if (!Array.isArray(raw)) return [];
+          return raw.filter(function (item) {
+            return item && typeof item.name === 'string' && inCatalogue(item.name, item.price) && Number.isFinite(Number(item.quantity)) && Number(item.quantity) >= 1;
+          }).map(function (item) {
+            return { id: item.name.toLowerCase() + '|' + Number(item.price), name: item.name, price: Number(item.price), quantity: clampQty(item.quantity) };
+          });
+        } catch (e) { return []; }
+      }
+      function readLocalWishForSync() {
+        try {
+          var raw = JSON.parse(window.localStorage.getItem(WISH_KEY) || '[]');
+          if (!Array.isArray(raw)) return [];
+          return raw.filter(function (item) {
+            return item && typeof item.name === 'string' && typeof item.href === 'string' && LIMITS.HREF_PATTERN.test(item.href) && inCatalogue(item.name, item.price);
+          }).map(function (item) {
+            return {
+              name: item.name,
+              href: item.href.slice(0, LIMITS.HREF_MAX),
+              image: typeof item.image === 'string' && LIMITS.IMAGE_PATTERN.test(item.image) ? item.image.slice(0, LIMITS.IMAGE_MAX) : catalogue[item.name].image,
+              price: Number(item.price)
+            };
+          });
+        } catch (e) { return []; }
+      }
+
+      var currentUser = null;
+      var authReady = false;
+      var currentProfile = null;
+      var currentOrders = [];
+      var unsubCart = null;
+      var unsubWish = null;
+      var unsubOrders = null;
+
+      function stopListeners() {
+        if (unsubCart) { unsubCart(); unsubCart = null; }
+        if (unsubWish) { unsubWish(); unsubWish = null; }
+        if (unsubOrders) { unsubOrders(); unsubOrders = null; }
+      }
+
+      async function ensureUserDocuments(user) {
+        var userPath = 'users/' + user.uid;
+        var profilePath = 'users/' + user.uid + '/private/profile';
+        var fallbackName = user.email ? user.email.split('@')[0] : 'REDPOLY Member';
+        var displayName = (user.displayName || fallbackName).trim().slice(0, LIMITS.DISPLAY_NAME_MAX) || 'REDPOLY Member';
+        var photoURL = sanitizeUrl(user.photoURL);
+        var email = (user.email || '').trim().slice(0, LIMITS.EMAIL_MAX);
+
+        try {
+          var userRef = fsMod.doc(db, 'users', user.uid);
+          var userSnap = await fsMod.getDoc(userRef);
+          if (!userSnap.exists()) {
+            await fsMod.setDoc(userRef, {
+              uid: user.uid,
+              displayName: displayName,
+              photoURL: photoURL,
+              createdAt: fsMod.serverTimestamp(),
+              updatedAt: fsMod.serverTimestamp()
+            });
+          } else {
+            var existing = userSnap.data();
+            if (existing.displayName !== displayName || (existing.photoURL || '') !== photoURL) {
+              await fsMod.updateDoc(userRef, {
+                displayName: displayName,
+                photoURL: photoURL,
+                updatedAt: fsMod.serverTimestamp()
+              });
+            }
+          }
+        } catch (error) {
+          handleFirestoreError(error, 'write', userPath);
+        }
+
+        try {
+          var profileRef = fsMod.doc(db, 'users', user.uid, 'private', 'profile');
+          var profileSnap = await fsMod.getDoc(profileRef);
+          if (!profileSnap.exists()) {
+            var initialProfile = {
+              uid: user.uid,
+              email: email,
+              fullName: displayName.slice(0, LIMITS.FULL_NAME_MAX),
+              phone: '',
+              address: '',
+              pinCode: '',
+              city: '',
+              state: ''
+            };
+            await fsMod.setDoc(profileRef, Object.assign({}, initialProfile, { updatedAt: fsMod.serverTimestamp() }));
+            return initialProfile;
+          }
+          var data = profileSnap.data();
+          return {
+            uid: user.uid,
+            email: typeof data.email === 'string' && data.email ? data.email : email,
+            fullName: typeof data.fullName === 'string' ? data.fullName : displayName,
+            phone: typeof data.phone === 'string' ? data.phone : '',
+            address: typeof data.address === 'string' ? data.address : '',
+            pinCode: typeof data.pinCode === 'string' ? data.pinCode : '',
+            city: typeof data.city === 'string' ? data.city : '',
+            state: typeof data.state === 'string' ? data.state : ''
+          };
+        } catch (error) {
+          handleFirestoreError(error, 'get', profilePath);
+        }
+      }
+
+      async function mergeAndSubscribeCart(uid) {
+        var cartPath = 'users/' + uid + '/cart';
+        var q = fsMod.query(fsMod.collection(db, 'users', uid, 'cart'), fsMod.where('uid', '==', uid));
+        try {
+          var existingSnap = await fsMod.getDocs(q);
+          var remoteMap = new Map();
+          existingSnap.forEach(function (docSnap) {
+            var d = docSnap.data();
+            if (typeof d.name === 'string' && inCatalogue(d.name, d.price)) {
+              remoteMap.set(docSnap.id, true);
+            }
+          });
+          var localItems = readLocalCartForSync();
+          for (var i = 0; i < localItems.length; i++) {
+            var item = localItems[i];
+            var slug = itemSlug(item.name);
+            if (!LIMITS.ID_PATTERN.test(slug) || remoteMap.has(slug)) continue;
+            await fsMod.setDoc(fsMod.doc(db, 'users', uid, 'cart', slug), {
+              uid: uid,
+              name: item.name,
+              price: item.price,
+              quantity: clampQty(item.quantity),
+              updatedAt: fsMod.serverTimestamp()
+            });
+          }
+        } catch (error) {
+          handleFirestoreError(error, 'list', cartPath);
+        }
+        unsubCart = fsMod.onSnapshot(q, function (snapshot) {
+          var synced = [];
+          snapshot.forEach(function (docSnap) {
+            var d = docSnap.data();
+            if (typeof d.name === 'string' && inCatalogue(d.name, d.price)) {
+              synced.push({
+                id: d.name.toLowerCase() + '|' + Number(d.price),
+                name: d.name,
+                price: Number(d.price),
+                quantity: clampQty(d.quantity)
+              });
+            }
+          });
+          try { window.localStorage.setItem(cartStorageKey, JSON.stringify(synced)); } catch (e) {}
+          dispatch('redpoly:cart-updated', { items: synced });
+        }, function (error) {
+          handleFirestoreError(error, 'list', cartPath);
+        });
+      }
+
+      async function mergeAndSubscribeWishlist(uid) {
+        var wishPath = 'users/' + uid + '/wishlist';
+        var q = fsMod.query(fsMod.collection(db, 'users', uid, 'wishlist'), fsMod.where('uid', '==', uid));
+        try {
+          var existingSnap = await fsMod.getDocs(q);
+          var remoteSet = new Set();
+          existingSnap.forEach(function (docSnap) { remoteSet.add(docSnap.id); });
+          var localItems = readLocalWishForSync();
+          for (var i = 0; i < localItems.length; i++) {
+            var item = localItems[i];
+            var slug = itemSlug(item.name);
+            if (!LIMITS.ID_PATTERN.test(slug) || remoteSet.has(slug)) continue;
+            await fsMod.setDoc(fsMod.doc(db, 'users', uid, 'wishlist', slug), {
+              uid: uid,
+              name: item.name,
+              href: item.href,
+              image: item.image,
+              price: item.price,
+              createdAt: fsMod.serverTimestamp()
+            });
+          }
+        } catch (error) {
+          handleFirestoreError(error, 'list', wishPath);
+        }
+        unsubWish = fsMod.onSnapshot(q, function (snapshot) {
+          var synced = [];
+          snapshot.forEach(function (docSnap) {
+            var d = docSnap.data();
+            if (typeof d.name === 'string' && typeof d.href === 'string' && LIMITS.HREF_PATTERN.test(d.href) && inCatalogue(d.name, d.price)) {
+              synced.push({
+                name: d.name,
+                href: d.href,
+                image: typeof d.image === 'string' ? d.image : catalogue[d.name].image,
+                price: Number(d.price)
+              });
+            }
+          });
+          try { window.localStorage.setItem(WISH_KEY, JSON.stringify(synced)); } catch (e) {}
+          dispatch('redpoly:wishlist-updated', { items: synced });
+        }, function (error) {
+          handleFirestoreError(error, 'list', wishPath);
+        });
+      }
+
+      function subscribeOrders(uid) {
+        var ordersPath = 'users/' + uid + '/orders';
+        var q = fsMod.query(fsMod.collection(db, 'users', uid, 'orders'), fsMod.where('uid', '==', uid));
+        unsubOrders = fsMod.onSnapshot(q, async function (snapshot) {
+          var orders = [];
+          for (var i = 0; i < snapshot.docs.length; i++) {
+            var docSnap = snapshot.docs[i];
+            var d = docSnap.data();
+            var ts = d.createdAt;
+            var createdAtMs = ts && typeof ts.toMillis === 'function' ? ts.toMillis() : Date.now();
+            var lineItems = [];
+            var itemsPath = 'users/' + uid + '/orders/' + docSnap.id + '/items';
+            try {
+              var itemsSnap = await fsMod.getDocs(fsMod.query(fsMod.collection(db, 'users', uid, 'orders', docSnap.id, 'items'), fsMod.where('uid', '==', uid)));
+              itemsSnap.forEach(function (itemDoc) {
+                var itemData = itemDoc.data();
+                if (typeof itemData.name === 'string') {
+                  lineItems.push({ name: itemData.name, price: Number(itemData.price), quantity: Number(itemData.quantity) });
+                }
+              });
+            } catch (error) {
+              handleFirestoreError(error, 'list', itemsPath);
+            }
+            orders.push({
+              id: docSnap.id,
+              reference: String(d.reference || ''),
+              customerName: String(d.customerName || ''),
+              email: String(d.email || ''),
+              phone: String(d.phone || ''),
+              address: String(d.address || ''),
+              pin: String(d.pin || ''),
+              city: String(d.city || ''),
+              state: String(d.state || ''),
+              shippingMethod: d.shippingMethod === 'express' ? 'express' : 'standard',
+              shippingCost: Number(d.shippingCost || 0),
+              freeShipping: Boolean(d.freeShipping),
+              freeGift: Boolean(d.freeGift),
+              subtotal: Number(d.subtotal || 0),
+              gstRate: Number(d.gstRate || 12),
+              gst: Number(d.gst || 0),
+              total: Number(d.total || 0),
+              itemCount: Number(d.itemCount || lineItems.length),
+              status: 'placed',
+              createdAtMs: createdAtMs,
+              items: lineItems
+            });
+          }
+          orders.sort(function (a, b) { return b.createdAtMs - a.createdAtMs; });
+          currentOrders = orders;
+          dispatch('redpoly:orders-updated', { orders: orders });
+        }, function (error) {
+          handleFirestoreError(error, 'list', ordersPath);
+        });
+      }
+
+      authMod.onAuthStateChanged(auth, async function (user) {
+        stopListeners();
+        currentUser = user;
+        authReady = true;
+        if (!user) {
+          currentProfile = null;
+          currentOrders = [];
+          dispatch('redpoly:auth-changed', { user: null, profile: null });
+          dispatch('redpoly:orders-updated', { orders: [] });
+          return;
+        }
+        try {
+          currentProfile = await ensureUserDocuments(user);
+          dispatch('redpoly:auth-changed', {
+            user: {
+              uid: user.uid,
+              displayName: user.displayName || currentProfile.fullName || 'REDPOLY Member',
+              email: user.email || currentProfile.email,
+              photoURL: sanitizeUrl(user.photoURL),
+              emailVerified: user.emailVerified
+            },
+            profile: currentProfile
+          });
+          await mergeAndSubscribeCart(user.uid);
+          await mergeAndSubscribeWishlist(user.uid);
+          subscribeOrders(user.uid);
+        } catch (error) {
+          console.error('Failed to initialize signed-in REDPOLY session:', error);
+          dispatch('redpoly:auth-error', { message: 'Signed in, but could not sync account data. Please try refreshing.' });
+        }
+      });
+
+      var api = {
+        isReady: function () { return authReady; },
+        getUser: function () {
+          return currentUser ? {
+            uid: currentUser.uid,
+            displayName: currentUser.displayName || (currentProfile && currentProfile.fullName) || 'REDPOLY Member',
+            email: currentUser.email || (currentProfile && currentProfile.email) || '',
+            photoURL: sanitizeUrl(currentUser.photoURL),
+            emailVerified: currentUser.emailVerified
+          } : null;
+        },
+        getProfile: function () { return currentProfile; },
+        getOrders: function () { return currentOrders; },
+        signInWithGoogle: async function () {
+          try {
+            var result = await authMod.signInWithPopup(auth, googleProvider);
+            return result.user;
+          } catch (error) {
+            var code = error && error.code ? String(error.code) : '';
+            if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return null;
+            throw error;
+          }
+        },
+        signOut: async function () { await authMod.signOut(auth); },
+        syncCartItem: async function (item) {
+          if (!currentUser || !currentUser.emailVerified || !inCatalogue(item.name, item.price)) return;
+          var slug = itemSlug(item.name);
+          if (!LIMITS.ID_PATTERN.test(slug)) return;
+          var path = 'users/' + currentUser.uid + '/cart/' + slug;
+          try {
+            var ref = fsMod.doc(db, 'users', currentUser.uid, 'cart', slug);
+            var existing = await fsMod.getDoc(ref);
+            if (existing.exists()) {
+              await fsMod.updateDoc(ref, { quantity: clampQty(item.quantity), updatedAt: fsMod.serverTimestamp() });
+            } else {
+              await fsMod.setDoc(ref, { uid: currentUser.uid, name: item.name, price: item.price, quantity: clampQty(item.quantity), updatedAt: fsMod.serverTimestamp() });
+            }
+          } catch (error) { handleFirestoreError(error, 'write', path); }
+        },
+        removeCartItem: async function (name) {
+          if (!currentUser || !currentUser.emailVerified) return;
+          var slug = itemSlug(name);
+          if (!LIMITS.ID_PATTERN.test(slug)) return;
+          var path = 'users/' + currentUser.uid + '/cart/' + slug;
+          try { await fsMod.deleteDoc(fsMod.doc(db, 'users', currentUser.uid, 'cart', slug)); }
+          catch (error) { handleFirestoreError(error, 'delete', path); }
+        },
+        saveWishlistItem: async function (item) {
+          if (!currentUser || !currentUser.emailVerified || !inCatalogue(item.name, item.price) || !LIMITS.HREF_PATTERN.test(item.href)) return;
+          var slug = itemSlug(item.name);
+          if (!LIMITS.ID_PATTERN.test(slug)) return;
+          var path = 'users/' + currentUser.uid + '/wishlist/' + slug;
+          try {
+            await fsMod.setDoc(fsMod.doc(db, 'users', currentUser.uid, 'wishlist', slug), {
+              uid: currentUser.uid,
+              name: item.name,
+              href: item.href.slice(0, LIMITS.HREF_MAX),
+              image: typeof item.image === 'string' && LIMITS.IMAGE_PATTERN.test(item.image) ? item.image.slice(0, LIMITS.IMAGE_MAX) : catalogue[item.name].image,
+              price: item.price,
+              createdAt: fsMod.serverTimestamp()
+            });
+          } catch (error) { handleFirestoreError(error, 'write', path); }
+        },
+        removeWishlistItem: async function (name) {
+          if (!currentUser || !currentUser.emailVerified) return;
+          var slug = itemSlug(name);
+          if (!LIMITS.ID_PATTERN.test(slug)) return;
+          var path = 'users/' + currentUser.uid + '/wishlist/' + slug;
+          try { await fsMod.deleteDoc(fsMod.doc(db, 'users', currentUser.uid, 'wishlist', slug)); }
+          catch (error) { handleFirestoreError(error, 'delete', path); }
+        },
+        saveDeliveryProfile: async function (profile) {
+          if (!currentUser || !currentUser.emailVerified) throw new Error('Sign in with Google to save your delivery profile.');
+          var uid = currentUser.uid;
+          var path = 'users/' + uid + '/private/profile';
+          var cleanPhone = String(profile.phone || '').trim();
+          var cleanPin = String(profile.pinCode || '').trim();
+          if (cleanPhone && !LIMITS.PHONE_PATTERN.test(cleanPhone)) throw new Error('Enter a valid 10-digit Indian mobile number.');
+          if (cleanPin && !LIMITS.PIN_PATTERN.test(cleanPin)) throw new Error('Enter a valid 6-digit Indian PIN code.');
+          var sanitized = {
+            uid: uid,
+            email: (profile.email || currentUser.email || '').trim().slice(0, LIMITS.EMAIL_MAX),
+            fullName: String(profile.fullName || '').trim().slice(0, LIMITS.FULL_NAME_MAX),
+            phone: cleanPhone,
+            address: String(profile.address || '').trim().slice(0, LIMITS.ADDRESS_MAX),
+            pinCode: cleanPin,
+            city: String(profile.city || '').trim().slice(0, LIMITS.CITY_MAX),
+            state: String(profile.state || '').trim().slice(0, LIMITS.STATE_MAX)
+          };
+          try {
+            await fsMod.setDoc(fsMod.doc(db, 'users', uid, 'private', 'profile'), Object.assign({}, sanitized, { updatedAt: fsMod.serverTimestamp() }), { merge: true });
+            currentProfile = sanitized;
+            dispatch('redpoly:profile-updated', { profile: sanitized });
+            return sanitized;
+          } catch (error) { handleFirestoreError(error, 'write', path); }
+        },
+        placeOrder: async function (input) {
+          if (!currentUser || !currentUser.emailVerified) return;
+          var uid = currentUser.uid;
+          var orderId = String(input.reference || '').toLowerCase().replace(/[^a-z0-9\-]/g, '');
+          if (!LIMITS.ID_PATTERN.test(orderId)) throw new Error('Invalid order reference');
+          var validItems = (input.items || []).filter(function (item) { return inCatalogue(item.name, item.price); });
+          if (!validItems.length) throw new Error('No valid catalogue items in order');
+          var orderPath = 'users/' + uid + '/orders/' + orderId;
+          var batch = fsMod.writeBatch(db);
+          var customerName = String(input.customerName || '').trim().slice(0, LIMITS.FULL_NAME_MAX);
+          var email = String(input.email || '').trim().slice(0, LIMITS.EMAIL_MAX);
+          var phone = String(input.phone || '').trim();
+          var address = String(input.address || '').trim().slice(0, LIMITS.ADDRESS_MAX);
+          var pin = String(input.pin || '').trim();
+          var city = String(input.city || '').trim().slice(0, LIMITS.CITY_MAX);
+          var state = String(input.state || '').trim().slice(0, LIMITS.STATE_MAX);
+          var itemCount = validItems.reduce(function (sum, item) { return sum + clampQty(item.quantity); }, 0);
+          batch.set(fsMod.doc(db, 'users', uid, 'orders', orderId), {
+            uid: uid, reference: input.reference, customerName: customerName, email: email, phone: phone,
+            address: address, pin: pin, city: city, state: state,
+            shippingMethod: input.shippingMethod, shippingCost: Number(input.shippingCost),
+            freeShipping: Boolean(input.freeShipping), freeGift: Boolean(input.freeGift),
+            subtotal: Number(input.subtotal), gstRate: Number(input.gstRate), gst: Number(input.gst),
+            total: Number(input.total), itemCount: itemCount, status: 'placed', createdAt: fsMod.serverTimestamp()
+          });
+          validItems.forEach(function (item) {
+            var slug = itemSlug(item.name);
+            batch.set(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug), {
+              uid: uid, orderId: orderId, name: item.name, price: Number(item.price), quantity: clampQty(item.quantity)
+            });
+            batch.delete(fsMod.doc(db, 'users', uid, 'cart', slug));
+          });
+          if (input.saveProfile) {
+            batch.set(fsMod.doc(db, 'users', uid, 'private', 'profile'), {
+              uid: uid, email: email, fullName: customerName, phone: phone, address: address, pinCode: pin, city: city, state: state, updatedAt: fsMod.serverTimestamp()
+            }, { merge: true });
+          }
+          try { await batch.commit(); } catch (error) { handleFirestoreError(error, 'write', orderPath); }
+        }
+      };
+
+      window.RedpolyFirebase = api;
+      dispatch('redpoly:firebase-ready', { user: api.getUser(), profile: currentProfile });
+      return api;
+    })().catch(function (err) {
+      firebaseBootstrapPromise = null;
+      throw err;
+    });
+    return firebaseBootstrapPromise;
+  }
+  window.RedpolyEnsureFirebase = ensureFirebaseClient;
+  if (!window.RedpolyFirebase) {
+    ensureFirebaseClient().catch(function (err) {
+      console.error('Firebase CDN bridge bootstrap failed:', err);
+    });
+  }
+
   function initAccountChrome() {
     if (!homeHeader) return;
     var googleSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5H1.2v3.1C3.2 21.4 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V6.6H1.2C.4 8.2 0 10.1 0 12s.4 3.8 1.2 5.4l4-3.1z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3.3.6 4.6 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.3 0 3.2 2.6 1.2 6.6l4 3.1c1-2.9 3.7-5 6.8-5z"/></svg>';
@@ -197,28 +734,15 @@
           btn.disabled = true;
           if (!window.RedpolyFirebase) {
             setAccountStatus('Loading authentication…', true);
-            await new Promise(function (resolve) {
-              var settled = false;
-              function done() {
-                if (settled) return;
-                settled = true;
-                resolve();
-              }
-              window.addEventListener('redpoly:firebase-ready', done, { once: true });
-              var existingScript = document.querySelector('script[src*="/firebase-client.js"]');
-              if (!existingScript) {
-                var s = document.createElement('script');
-                s.src = '/firebase-client.js';
-                s.onload = function () { setTimeout(done, 50); };
-                s.onerror = done;
-                document.head.appendChild(s);
-              }
-              setTimeout(done, 2500);
-            });
+            try {
+              await ensureFirebaseClient();
+            } catch (loadErr) {
+              console.error(loadErr);
+            }
           }
           if (!window.RedpolyFirebase) {
             btn.disabled = false;
-            setAccountStatus('Could not load /firebase-client.js. Please refresh the page or ensure the latest build is deployed.', false);
+            setAccountStatus('Could not initialize Firebase authentication. Please check your connection and refresh.', false);
             return;
           }
           setAccountStatus('Opening Google sign-in…', true);
