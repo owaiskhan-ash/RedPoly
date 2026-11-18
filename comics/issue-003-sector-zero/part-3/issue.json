@@ -1,0 +1,66 @@
+{
+  "id": "issue-003-sector-zero-part-3",
+  "number": "03",
+  "title": "Sector Zero",
+  "subtitle": "In the finale, the crew lands in a world made of blocks and has one last shot at stopping Protocol 00.",
+  "pages": [
+    {
+      "image": "/comics/issue-003-sector-zero/part-3/pages/page-01.webp?v=issue03-part3-20261118",
+      "alt": "Page 1: A portal drops Poko into Pixel World, Dimension 64-Bit. Reno likes the blocky terrain, the green and teal dinos puzzle over their new shapes, and CC-01 detects Protocol 00 while its graphics card overheats.",
+      "shop": [
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-3/pages/page-02.webp?v=issue03-part3-20261118",
+      "alt": "Page 2: At Voxel Canyon, Mecha Rover stomps the blocks and switches to truck mode to start Cube-Crush. Poko sends out square bubbles that make the truck bounce.",
+      "shop": [
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "BUBBLE GUN", "href": "/bubble-gun", "image": "/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-3/pages/page-03.webp?v=issue03-part3-20261118",
+      "alt": "Page 3: Mecha Rover scoffs at the soap, and Reno fires gel beads. The green dino spots that the cross on the robot's chest is an assembly bolt, but the teal dino worries they don't have a screwdriver big enough.",
+      "shop": [
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-3/pages/page-04.webp?v=issue03-part3-20261118",
+      "alt": "Page 4: CC-01 scans for a cross-shaped tool. Poko spots a match in the leafy tops of the carrots, the green dino proposes a team stunt, and CC-01 decides to ignore the rules against vegetable engineering.",
+      "shop": [
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-3/pages/page-05.webp?v=issue03-part3-20261118",
+      "alt": "Page 5: Poko's square bubbles throw Mecha Rover off balance, and Reno adds a blast of gel. CC-01 launches Poko toward the bolt, where the leafy carrot tip makes contact with a loud ZZZ-POP!",
+      "shop": [
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "BUBBLE GUN", "href": "/bubble-gun", "image": "/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121" },
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-3/pages/page-06.webp?v=issue03-part3-20261118",
+      "alt": "Page 6: Mecha Rover pauses Protocol 00 and reboots in Friend Mode. The dinos relax, the portal reopens, and a glitch makes a bright green Pixel Splash box appear in front of the truck.",
+      "shop": [
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "PIXEL SPLASH", "href": "/pixel-splash", "image": "/assets/images/redpoly/products/pixel-splash-thumb.webp?v=pixel-20261117-v3" }
+      ]
+    }
+  ]
+}
