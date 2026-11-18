@@ -308,7 +308,7 @@
       var copy = document.createElement('div');
       var eyebrow = document.createElement('p');
       eyebrow.className = 'account-identity__eyebrow';
-      eyebrow.textContent = 'GOOGLE ACCOUNT CONNECTED';
+      eyebrow.textContent = 'GOOGLE ACCOUNT';
       var name = document.createElement('h2');
       name.className = 'account-identity__name';
       name.textContent = user.displayName || 'REDPOLY MEMBER';
@@ -318,7 +318,7 @@
       emailSpan.textContent = user.email || '';
       var badge = document.createElement('span');
       badge.className = 'account-badge';
-      badge.textContent = user.emailVerified ? 'VERIFIED · CLOUD SYNC ON' : 'SIGNED IN';
+      badge.textContent = user.emailVerified ? 'SYNC ON' : 'SIGNED IN';
       meta.appendChild(emailSpan);
       meta.appendChild(badge);
       copy.appendChild(eyebrow);
@@ -358,11 +358,6 @@
       grid.appendChild(left);
       grid.appendChild(controls);
       identityEl.appendChild(grid);
-
-      var note = document.createElement('p');
-      note.className = 'account-identity__note';
-      note.textContent = 'Your saved delivery address, demo order receipts, favorites, and cart automatically sync to your Google account across tabs and devices.';
-      identityEl.appendChild(note);
       identityEl.appendChild(statusLine);
     } else {
       var guestInit = document.createElement('span');
@@ -373,7 +368,7 @@
       var gCopy = document.createElement('div');
       var gEyebrow = document.createElement('p');
       gEyebrow.className = 'account-identity__eyebrow';
-      gEyebrow.textContent = 'GUEST MODE · SIGN IN TO SYNC ACROSS DEVICES';
+      gEyebrow.textContent = 'GUEST MODE';
       var gName = document.createElement('h2');
       gName.className = 'account-identity__name';
       gName.textContent = 'SIGN IN WITH GOOGLE';
@@ -381,11 +376,8 @@
       gMeta.className = 'account-identity__meta';
       var gBadge = document.createElement('span');
       gBadge.className = 'account-badge account-badge--guest';
-      gBadge.textContent = 'LOCAL BROWSER MODE';
-      var gText = document.createElement('span');
-      gText.textContent = 'Cart & favorites stay saved in this browser until you sign in.';
+      gBadge.textContent = 'LOCAL';
       gMeta.appendChild(gBadge);
-      gMeta.appendChild(gText);
       gCopy.appendChild(gEyebrow);
       gCopy.appendChild(gName);
       gCopy.appendChild(gMeta);
@@ -406,11 +398,6 @@
       grid.appendChild(left);
       grid.appendChild(gControls);
       identityEl.appendChild(grid);
-
-      var gNote = document.createElement('p');
-      gNote.className = 'account-identity__note';
-      gNote.textContent = 'You can save a delivery address locally and manage your favorites or cart right below—or connect Google to store your address and order history in the cloud.';
-      identityEl.appendChild(gNote);
       identityEl.appendChild(gStatus);
     }
   }
@@ -422,11 +409,11 @@
     var isCloud = rec.source === 'cloud';
 
     if (addressSyncBadge) {
-      addressSyncBadge.textContent = isCloud ? 'CLOUD SYNCED' : 'LOCAL DEVICE DRAFT';
+      addressSyncBadge.textContent = isCloud ? 'SYNCED' : 'LOCAL';
       addressSyncBadge.className = isCloud ? 'account-badge' : 'account-badge account-badge--guest';
     }
     if (addressSaveBtn) {
-      addressSaveBtn.textContent = isCloud ? 'SAVE TO GOOGLE ACCOUNT' : 'SAVE ON THIS DEVICE';
+      addressSaveBtn.textContent = isCloud ? 'SAVE ADDRESS' : 'SAVE ON DEVICE';
     }
 
     // Populate form inputs unless the user is actively typing edits
@@ -450,10 +437,10 @@
     top.className = 'address-preview__top';
     var label = document.createElement('span');
     label.className = 'address-preview__label';
-    label.textContent = 'PRIMARY DELIVERY ADDRESS';
+    label.textContent = 'SAVED ADDRESS';
     var badge = document.createElement('span');
     badge.className = isCloud ? 'account-badge' : 'account-badge account-badge--guest';
-    badge.textContent = hasCompleteAddress(data) ? (isCloud ? 'SAVED IN CLOUD' : 'SAVED LOCALLY') : 'NOT SAVED YET';
+    badge.textContent = hasCompleteAddress(data) ? (isCloud ? 'SAVED' : 'LOCAL') : 'NONE';
     top.appendChild(label);
     top.appendChild(badge);
     addressPreview.appendChild(top);
@@ -491,12 +478,12 @@
       if (!isCloud) {
         var clearBtn = document.createElement('button');
         clearBtn.type = 'button';
-        clearBtn.textContent = 'CLEAR LOCAL ADDRESS';
+        clearBtn.textContent = 'CLEAR';
         clearBtn.addEventListener('click', function () {
           writeGuestAddress(null);
           formDirty = false;
           if (addressStatus) {
-            addressStatus.textContent = 'Local delivery address cleared.';
+            addressStatus.textContent = 'Address cleared.';
             addressStatus.classList.add('is-ok');
           }
           renderAddressSection();
@@ -510,13 +497,7 @@
       var emptyName = document.createElement('h3');
       emptyName.className = 'address-preview__name';
       emptyName.textContent = 'NO SAVED ADDRESS';
-      var emptyMsg = document.createElement('p');
-      emptyMsg.className = 'address-preview__empty';
-      emptyMsg.textContent = isCloud && rec.fallbackGuest && hasCompleteAddress(rec.fallbackGuest)
-        ? 'We loaded your local browser address into the form—click "Save to Google Account" to store it in the cloud.'
-        : 'Fill out the delivery form beside this card to save your address for instant checkout autofill.';
       addressPreview.appendChild(emptyName);
-      addressPreview.appendChild(emptyMsg);
     }
   }
 
@@ -535,13 +516,13 @@
     ref.textContent = order.reference || 'RED-DEMO';
     var statusPill = document.createElement('span');
     statusPill.className = isSessionOnly ? 'account-badge account-badge--guest' : 'account-badge';
-    statusPill.textContent = isSessionOnly ? 'SESSION DEMO RECEIPT' : 'SAVED IN CLOUD · ' + String(order.status || 'placed').toUpperCase();
+    statusPill.textContent = isSessionOnly ? 'DEMO' : String(order.status || 'placed').toUpperCase();
     refRow.appendChild(ref);
     refRow.appendChild(statusPill);
     if (order.freeGift) {
       var giftPill = document.createElement('span');
       giftPill.className = 'account-badge account-badge--indigo';
-      giftPill.textContent = '✦ FREE GIFT INCLUDED';
+      giftPill.textContent = '✦ FREE GIFT';
       refRow.appendChild(giftPill);
     }
 
@@ -549,9 +530,8 @@
     meta.className = 'order-card__meta';
     var dateText = order.createdAtMs
       ? new Date(order.createdAtMs).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-      : 'Current browser session';
-    var shipText = String(order.shippingMethod || 'standard').toUpperCase() + (order.freeShipping ? ' (FREE)' : ' (' + money(order.shippingCost) + ')');
-    meta.textContent = dateText + ' · ' + shipText + ' · Includes ' + (order.gstRate || 12) + '% GST (' + money(order.gst) + ')';
+      : 'Session demo';
+    meta.textContent = dateText;
     left.appendChild(refRow);
     left.appendChild(meta);
 
@@ -612,15 +592,13 @@
     bottom.className = 'order-card__bottom';
     var shipNote = document.createElement('p');
     shipNote.className = 'order-card__ship';
-    if (order.address) {
-      var destStrong = document.createElement('strong');
-      destStrong.textContent = (order.customerName ? order.customerName + ' · ' : '');
-      shipNote.appendChild(destStrong);
-      shipNote.appendChild(document.createTextNode([order.address, order.city, order.state, order.pin ? 'PIN ' + order.pin : ''].filter(Boolean).join(', ')));
-    } else if (order.pin) {
-      shipNote.textContent = 'Delivery PIN ' + order.pin + ' · ' + (order.deliveryDays || 4) + '-day estimate';
-    } else {
-      shipNote.textContent = 'Demo order preview (no payment collected)';
+    if (order.address || order.city || order.pin) {
+      if (order.customerName) {
+        var destStrong = document.createElement('strong');
+        destStrong.textContent = order.customerName + (order.city || order.pin ? ' · ' : '');
+        shipNote.appendChild(destStrong);
+      }
+      shipNote.appendChild(document.createTextNode([order.city, order.pin].filter(Boolean).join(' · ')));
     }
 
     var actions = document.createElement('div');
@@ -689,18 +667,13 @@
       empty.className = 'account-empty';
       var copyWrap = document.createElement('div');
       var title = document.createElement('strong');
-      title.textContent = user ? 'NO ORDERS SAVED YET' : 'SIGN IN OR PLACE A DEMO ORDER';
-      var msg = document.createElement('p');
-      msg.textContent = user
-        ? 'Orders you complete at demo checkout while signed in appear here automatically with full breakdowns and Buy Again.'
-        : 'Orders placed while signed in with Google are permanently archived here. Test checkout anytime to preview a demo receipt.';
+      title.textContent = 'NO ORDERS YET';
       copyWrap.appendChild(title);
-      copyWrap.appendChild(msg);
 
       var cta = document.createElement('a');
       cta.className = 'account-btn';
       cta.href = '/#shop';
-      cta.textContent = 'EXPLORE THE SHOP →';
+      cta.textContent = 'EXPLORE SHOP →';
       empty.appendChild(copyWrap);
       empty.appendChild(cta);
       ordersContainer.appendChild(empty);
@@ -728,11 +701,8 @@
       empty.className = 'account-empty';
       var copyWrap = document.createElement('div');
       var title = document.createElement('strong');
-      title.textContent = 'NO FAVORITES HEARTED YET';
-      var msg = document.createElement('p');
-      msg.textContent = 'Tap the heart button on any toy card or product page across REDPOLY to pin your favorites right here.';
+      title.textContent = 'NO FAVORITES YET';
       copyWrap.appendChild(title);
-      copyWrap.appendChild(msg);
 
       var cta = document.createElement('a');
       cta.className = 'account-btn';
@@ -826,16 +796,13 @@
       empty.className = 'account-empty';
       var copyWrap = document.createElement('div');
       var title = document.createElement('strong');
-      title.textContent = 'YOUR CART IS EMPTY';
-      var msg = document.createElement('p');
-      msg.textContent = 'Add toys from Favorites above or head back to the REDPOLY shelf to fill your bag.';
+      title.textContent = 'CART IS EMPTY';
       copyWrap.appendChild(title);
-      copyWrap.appendChild(msg);
 
       var cta = document.createElement('a');
       cta.className = 'account-btn';
       cta.href = '/#shop';
-      cta.textContent = 'PICK YOUR TOYS →';
+      cta.textContent = 'BROWSE TOYS →';
       empty.appendChild(copyWrap);
       empty.appendChild(cta);
       cartContainer.appendChild(empty);
@@ -867,7 +834,7 @@
       nameLink.href = cat.href;
       nameLink.textContent = item.name;
       var priceLine = document.createElement('p');
-      priceLine.textContent = money(item.price) + ' each · Incl. GST';
+      priceLine.textContent = money(item.price) + ' each';
       info.appendChild(nameLink);
       info.appendChild(priceLine);
 
@@ -957,7 +924,7 @@
     var sumLine = document.createElement('p');
     sumLine.className = 'account-cart-summary__line';
     var lbl = document.createElement('span');
-    lbl.textContent = 'ITEMS (' + pieces + ') · INCL. GST';
+    lbl.textContent = 'ITEMS (' + pieces + ')';
     var val = document.createElement('strong');
     val.textContent = money(subtotal);
     sumLine.appendChild(lbl);
@@ -966,11 +933,11 @@
     var reward = document.createElement('p');
     reward.className = 'account-cart-summary__reward';
     if (subtotal >= FREE_GIFT_FROM) {
-      reward.textContent = '✦ Free Standard shipping AND a free mystery gift unlocked!';
+      reward.textContent = '✦ Free shipping + gift unlocked';
     } else if (subtotal >= FREE_SHIPPING_FROM) {
-      reward.textContent = '✓ Free Standard shipping unlocked! Add ' + money(FREE_GIFT_FROM - subtotal) + ' more for a free gift.';
+      reward.textContent = '✓ Free shipping · Add ' + money(FREE_GIFT_FROM - subtotal) + ' for gift';
     } else {
-      reward.textContent = 'Add ' + money(FREE_SHIPPING_FROM - subtotal) + ' more to unlock free Standard shipping.';
+      reward.textContent = 'Add ' + money(FREE_SHIPPING_FROM - subtotal) + ' for free shipping';
     }
 
     var checkoutLink = document.createElement('a');
@@ -995,7 +962,7 @@
     if (statAddressSub) {
       statAddressSub.textContent = hasAddr
         ? [rec.data.city, rec.data.state].filter(Boolean).join(', ')
-        : 'Add address below';
+        : 'Not set';
     }
 
     var fb = window.RedpolyFirebase;
@@ -1004,7 +971,7 @@
     var sessionOrder = readSessionDemoOrder();
     var orderCount = user ? cloudOrders.length : (sessionOrder ? 1 : 0);
     if (statOrders) statOrders.textContent = String(orderCount);
-    if (statOrdersSub) statOrdersSub.textContent = user ? 'Synced with Google' : (sessionOrder ? 'Session preview' : 'No orders yet');
+    if (statOrdersSub) statOrdersSub.textContent = user ? 'Synced' : (sessionOrder ? 'Session' : 'None');
 
     var favs = readFavorites();
     if (statFavorites) statFavorites.textContent = String(favs.length);
@@ -1013,7 +980,7 @@
     var pieces = cart.reduce(function (s, i) { return s + i.quantity; }, 0);
     var subtotal = cart.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
     if (statCart) statCart.textContent = money(subtotal);
-    if (statCartSub) statCartSub.textContent = pieces + (pieces === 1 ? ' item in bag' : ' items in bag');
+    if (statCartSub) statCartSub.textContent = pieces + (pieces === 1 ? ' item' : ' items');
   }
 
   function renderAll() {
@@ -1047,11 +1014,11 @@
         return;
       }
       if (!/^[1-9][0-9]{5}$/.test(pin)) {
-        if (pinStatus) pinStatus.textContent = pin.length < 6 ? 'Enter all 6 digits to look up city & state.' : 'Enter a valid 6-digit Indian PIN code.';
+        if (pinStatus) pinStatus.textContent = pin.length < 6 ? '6 digits required' : 'Invalid PIN code';
         return;
       }
 
-      if (pinStatus) pinStatus.textContent = 'Looking up city and state…';
+      if (pinStatus) pinStatus.textContent = 'Checking PIN…';
       lookupTimer = window.setTimeout(function () {
         var controller = window.AbortController ? new AbortController() : null;
         activeLookup = controller;
@@ -1065,7 +1032,7 @@
             var offices = res && res[0] && res[0].Status === 'Success' && res[0].PostOffice;
             var office = offices && offices.find(function (entry) { return entry && entry.Country === 'India' && entry.State && (entry.District || entry.Block || entry.Name); });
             if (!office) {
-              if (pinStatus) pinStatus.textContent = 'No location found for this PIN. Please enter city and state manually.';
+              if (pinStatus) pinStatus.textContent = 'PIN not found — enter city & state';
               return;
             }
             cityInput.value = office.District || office.Block || office.Name;
@@ -1073,11 +1040,11 @@
             cityInput.readOnly = true;
             stateInput.readOnly = true;
             lastAutoPin = pin;
-            if (pinStatus) pinStatus.textContent = 'Detected ' + cityInput.value + ', ' + stateInput.value + '.';
+            if (pinStatus) pinStatus.textContent = cityInput.value + ', ' + stateInput.value;
           })
           .catch(function () {
             if (seq !== lookupSeq || pinInput.value.trim() !== pin) return;
-            if (pinStatus) pinStatus.textContent = 'PIN lookup unavailable right now. You can type city and state manually.';
+            if (pinStatus) pinStatus.textContent = 'Enter city & state manually';
           });
       }, 180);
     });
@@ -1123,7 +1090,7 @@
         addressSaveBtn.disabled = true;
         if (addressStatus) {
           addressStatus.classList.add('is-ok');
-          addressStatus.textContent = 'Saving to your Google account…';
+          addressStatus.textContent = 'Saving…';
         }
         try {
           await fb.saveDeliveryProfile(payload);
@@ -1131,15 +1098,15 @@
           writeGuestAddress(null);
           if (addressStatus) {
             addressStatus.classList.add('is-ok');
-            addressStatus.textContent = 'Delivery address saved to your Google account.';
+            addressStatus.textContent = 'Saved';
           }
           renderAddressSection();
           renderStats();
-          showToast('Address saved to cloud');
+          showToast('Address saved');
         } catch (err) {
           if (addressStatus) {
             addressStatus.classList.remove('is-ok');
-            addressStatus.textContent = err && err.message ? err.message : 'Could not save delivery address.';
+            addressStatus.textContent = err && err.message ? err.message : 'Could not save address.';
           }
         } finally {
           addressSaveBtn.disabled = false;
@@ -1149,33 +1116,74 @@
         formDirty = false;
         if (addressStatus) {
           addressStatus.classList.add('is-ok');
-          addressStatus.textContent = 'Saved on this device. Sign in with Google anytime to sync to the cloud.';
+          addressStatus.textContent = 'Saved on device';
         }
         renderAddressSection();
         renderStats();
-        showToast('Address saved on this device');
+        showToast('Address saved');
       }
     });
   }
 
-  // Tab filtering across sections
-  function activateTab(tabName) {
-    if (!tabsNav) return;
-    tabsNav.querySelectorAll('button[data-tab]').forEach(function (btn) {
-      btn.classList.toggle('is-active', btn.getAttribute('data-tab') === tabName);
-    });
+  // Tab switching: open Recent Orders by default, show Address/Favorites/Cart only on click
+  var VALID_TABS = ['orders', 'address', 'favorites', 'cart'];
+  function resolveTab(name) {
+    return VALID_TABS.indexOf(name) !== -1 ? name : 'orders';
+  }
+  function activateTab(tabName, scrollToPanel) {
+    var active = resolveTab(tabName);
+    if (tabsNav) {
+      tabsNav.querySelectorAll('button[data-tab]').forEach(function (btn) {
+        var match = btn.getAttribute('data-tab') === active;
+        btn.classList.toggle('is-active', match);
+        btn.setAttribute('aria-selected', match ? 'true' : 'false');
+      });
+    }
     sectionEls.forEach(function (sec) {
-      sec.hidden = tabName !== 'all' && sec.getAttribute('data-section') !== tabName;
+      sec.hidden = sec.getAttribute('data-section') !== active;
     });
+    if (scrollToPanel && tabsNav) {
+      tabsNav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   if (tabsNav) {
     tabsNav.addEventListener('click', function (event) {
       var btn = event.target.closest('button[data-tab]');
       if (!btn) return;
-      activateTab(btn.getAttribute('data-tab'));
+      activateTab(btn.getAttribute('data-tab'), false);
+    });
+    tabsNav.addEventListener('keydown', function (event) {
+      var tabs = Array.prototype.slice.call(tabsNav.querySelectorAll('button[data-tab]'));
+      var idx = tabs.indexOf(document.activeElement);
+      if (idx === -1) return;
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        var next = tabs[(idx + 1) % tabs.length];
+        next.focus();
+        activateTab(next.getAttribute('data-tab'), false);
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        var prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+        prev.focus();
+        activateTab(prev.getAttribute('data-tab'), false);
+      }
     });
   }
+
+  document.querySelectorAll('.account-stat[data-tab-link]').forEach(function (card) {
+    card.addEventListener('click', function (event) {
+      event.preventDefault();
+      var targetTab = card.getAttribute('data-tab-link');
+      activateTab(targetTab, true);
+    });
+  });
+
+  function syncTabFromHash() {
+    var hash = (window.location.hash || '').replace(/^#/, '');
+    activateTab(hash ? resolveTab(hash) : 'orders', false);
+  }
+  window.addEventListener('hashchange', syncTabFromHash);
 
   // Sync live with Firebase bridge, header drawers, and other browser tabs
   window.addEventListener('redpoly:firebase-ready', renderAll);
@@ -1211,4 +1219,5 @@
   window.addEventListener('storage', renderAll);
 
   renderAll();
+  syncTabFromHash();
 })();
