@@ -35,22 +35,12 @@
 .account-badge--guest{background:#ffe2d3;color:#7f220e}
 .account-badge--indigo{background:#4439b8;color:#fff;border-color:#4439b8}
 .account-badge--dark{background:#171512;color:#c8ff00}
+.account-badge--delivered{background:#22c55e;color:#082012;border-color:#082012}
+.account-badge--cancelled{background:#ffe2d3;color:#8e1e0f;border-color:#8e1e0f}
 .account-identity__controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .account-identity__status{margin-top:10px;min-height:16px;font-size:11px;font-weight:800;color:#a52b18}
 .account-identity__status:empty{display:none}
 .account-identity__status.is-ok{color:#355900}
-
-/* Overview Stats Bar */
-.account-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:22px}
-.account-stat{display:flex;flex-direction:column;gap:6px;padding:18px 20px;background:#1b1916;border:1px solid rgba(255,255,255,.15);border-top:3px solid #c8ff00;text-align:left;transition:transform .16s ease,border-color .16s ease}
-.account-stat:nth-child(1){border-top-color:#8f7bff}
-.account-stat:nth-child(2){border-top-color:#c8ff00}
-.account-stat:nth-child(3){border-top-color:#ff6b1a}
-.account-stat:nth-child(4){border-top-color:#3bc9c4}
-.account-stat:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.35)}
-.account-stat span{color:#aaa295;font-size:8.5px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase}
-.account-stat strong{font:clamp(28px,3vw,36px)/.95 'Anton',sans-serif;color:#fff}
-.account-stat small{color:#d0c9bd;font-size:11px;font-weight:700}
 
 /* Sticky Section / Filter Tabs */
 .account-tabs{position:sticky;top:82px;z-index:20;display:flex;gap:8px;overflow-x:auto;margin:26px -4px 0;padding:10px 4px;background:rgba(16,16,13,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.12);scrollbar-width:thin}
@@ -116,9 +106,33 @@
 .order-item__copy small{display:block;margin-top:4px;color:#bfb7aa;font-size:11px;font-weight:700}
 .order-item__total{font:20px/1 'Anton',sans-serif;color:#c8ff00;flex:none}
 .order-card__bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 18px;margin-top:16px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.18)}
-.order-card__ship{color:#d5cec1;font-size:11.5px;line-height:1.55}
+.order-card__ship{color:#d5cec1;font-size:11.5px;line-height:1.55;max-width:58ch}
 .order-card__ship strong{color:#fff}
 .order-card__actions{display:flex;flex-wrap:wrap;gap:8px}
+.account-btn--sm{min-height:34px;padding:7px 11px;font-size:9px;box-shadow:3px 3px 0 #000}
+
+/* Order Milestone + Tracking Strip */
+.order-milestone{margin-top:14px;padding:14px 16px;background:#181512;border:1px solid rgba(255,255,255,.14)}
+.order-milestone__head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 14px}
+.order-milestone__label{font-size:10.5px;font-weight:900;letter-spacing:.9px;text-transform:uppercase;color:#c8ff00}
+.order-milestone--cancelled .order-milestone__label{color:#ff9a69}
+.order-milestone__pct{font:20px/1 'Anton',sans-serif;color:#fff;letter-spacing:.4px}
+.order-milestone__track{position:relative;height:7px;margin-top:10px;background:rgba(255,255,255,.12);overflow:hidden}
+.order-milestone__fill{display:block;height:100%;background:linear-gradient(90deg,#8f7bff,#c8ff00);transition:width .28s ease}
+.order-milestone--delivered .order-milestone__fill{background:#22c55e}
+.order-milestone__steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px;padding:0;list-style:none}
+.order-milestone__steps li{font-size:9px;font-weight:800;line-height:1.3;color:#8e877c}
+.order-milestone__steps li.is-done{color:#e9e3d7}
+.order-milestone__steps li.is-current{color:#c8ff00}
+.order-tracking{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:12px;padding-top:11px;border-top:1px dashed rgba(255,255,255,.16)}
+.order-tracking__info{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;font-size:11px;font-weight:700;color:#d6cfc2}
+.order-tracking__code{display:inline-flex;align-items:center;padding:4px 9px;background:#100e0b;border:1px solid rgba(200,255,0,.45);color:#c8ff00;font:700 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.6px}
+.order-tracking__copy{padding:6px 10px;border:1px solid rgba(255,255,255,.28);background:#25211c;color:#f7f1e6;font:900 9px/1 'Archivo',sans-serif;letter-spacing:.9px;text-transform:uppercase;cursor:pointer}
+.order-tracking__copy:hover{background:#c8ff00;border-color:#c8ff00;color:#111}
+.order-tracking__pending{font-size:11px;color:#9f978b;font-weight:700}
+.order-item__actions{display:flex;align-items:center;gap:10px;flex:none}
+.order-item__review-link{padding:6px 9px;border:1px solid #c8ff00;background:rgba(200,255,0,.1);color:#c8ff00;font:900 8.5px/1 'Archivo',sans-serif;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+.order-item__review-link:hover{background:#c8ff00;color:#111}
 
 /* Favorites Grid */
 .fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:16px;margin-top:20px}
@@ -168,7 +182,6 @@
 .account-empty p{font-size:12.5px;line-height:1.55;max-width:52ch}
 
 @media(max-width:940px){
-  .account-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .address-grid,.account-cart-grid{grid-template-columns:1fr}
   .account-tabs{top:82px}
 }
@@ -179,13 +192,14 @@
   .account-main{width:calc(100% - 28px);padding:22px 0 60px}
   .account-hero{grid-template-columns:1fr}
   .account-identity{padding:20px 18px}
-  .account-stats{gap:10px}
-  .account-stat{padding:14px}
   .address-form{grid-template-columns:1fr}
   .address-field--wide{grid-column:1}
   .order-card{padding:16px}
   .order-card__total-box{text-align:left}
+  .order-milestone__steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .order-item{flex-wrap:wrap}
+  .order-item__actions{margin-left:auto}
   .account-cart-row{flex-wrap:wrap}
   .account-cart-row__price{margin-left:auto}
 }
-@media(prefers-reduced-motion:reduce){.account-btn,.account-stat,.fav-card,.account-tabs button{transition:none}.account-btn:hover,.account-stat:hover,.fav-card:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){.account-btn,.fav-card,.account-tabs button,.order-milestone__fill{transition:none}.account-btn:hover,.fav-card:hover{transform:none}}

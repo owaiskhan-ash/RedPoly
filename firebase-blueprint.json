@@ -229,7 +229,28 @@
         },
         "status": {
           "type": "string",
-          "enum": ["placed", "fulfilled", "cancelled"]
+          "enum": [
+            "placed",
+            "created",
+            "processed",
+            "shipped",
+            "out_for_delivery",
+            "delivered",
+            "fulfilled",
+            "cancelled"
+          ]
+        },
+        "trackingCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "trackingCarrier": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "deliveredAt": {
+          "type": "string",
+          "format": "date-time"
         },
         "createdAt": {
           "type": "string",
@@ -289,6 +310,103 @@
         }
       },
       "required": ["uid", "orderId", "name", "price", "quantity"]
+    },
+    "ProductReview": {
+      "title": "ProductReview",
+      "description": "Verified delivered-purchase customer review awaiting or approved by store admin moderation.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "orderReference": {
+          "type": "string",
+          "minLength": 15,
+          "maxLength": 15,
+          "pattern": "^RED-DEMO-[0-9]{6}$"
+        },
+        "productSlug": {
+          "type": "string",
+          "enum": [
+            "bubble-gun",
+            "stunt-pet",
+            "mini-cool-car",
+            "gel-storm",
+            "mecha-rover",
+            "pixel-splash",
+            "cute-dinos"
+          ]
+        },
+        "itemSlug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "productName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "authorName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "rating": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "body": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 1000
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "verifiedPurchase": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "moderatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "orderId",
+        "orderReference",
+        "productSlug",
+        "itemSlug",
+        "productName",
+        "authorName",
+        "rating",
+        "title",
+        "body",
+        "status",
+        "verifiedPurchase",
+        "createdAt"
+      ]
     }
   },
   "firestore": {
@@ -310,11 +428,15 @@
     },
     "/users/{userId}/orders/{orderId}": {
       "schema": { "$ref": "#/entities/Order" },
-      "description": "Immutable demo orders placed by a customer."
+      "description": "Customer demo orders with admin-editable fulfillment milestones, tracking code, and delivery details."
     },
     "/users/{userId}/orders/{orderId}/items/{itemId}": {
       "schema": { "$ref": "#/entities/OrderItem" },
       "description": "Line items belonging to a customer order."
+    },
+    "/products/{productSlug}/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/ProductReview" },
+      "description": "Verified delivered-purchase reviews for each product, moderated in Admin Dashboard."
     }
   }
 }
