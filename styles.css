@@ -24,7 +24,7 @@ button{font-family:inherit;cursor:pointer}
 .site-header__inner{display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:82px}
 .site-header__brand{display:flex;flex:none;align-items:center;gap:12px;color:var(--lime)}
 .site-header__brand img{width:108px;height:auto;object-fit:contain}
-.site-header__brand span{font-size:8px;font-weight:900;letter-spacing:2px;white-space:nowrap}
+.site-header__brand span{font-size:13px;font-weight:900;letter-spacing:2.4px;white-space:nowrap}
 .site-header__nav{display:flex;align-items:center;gap:clamp(18px,3vw,38px);margin-left:auto}
 .site-header__inner>.cart-toggle,.site-header__inner>.wish-toggle{flex:none;margin-left:10px}
 /* "Next toy" pill: product pages only, so visitors can move around the range without going back */
@@ -224,6 +224,7 @@ button{font-family:inherit;cursor:pointer}
   .site-header__inner{gap:18px}
   .site-header__brand img{width:94px}
   .site-header__brand{gap:8px}
+  .site-header__brand span{font-size:12px;letter-spacing:2px}
   .site-header__nav{gap:18px}
   .limited__grid{grid-template-columns:1fr 1fr;grid-template-areas:"left center" "right center"}
   .limited__left{grid-area:left}
@@ -240,7 +241,7 @@ button{font-family:inherit;cursor:pointer}
   .site-header__inner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;min-height:0;padding-top:10px;padding-bottom:8px}
   .site-header__brand{gap:7px;min-width:0}
   .site-header__brand img{width:82px}
-  .site-header__brand span{font-size:7px;letter-spacing:1.3px}
+  .site-header__brand span{font-size:11px;letter-spacing:1.8px}
   .site-header__nav{grid-column:1/-1;grid-row:2;justify-content:space-between;gap:12px;width:100%;margin:0;padding-top:5px;border-top:1px solid rgba(244,240,230,.12)}
   .site-header__nav a{padding:7px 0 5px;font-size:8px;letter-spacing:.9px}
   .site-header__nav a::after{bottom:0}
