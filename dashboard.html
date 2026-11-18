@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/dashboard.css?v=dash-20261118" />
+  <link rel="stylesheet" href="/dashboard.css?v=orders-reviews-20261119" />
 </head>
 <body>
   <header class="top-bar">
@@ -47,13 +47,20 @@
     <aside class="sidebar" id="dash-sidebar" aria-label="Dashboard navigation">
       <nav class="sidebar__nav">
         <p class="sidebar__section-label">Store management</p>
-        <a class="sidebar__link is-active" href="/dashboard" aria-current="page">
+        <a class="sidebar__link is-active" href="#orders" id="nav-orders" data-view="orders" aria-current="page">
           <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M3.5 5.5h13l-1 10.5h-11L3.5 5.5Z" />
             <path d="M7 5.5V4a3 3 0 0 1 6 0v1.5" />
           </svg>
           <span>Orders</span>
           <span class="sidebar__count" id="sidebar-orders-count">0</span>
+        </a>
+        <a class="sidebar__link" href="#reviews" id="nav-reviews" data-view="reviews">
+          <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 2.5l2.35 4.76 5.25.76-3.8 3.7.9 5.23L10 14.48l-4.7 2.47.9-5.23-3.8-3.7 5.25-.76L10 2.5z" />
+          </svg>
+          <span>Reviews</span>
+          <span class="sidebar__count" id="sidebar-reviews-count">0</span>
         </a>
       </nav>
 
@@ -73,7 +80,7 @@
       <div class="page-wrap">
         <div class="page-header">
           <div>
-            <h1 class="page-title">Orders</h1>
+            <h1 class="page-title" id="page-title">Orders</h1>
           </div>
           <div class="page-actions" id="page-actions" hidden>
             <button type="button" class="btn btn--secondary" id="refresh-orders-btn">
@@ -93,111 +100,184 @@
 
         <!-- Dashboard Content -->
         <div class="dashboard-content" id="dashboard-content" hidden>
-          <!-- Metrics Strip -->
-          <section class="metrics-strip" aria-label="Order summary">
-            <div class="metric-cell">
-              <span class="metric-cell__label">Total orders</span>
-              <strong class="metric-cell__value" id="metric-total-orders">0</strong>
-            </div>
-            <div class="metric-cell">
-              <span class="metric-cell__label">Gross sales</span>
-              <strong class="metric-cell__value" id="metric-gross-sales">₹0</strong>
-            </div>
-            <div class="metric-cell">
-              <span class="metric-cell__label">Items ordered</span>
-              <strong class="metric-cell__value" id="metric-items-ordered">0</strong>
-            </div>
-            <div class="metric-cell">
-              <span class="metric-cell__label">Open / Unfulfilled</span>
-              <strong class="metric-cell__value" id="metric-unfulfilled">0</strong>
-            </div>
-          </section>
+          <div id="orders-view">
+            <!-- Metrics Strip -->
+            <section class="metrics-strip" aria-label="Order summary">
+              <div class="metric-cell">
+                <span class="metric-cell__label">Total orders</span>
+                <strong class="metric-cell__value" id="metric-total-orders">0</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Gross sales</span>
+                <strong class="metric-cell__value" id="metric-gross-sales">₹0</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Items ordered</span>
+                <strong class="metric-cell__value" id="metric-items-ordered">0</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Open / In progress</span>
+                <strong class="metric-cell__value" id="metric-unfulfilled">0</strong>
+              </div>
+            </section>
 
-          <!-- Error Banner -->
-          <div class="inline-alert" id="orders-error-banner" hidden role="alert">
-            <p id="orders-error-text"></p>
-            <button type="button" class="btn btn--secondary btn--sm" id="orders-retry-btn">Try again</button>
+            <!-- Error Banner -->
+            <div class="inline-alert" id="orders-error-banner" hidden role="alert">
+              <p id="orders-error-text"></p>
+              <button type="button" class="btn btn--secondary btn--sm" id="orders-retry-btn">Try again</button>
+            </div>
+
+            <!-- Orders Table Card -->
+            <section class="orders-card" aria-label="All placed orders">
+              <div class="orders-tabs" id="orders-filter-tabs" role="tablist" aria-label="Filter orders">
+                <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-filter="all">All <span id="tab-count-all">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="open">Open <span id="tab-count-placed">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="shipped">Shipped <span id="tab-count-shipped">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="delivered">Delivered <span id="tab-count-fulfilled">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="cancelled">Cancelled <span id="tab-count-cancelled">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="express">Express <span id="tab-count-express">0</span></button>
+              </div>
+
+              <div class="orders-toolbar">
+                <div class="search-field">
+                  <svg class="search-field__icon" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="7" cy="7" r="4.5" />
+                    <path d="M10.5 10.5L14 14" />
+                  </svg>
+                  <input type="search" id="orders-search" placeholder="Search orders by ID, tracking, customer, email, city, PIN, or toy" aria-label="Search orders" />
+                  <button type="button" class="search-field__clear" id="orders-search-clear" hidden aria-label="Clear search">×</button>
+                </div>
+                <div class="toolbar-controls">
+                  <label class="sort-control" for="orders-sort">
+                    <span class="sr-only">Sort orders</span>
+                    <select id="orders-sort" aria-label="Sort orders">
+                      <option value="newest">Newest first</option>
+                      <option value="oldest">Oldest first</option>
+                      <option value="total-desc">Total: high to low</option>
+                      <option value="total-asc">Total: low to high</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Loading Skeleton -->
+              <div class="table-skeleton" id="orders-skeleton" hidden aria-hidden="true">
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+              </div>
+
+              <!-- Empty State -->
+              <div class="empty-state" id="orders-empty" hidden>
+                <div class="empty-state__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7h16l-1.2 12H5.2L4 7Z" />
+                    <path d="M8.5 7V5a3.5 3.5 0 0 1 7 0v2" />
+                  </svg>
+                </div>
+                <h2 class="empty-state__title" id="orders-empty-title">No orders yet</h2>
+                <p class="empty-state__copy" id="orders-empty-copy">Orders completed through REDPOLY checkout will appear here automatically.</p>
+                <div class="empty-state__actions" id="orders-empty-actions"></div>
+              </div>
+
+              <!-- Data Table -->
+              <div class="table-scroll" id="orders-table-wrap">
+                <table class="orders-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Order</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Customer</th>
+                      <th scope="col">Destination</th>
+                      <th scope="col">Payment</th>
+                      <th scope="col">Fulfillment</th>
+                      <th scope="col">Items</th>
+                      <th scope="col">Delivery</th>
+                      <th scope="col" class="col-num">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orders-tbody"></tbody>
+                </table>
+              </div>
+
+              <div class="table-footer" id="orders-table-footer" hidden>
+                <span id="orders-showing-text">Showing 0 orders</span>
+                <span>Click any order row to edit order details, tracking, or fulfillment milestones</span>
+              </div>
+            </section>
           </div>
 
-          <!-- Orders Table Card -->
-          <section class="orders-card" aria-label="All placed orders">
-            <div class="orders-tabs" id="orders-filter-tabs" role="tablist" aria-label="Filter orders">
-              <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-filter="all">All <span id="tab-count-all">0</span></button>
-              <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="placed">Unfulfilled <span id="tab-count-placed">0</span></button>
-              <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="fulfilled">Fulfilled <span id="tab-count-fulfilled">0</span></button>
-              <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="cancelled">Cancelled <span id="tab-count-cancelled">0</span></button>
-              <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="express">Express <span id="tab-count-express">0</span></button>
-            </div>
-
-            <div class="orders-toolbar">
-              <div class="search-field">
-                <svg class="search-field__icon" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="7" cy="7" r="4.5" />
-                  <path d="M10.5 10.5L14 14" />
-                </svg>
-                <input type="search" id="orders-search" placeholder="Search orders by ID, customer, email, city, PIN, or toy" aria-label="Search orders" />
-                <button type="button" class="search-field__clear" id="orders-search-clear" hidden aria-label="Clear search">×</button>
+          <!-- Product Reviews Moderation View -->
+          <div id="reviews-view" hidden>
+            <section class="metrics-strip" aria-label="Review summary">
+              <div class="metric-cell">
+                <span class="metric-cell__label">Total reviews</span>
+                <strong class="metric-cell__value" id="metric-total-reviews">0</strong>
               </div>
-              <div class="toolbar-controls">
-                <label class="sort-control" for="orders-sort">
-                  <span class="sr-only">Sort orders</span>
-                  <select id="orders-sort" aria-label="Sort orders">
-                    <option value="newest">Newest first</option>
-                    <option value="oldest">Oldest first</option>
-                    <option value="total-desc">Total: high to low</option>
-                    <option value="total-asc">Total: low to high</option>
-                  </select>
-                </label>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Pending moderation</span>
+                <strong class="metric-cell__value" id="metric-pending-reviews">0</strong>
               </div>
-            </div>
-
-            <!-- Loading Skeleton -->
-            <div class="table-skeleton" id="orders-skeleton" hidden aria-hidden="true">
-              <div class="skeleton-row"></div>
-              <div class="skeleton-row"></div>
-              <div class="skeleton-row"></div>
-              <div class="skeleton-row"></div>
-              <div class="skeleton-row"></div>
-            </div>
-
-            <!-- Empty State -->
-            <div class="empty-state" id="orders-empty" hidden>
-              <div class="empty-state__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 7h16l-1.2 12H5.2L4 7Z" />
-                  <path d="M8.5 7V5a3.5 3.5 0 0 1 7 0v2" />
-                </svg>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Approved &amp; live</span>
+                <strong class="metric-cell__value" id="metric-approved-reviews">0</strong>
               </div>
-              <h2 class="empty-state__title" id="orders-empty-title">No orders yet</h2>
-              <p class="empty-state__copy" id="orders-empty-copy">Orders completed through REDPOLY checkout will appear here automatically.</p>
-              <div class="empty-state__actions" id="orders-empty-actions"></div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Rejected</span>
+                <strong class="metric-cell__value" id="metric-rejected-reviews">0</strong>
+              </div>
+            </section>
+
+            <div class="inline-alert" id="reviews-error-banner" hidden role="alert">
+              <p id="reviews-error-text"></p>
+              <button type="button" class="btn btn--secondary btn--sm" id="reviews-retry-btn">Try again</button>
             </div>
 
-            <!-- Data Table -->
-            <div class="table-scroll" id="orders-table-wrap">
-              <table class="orders-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Order</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Customer</th>
-                    <th scope="col">Destination</th>
-                    <th scope="col">Payment</th>
-                    <th scope="col">Fulfillment</th>
-                    <th scope="col">Items</th>
-                    <th scope="col">Delivery</th>
-                    <th scope="col" class="col-num">Total</th>
-                  </tr>
-                </thead>
-                <tbody id="orders-tbody"></tbody>
-              </table>
-            </div>
+            <section class="orders-card" aria-label="Verified customer reviews">
+              <div class="orders-tabs" id="reviews-filter-tabs" role="tablist" aria-label="Filter reviews">
+                <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-review-filter="all">All <span id="rev-tab-all">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-review-filter="pending">Pending <span id="rev-tab-pending">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-review-filter="approved">Approved <span id="rev-tab-approved">0</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-review-filter="rejected">Rejected <span id="rev-tab-rejected">0</span></button>
+              </div>
 
-            <div class="table-footer" id="orders-table-footer" hidden>
-              <span id="orders-showing-text">Showing 0 orders</span>
-              <span>Click any order row to inspect line items and shipping details</span>
-            </div>
-          </section>
+              <div class="orders-toolbar">
+                <div class="search-field">
+                  <svg class="search-field__icon" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="7" cy="7" r="4.5" />
+                    <path d="M10.5 10.5L14 14" />
+                  </svg>
+                  <input type="search" id="reviews-search" placeholder="Search reviews by product, buyer name, order reference, or text" aria-label="Search reviews" />
+                  <button type="button" class="search-field__clear" id="reviews-search-clear" hidden aria-label="Clear review search">×</button>
+                </div>
+              </div>
+
+              <div class="table-skeleton" id="reviews-skeleton" hidden aria-hidden="true">
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+              </div>
+
+              <div class="empty-state" id="reviews-empty" hidden>
+                <div class="empty-state__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8l-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9L12 3z" />
+                  </svg>
+                </div>
+                <h2 class="empty-state__title" id="reviews-empty-title">No customer reviews yet</h2>
+                <p class="empty-state__copy" id="reviews-empty-copy">Verified buyers with delivered orders can leave reviews from any product page.</p>
+              </div>
+
+              <div class="reviews-list" id="reviews-list" hidden></div>
+
+              <div class="table-footer" id="reviews-footer" hidden>
+                <span id="reviews-showing-text">Showing 0 reviews</span>
+                <span>Approved reviews appear immediately on product pages</span>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </main>
@@ -211,60 +291,171 @@
         <div>
           <div class="drawer__title-row">
             <h2 class="drawer__title" id="drawer-order-ref">#RED-DEMO-000000</h2>
-            <span class="status-badge" id="drawer-status-badge">Placed</span>
+            <span class="status-badge" id="drawer-status-badge">Order Created</span>
           </div>
           <p class="drawer__sub" id="drawer-order-date">—</p>
         </div>
-        <button type="button" class="drawer__close" id="drawer-close-btn" aria-label="Close order details">×</button>
+        <div class="drawer__head-actions">
+          <button type="button" class="btn btn--secondary btn--sm" id="drawer-edit-toggle" aria-expanded="false">Edit order</button>
+          <button type="button" class="drawer__close" id="drawer-close-btn" aria-label="Close order details">×</button>
+        </div>
       </header>
 
       <div class="drawer__body">
-        <!-- Fulfillment Controls -->
-        <section class="drawer-section">
-          <div class="drawer-section__head">
-            <h3>Fulfillment status</h3>
-            <span class="drawer-saving" id="drawer-status-saving" hidden>Saving…</span>
-          </div>
-          <div class="status-actions" id="drawer-status-actions">
-            <button type="button" class="btn btn--primary btn--sm" data-status-action="fulfilled">Mark as fulfilled</button>
-            <button type="button" class="btn btn--secondary btn--sm" data-status-action="placed">Mark unfulfilled</button>
-            <button type="button" class="btn btn--danger-ghost btn--sm" data-status-action="cancelled">Cancel order</button>
-          </div>
-          <p class="drawer-status-error" id="drawer-status-error" hidden></p>
-        </section>
+        <!-- Read-Only View -->
+        <div id="drawer-read-view">
+          <!-- Fulfillment Controls -->
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Fulfillment milestone</h3>
+              <span class="drawer-saving" id="drawer-status-saving" hidden>Saving…</span>
+            </div>
+            <div class="milestone-progress" aria-hidden="true">
+              <span class="milestone-progress__fill" id="drawer-progress-fill"></span>
+            </div>
+            <div class="status-actions" id="drawer-status-actions">
+              <button type="button" class="btn btn--secondary btn--sm" data-status-action="created">Created · 0%</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-status-action="processed">Processed · 15%</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-status-action="shipped">Shipped · 50%</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-status-action="out_for_delivery">Out for Delivery · 90%</button>
+              <button type="button" class="btn btn--primary btn--sm" data-status-action="delivered">Delivered · 100%</button>
+              <button type="button" class="btn btn--danger-ghost btn--sm" data-status-action="cancelled">Cancel</button>
+            </div>
+            <p class="drawer-status-error" id="drawer-status-error" hidden></p>
 
-        <!-- Items -->
-        <section class="drawer-section">
-          <div class="drawer-section__head">
-            <h3>Items</h3>
-            <span class="drawer-section__meta" id="drawer-item-count">0 items</span>
-          </div>
-          <ul class="drawer-items" id="drawer-items-list"></ul>
-        </section>
+            <form class="tracking-form" id="drawer-tracking-form">
+              <div class="tracking-form__fields">
+                <label class="dash-field">
+                  <span>Courier / carrier</span>
+                  <input type="text" id="drawer-tracking-carrier" maxlength="64" placeholder="e.g. Delhivery" />
+                </label>
+                <label class="dash-field">
+                  <span>Tracking ID</span>
+                  <input type="text" id="drawer-tracking-code" maxlength="64" placeholder="e.g. DLV98271625" />
+                </label>
+              </div>
+              <button type="submit" class="btn btn--secondary btn--sm" id="drawer-save-tracking-btn">Save tracking</button>
+            </form>
+          </section>
 
-        <!-- Payment Summary -->
-        <section class="drawer-section">
-          <div class="drawer-section__head">
-            <h3>Payment summary</h3>
-            <span class="status-badge status-badge--neutral">Demo</span>
-          </div>
-          <dl class="summary-list" id="drawer-summary-list"></dl>
-        </section>
+          <!-- Items -->
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Items</h3>
+              <span class="drawer-section__meta" id="drawer-item-count">0 items</span>
+            </div>
+            <ul class="drawer-items" id="drawer-items-list"></ul>
+          </section>
 
-        <!-- Customer & Shipping -->
-        <section class="drawer-section">
-          <div class="drawer-section__head">
-            <h3>Customer &amp; shipping</h3>
+          <!-- Payment Summary -->
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Payment summary</h3>
+              <span class="status-badge status-badge--neutral">Demo</span>
+            </div>
+            <dl class="summary-list" id="drawer-summary-list"></dl>
+          </section>
+
+          <!-- Customer & Shipping -->
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Customer &amp; shipping</h3>
+            </div>
+            <div class="customer-details" id="drawer-customer-details"></div>
+          </section>
+        </div>
+
+        <!-- Edit Order Form View -->
+        <form id="drawer-edit-form" class="drawer-edit-form" hidden novalidate>
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Customer &amp; shipping details</h3>
+            </div>
+            <div class="edit-grid">
+              <label class="dash-field">
+                <span>Customer name</span>
+                <input type="text" id="edit-customer-name" maxlength="80" required />
+              </label>
+              <label class="dash-field">
+                <span>Email</span>
+                <input type="email" id="edit-email" maxlength="120" required />
+              </label>
+              <label class="dash-field">
+                <span>Mobile (10 digits)</span>
+                <input type="tel" id="edit-phone" maxlength="10" required />
+              </label>
+              <label class="dash-field">
+                <span>PIN code (6 digits)</span>
+                <input type="text" id="edit-pin" maxlength="6" required />
+              </label>
+              <label class="dash-field edit-grid__full">
+                <span>Street address</span>
+                <input type="text" id="edit-address" maxlength="220" required />
+              </label>
+              <label class="dash-field">
+                <span>City</span>
+                <input type="text" id="edit-city" maxlength="60" required />
+              </label>
+              <label class="dash-field">
+                <span>State</span>
+                <input type="text" id="edit-state" maxlength="60" required />
+              </label>
+              <label class="dash-field">
+                <span>Shipping method</span>
+                <select id="edit-shipping-method">
+                  <option value="standard">Standard (₹30, free ≥ ₹2,000)</option>
+                  <option value="express">Express (₹120, free ≥ ₹5,000)</option>
+                </select>
+              </label>
+              <label class="dash-field">
+                <span>Order status</span>
+                <select id="edit-status">
+                  <option value="created">Order Created (0%)</option>
+                  <option value="processed">Order Processed (15%)</option>
+                  <option value="shipped">Order Shipped (50%)</option>
+                  <option value="out_for_delivery">Order Out for Delivery (90%)</option>
+                  <option value="delivered">Order Delivered (100%)</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </label>
+              <label class="dash-field">
+                <span>Courier / carrier</span>
+                <input type="text" id="edit-tracking-carrier" maxlength="64" placeholder="Optional" />
+              </label>
+              <label class="dash-field">
+                <span>Tracking code</span>
+                <input type="text" id="edit-tracking-code" maxlength="64" placeholder="Optional" />
+              </label>
+            </div>
+          </section>
+
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Line items</h3>
+              <span class="drawer-section__meta" id="edit-preview-total">₹0</span>
+            </div>
+            <ul class="edit-items-list" id="edit-items-list"></ul>
+            <div class="edit-add-row">
+              <select id="edit-add-product" aria-label="Add product to order"></select>
+              <button type="button" class="btn btn--secondary btn--sm" id="edit-add-item-btn">+ Add item</button>
+            </div>
+            <p class="edit-totals-note" id="edit-totals-note"></p>
+          </section>
+
+          <p class="drawer-status-error" id="drawer-edit-error" hidden></p>
+
+          <div class="drawer-edit-actions">
+            <button type="button" class="btn btn--secondary" id="drawer-edit-cancel">Cancel</button>
+            <button type="submit" class="btn btn--primary" id="drawer-edit-save">Save order changes</button>
           </div>
-          <div class="customer-details" id="drawer-customer-details"></div>
-        </section>
+        </form>
       </div>
     </aside>
   </div>
 
   <div class="dash-toast" id="dash-toast" role="status" aria-live="polite"></div>
 
-  <script src="/firebase-client.js?v=fb-20261118" defer></script>
-  <script src="/dashboard.js?v=dash-20261118" defer></script>
+  <script src="/firebase-client.js?v=orders-reviews-20261119" defer></script>
+  <script src="/dashboard.js?v=orders-reviews-20261119" defer></script>
 </body>
 </html>

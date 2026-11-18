@@ -99,6 +99,36 @@ service cloud.firestore {
         data.createdAt is timestamp;
     }
 
+    function isValidProductSlug(slug) {
+      return slug in [
+        'bubble-gun',
+        'stunt-pet',
+        'mini-cool-car',
+        'gel-storm',
+        'mecha-rover',
+        'pixel-splash',
+        'cute-dinos'
+      ];
+    }
+
+    function itemSlugMatchesProduct(itemSlug, productSlug) {
+      return (productSlug == 'cute-dinos' && itemSlug in ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio']) ||
+        (productSlug != 'cute-dinos' && itemSlug == productSlug);
+    }
+
+    function isValidOrderStatus(status) {
+      return status in [
+        'placed',
+        'created',
+        'processed',
+        'shipped',
+        'out_for_delivery',
+        'delivered',
+        'fulfilled',
+        'cancelled'
+      ];
+    }
+
     function isValidOrder(data, userId) {
       return data.keys().hasAll([
           'uid', 'reference', 'customerName', 'email', 'phone', 'address', 'pin', 'city', 'state',
@@ -108,7 +138,8 @@ service cloud.firestore {
         data.keys().hasOnly([
           'uid', 'reference', 'customerName', 'email', 'phone', 'address', 'pin', 'city', 'state',
           'shippingMethod', 'shippingCost', 'freeShipping', 'freeGift', 'subtotal', 'gstRate', 'gst',
-          'total', 'itemCount', 'status', 'createdAt'
+          'total', 'itemCount', 'status', 'createdAt',
+          'trackingCode', 'trackingCarrier', 'deliveredAt'
         ]) &&
         data.uid is string && data.uid == userId && isValidId(data.uid) &&
         data.reference is string && data.reference.size() == 15 && data.reference.matches('^RED-DEMO-[0-9]{6}$') &&
@@ -128,14 +159,17 @@ service cloud.firestore {
         (data.gst is int || data.gst is float) && data.gst >= 0 && data.gst <= data.subtotal &&
         (data.total is int || data.total is float) && data.total == data.subtotal + data.shippingCost &&
         data.itemCount is int && data.itemCount >= 1 && data.itemCount <= 500 &&
-        data.status in ['placed', 'fulfilled', 'cancelled'] &&
-        data.createdAt is timestamp;
+        data.status is string && isValidOrderStatus(data.status) &&
+        data.createdAt is timestamp &&
+        (!('trackingCode' in data) || (data.trackingCode is string && data.trackingCode.size() <= 64)) &&
+        (!('trackingCarrier' in data) || (data.trackingCarrier is string && data.trackingCarrier.size() <= 64)) &&
+        (!('deliveredAt' in data) || data.deliveredAt is timestamp);
     }
 
     function isValidOrderItem(data, userId, orderId) {
       return data.keys().hasAll(['uid', 'orderId', 'name', 'price', 'quantity']) &&
         data.keys().hasOnly(['uid', 'orderId', 'name', 'price', 'quantity']) &&
-        data.uid is string && data.uid == userId && data.uid == request.auth.uid && isValidId(data.uid) &&
+        data.uid is string && data.uid == userId && isValidId(data.uid) &&
         data.orderId is string && data.orderId == orderId && isValidId(data.orderId) &&
         data.name is string && data.name.size() >= 1 && data.name.size() <= 80 &&
         (data.price is int || data.price is float) &&
@@ -143,10 +177,77 @@ service cloud.firestore {
         data.quantity is int && data.quantity >= 1 && data.quantity <= 99;
     }
 
-    // Collection-group read access for verified store admin to list all placed orders
+    function isValidReviewCreate(data, productSlug, reviewId) {
+      return data.keys().hasAll([
+          'uid', 'orderId', 'orderReference', 'productSlug', 'itemSlug', 'productName',
+          'authorName', 'rating', 'title', 'body', 'status', 'verifiedPurchase', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'uid', 'orderId', 'orderReference', 'productSlug', 'itemSlug', 'productName',
+          'authorName', 'rating', 'title', 'body', 'status', 'verifiedPurchase', 'createdAt'
+        ]) &&
+        isValidId(reviewId) &&
+        data.uid is string && data.uid == request.auth.uid && isValidId(data.uid) &&
+        data.orderId is string && isValidId(data.orderId) &&
+        reviewId == data.uid + '__' + data.orderId + '__' + productSlug &&
+        data.orderReference is string && data.orderReference.size() == 15 && data.orderReference.matches('^RED-DEMO-[0-9]{6}$') &&
+        data.productSlug is string && data.productSlug == productSlug && isValidProductSlug(productSlug) &&
+        data.itemSlug is string && itemSlugMatchesProduct(data.itemSlug, productSlug) &&
+        data.productName is string && data.productName.size() >= 1 && data.productName.size() <= 80 &&
+        data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 80 &&
+        data.rating is int && data.rating >= 1 && data.rating <= 5 &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 120 &&
+        data.body is string && data.body.size() >= 5 && data.body.size() <= 1000 &&
+        data.status == 'pending' &&
+        data.verifiedPurchase == true &&
+        data.createdAt == request.time;
+    }
+
+    // Collection-group read access for verified store admin to list all placed orders & customer reviews
     match /{path=**}/orders/{orderId} {
       allow get: if isValidId(orderId) && isAdmin();
       allow list: if isAdmin();
+    }
+
+    match /{path=**}/reviews/{reviewId} {
+      allow get: if isValidId(reviewId) && isAdmin();
+      allow list: if isAdmin();
+    }
+
+    match /products/{productSlug}/reviews/{reviewId} {
+      allow get: if isValidId(reviewId) && isValidProductSlug(productSlug) && (
+        resource.data.status == 'approved' ||
+        isAdmin() ||
+        (isSignedIn() && resource.data.uid == request.auth.uid)
+      );
+      allow list: if isValidProductSlug(productSlug) && (
+        resource.data.status == 'approved' ||
+        isAdmin() ||
+        (isSignedIn() && resource.data.uid == request.auth.uid)
+      );
+      allow create: if isVerified() && isValidProductSlug(productSlug) &&
+        isValidReviewCreate(incoming(), productSlug, reviewId) &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)/orders/$(incoming().orderId)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)/orders/$(incoming().orderId)).data.uid == request.auth.uid &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)/orders/$(incoming().orderId)).data.status in ['delivered', 'fulfilled'] &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)/orders/$(incoming().orderId)/items/$(incoming().itemSlug));
+      allow update: if isAdmin() && isValidId(reviewId) && isValidProductSlug(productSlug) &&
+        incoming().uid == existing().uid &&
+        incoming().orderId == existing().orderId &&
+        incoming().orderReference == existing().orderReference &&
+        incoming().productSlug == existing().productSlug &&
+        incoming().itemSlug == existing().itemSlug &&
+        incoming().productName == existing().productName &&
+        incoming().authorName == existing().authorName &&
+        incoming().rating == existing().rating &&
+        incoming().title == existing().title &&
+        incoming().body == existing().body &&
+        incoming().verifiedPurchase == existing().verifiedPurchase &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'moderatedAt']) &&
+        incoming().status in ['pending', 'approved', 'rejected'] &&
+        (!('moderatedAt' in incoming()) || incoming().moderatedAt is timestamp);
+      allow delete: if isAdmin() && isValidId(reviewId) && isValidProductSlug(productSlug);
     }
 
     match /users/{userId} {
@@ -215,14 +316,20 @@ service cloud.firestore {
           incoming().uid == request.auth.uid &&
           incoming().status == 'placed' &&
           incoming().createdAt == request.time &&
+          !('deliveredAt' in incoming()) &&
           exists(/databases/$(database)/documents/users/$(userId));
         allow update: if isAdmin() && isValidId(userId) && isValidId(orderId) &&
           isValidOrder(incoming(), userId) &&
           incoming().uid == existing().uid &&
           incoming().reference == existing().reference &&
-          incoming().total == existing().total &&
+          incoming().gstRate == existing().gstRate &&
           incoming().createdAt == existing().createdAt &&
-          incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'customerName', 'email', 'phone', 'address', 'pin', 'city', 'state',
+            'shippingMethod', 'shippingCost', 'freeShipping', 'freeGift',
+            'subtotal', 'gst', 'total', 'itemCount', 'status',
+            'trackingCode', 'trackingCarrier', 'deliveredAt'
+          ]);
         allow delete: if false;
 
         match /items/{itemId} {
@@ -231,12 +338,20 @@ service cloud.firestore {
             (isOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/orders/$(orderId)).data.uid == request.auth.uid)
           );
           allow list: if isAdmin() || (isOwner(userId) && resource.data.uid == request.auth.uid);
-          allow create: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(orderId) && isValidId(itemId) &&
+          allow create: if isValidId(userId) && isValidId(orderId) && isValidId(itemId) &&
             isValidOrderItem(incoming(), userId, orderId) &&
-            existsAfter(/databases/$(database)/documents/users/$(userId)/orders/$(orderId)) &&
-            getAfter(/databases/$(database)/documents/users/$(userId)/orders/$(orderId)).data.uid == request.auth.uid;
-          allow update: if false;
-          allow delete: if false;
+            existsAfter(/databases/$(database)/documents/users/$(userId)/orders/$(orderId)) && (
+              (isVerifiedOwner(userId) && incoming().uid == request.auth.uid &&
+                getAfter(/databases/$(database)/documents/users/$(userId)/orders/$(orderId)).data.uid == request.auth.uid) ||
+              isAdmin()
+            );
+          allow update: if isAdmin() && isValidId(userId) && isValidId(orderId) && isValidId(itemId) &&
+            isValidOrderItem(incoming(), userId, orderId) &&
+            incoming().uid == existing().uid &&
+            incoming().orderId == existing().orderId &&
+            incoming().name == existing().name &&
+            existsAfter(/databases/$(database)/documents/users/$(userId)/orders/$(orderId));
+          allow delete: if isAdmin() && isValidId(userId) && isValidId(orderId) && isValidId(itemId);
         }
       }
     }

@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=header-shared-20261118" />
-  <link rel="stylesheet" href="/account.css?v=account-page-20261118-v2" />
+  <link rel="stylesheet" href="/styles.css?v=orders-reviews-20261119" />
+  <link rel="stylesheet" href="/account.css?v=orders-reviews-20261119" />
 </head>
 <body class="account-page">
 <header class="site-header">
@@ -52,29 +52,6 @@
   </header>
 
   <section class="account-identity" id="account-identity" aria-live="polite"></section>
-
-  <section class="account-stats" aria-label="Account summary">
-    <a class="account-stat" href="#orders" data-tab-link="orders">
-      <span>RECENT ORDERS</span>
-      <strong id="stat-orders">0</strong>
-      <small id="stat-orders-sub">None</small>
-    </a>
-    <a class="account-stat" href="#address" data-tab-link="address">
-      <span>ADDRESS</span>
-      <strong id="stat-address">—</strong>
-      <small id="stat-address-sub">Not set</small>
-    </a>
-    <a class="account-stat" href="#favorites" data-tab-link="favorites">
-      <span>FAVORITES</span>
-      <strong id="stat-favorites">0</strong>
-      <small>Saved</small>
-    </a>
-    <a class="account-stat" href="#cart" data-tab-link="cart">
-      <span>CART</span>
-      <strong id="stat-cart">₹0</strong>
-      <small id="stat-cart-sub">0 items</small>
-    </a>
-  </section>
 
   <nav class="account-tabs" id="account-tabs" role="tablist" aria-label="Account sections">
     <button type="button" class="is-active" role="tab" aria-selected="true" aria-controls="orders" data-tab="orders">RECENT ORDERS <b id="tab-orders-count">0</b></button>
@@ -176,8 +153,8 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="/firebase-client.js" defer></script>
-<script src="/main.js?v=audit-fixes-20261118" defer></script>
-<script src="/account.js?v=account-page-20261118-v2" defer></script>
+<script src="/firebase-client.js?v=orders-reviews-20261119" defer></script>
+<script src="/main.js?v=orders-reviews-20261119" defer></script>
+<script src="/account.js?v=orders-reviews-20261119" defer></script>
 </body>
 </html>

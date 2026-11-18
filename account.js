@@ -134,13 +134,6 @@
 
   // DOM refs
   var identityEl = document.getElementById('account-identity');
-  var statAddress = document.getElementById('stat-address');
-  var statAddressSub = document.getElementById('stat-address-sub');
-  var statOrders = document.getElementById('stat-orders');
-  var statOrdersSub = document.getElementById('stat-orders-sub');
-  var statFavorites = document.getElementById('stat-favorites');
-  var statCart = document.getElementById('stat-cart');
-  var statCartSub = document.getElementById('stat-cart-sub');
   var tabOrdersCount = document.getElementById('tab-orders-count');
   var tabFavCount = document.getElementById('tab-fav-count');
   var tabCartCount = document.getElementById('tab-cart-count');
@@ -223,7 +216,7 @@
       window.RedpolyFirebase.syncCartItem(existing).catch(function (err) { console.error(err); });
     }
     renderCartSection();
-    renderStats();
+    renderTabCounts();
     showToast(name + ' added to cart');
     if (openDrawer) {
       window.dispatchEvent(new CustomEvent('redpoly:open-cart'));
@@ -487,7 +480,7 @@
             addressStatus.classList.add('is-ok');
           }
           renderAddressSection();
-          renderStats();
+          renderTabCounts();
           showToast('Saved address cleared');
         });
         actions.appendChild(clearBtn);
@@ -501,9 +494,43 @@
     }
   }
 
+  var ORDER_MILESTONES = [
+    { key: 'created', label: 'Order Created', pct: 0 },
+    { key: 'processed', label: 'Order Processed', pct: 15 },
+    { key: 'shipped', label: 'Order Shipped', pct: 50 },
+    { key: 'out_for_delivery', label: 'Out for Delivery', pct: 90 },
+    { key: 'delivered', label: 'Order Delivered', pct: 100 }
+  ];
+
+  function resolveOrderMilestone(status) {
+    if (status === 'cancelled') {
+      return { key: 'cancelled', step: -1, pct: 0, label: 'Cancelled', delivered: false, cancelled: true };
+    }
+    if (status === 'delivered' || status === 'fulfilled') {
+      return { key: 'delivered', step: 4, pct: 100, label: 'Order Delivered', delivered: true, cancelled: false };
+    }
+    if (status === 'out_for_delivery') {
+      return { key: 'out_for_delivery', step: 3, pct: 90, label: 'Order Out for Delivery', delivered: false, cancelled: false };
+    }
+    if (status === 'shipped') {
+      return { key: 'shipped', step: 2, pct: 50, label: 'Order Shipped', delivered: false, cancelled: false };
+    }
+    if (status === 'processed') {
+      return { key: 'processed', step: 1, pct: 15, label: 'Order Processed', delivered: false, cancelled: false };
+    }
+    return { key: 'created', step: 0, pct: 0, label: 'Order Created', delivered: false, cancelled: false };
+  }
+
+  function reviewUrlForProduct(itemName) {
+    var cat = CATALOGUE[itemName];
+    if (!cat || !cat.href) return '';
+    return cat.href.split('?')[0] + '#product-reviews';
+  }
+
   function buildOrderCard(order, isSessionOnly) {
     var card = document.createElement('article');
     card.className = 'order-card';
+    var ms = resolveOrderMilestone(order.status);
 
     var top = document.createElement('div');
     top.className = 'order-card__top';
@@ -515,8 +542,14 @@
     ref.className = 'order-card__ref';
     ref.textContent = order.reference || 'RED-DEMO';
     var statusPill = document.createElement('span');
-    statusPill.className = isSessionOnly ? 'account-badge account-badge--guest' : 'account-badge';
-    statusPill.textContent = isSessionOnly ? 'DEMO' : String(order.status || 'placed').toUpperCase();
+    statusPill.className = isSessionOnly
+      ? 'account-badge account-badge--guest'
+      : ms.delivered
+        ? 'account-badge account-badge--delivered'
+        : ms.cancelled
+          ? 'account-badge account-badge--cancelled'
+          : 'account-badge';
+    statusPill.textContent = isSessionOnly ? 'DEMO' : (ms.cancelled ? 'CANCELLED' : (ms.label.toUpperCase() + ' · ' + ms.pct + '%'));
     refRow.appendChild(ref);
     refRow.appendChild(statusPill);
     if (order.freeGift) {
@@ -531,7 +564,8 @@
     var dateText = order.createdAtMs
       ? new Date(order.createdAtMs).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
       : 'Session demo';
-    meta.textContent = dateText;
+    var methodLabel = order.shippingMethod === 'express' ? 'Express shipping' : 'Standard shipping';
+    meta.textContent = dateText + ' · ' + methodLabel;
     left.appendChild(refRow);
     left.appendChild(meta);
 
@@ -547,6 +581,92 @@
     top.appendChild(left);
     top.appendChild(right);
     card.appendChild(top);
+
+    // Milestone Progress & Tracking Strip
+    if (!isSessionOnly) {
+      var milestoneBox = document.createElement('div');
+      milestoneBox.className = 'order-milestone' + (ms.delivered ? ' order-milestone--delivered' : '') + (ms.cancelled ? ' order-milestone--cancelled' : '');
+
+      var msHead = document.createElement('div');
+      msHead.className = 'order-milestone__head';
+      var msLabel = document.createElement('span');
+      msLabel.className = 'order-milestone__label';
+      msLabel.textContent = ms.cancelled ? 'ORDER CANCELLED' : ms.label;
+      var msPct = document.createElement('strong');
+      msPct.className = 'order-milestone__pct';
+      msPct.textContent = ms.cancelled ? '—' : ms.pct + '%';
+      msHead.appendChild(msLabel);
+      msHead.appendChild(msPct);
+      milestoneBox.appendChild(msHead);
+
+      if (!ms.cancelled) {
+        var bar = document.createElement('div');
+        bar.className = 'order-milestone__track';
+        bar.setAttribute('role', 'progressbar');
+        bar.setAttribute('aria-valuemin', '0');
+        bar.setAttribute('aria-valuemax', '100');
+        bar.setAttribute('aria-valuenow', String(ms.pct));
+        bar.setAttribute('aria-label', ms.label + ' (' + ms.pct + '%)');
+        var fill = document.createElement('span');
+        fill.className = 'order-milestone__fill';
+        fill.style.width = ms.pct + '%';
+        bar.appendChild(fill);
+        milestoneBox.appendChild(bar);
+
+        var stepsUl = document.createElement('ol');
+        stepsUl.className = 'order-milestone__steps';
+        ORDER_MILESTONES.forEach(function (stepObj, idx) {
+          var li = document.createElement('li');
+          if (idx <= ms.step) li.classList.add('is-done');
+          if (idx === ms.step) li.classList.add('is-current');
+          li.textContent = stepObj.label + ' (' + stepObj.pct + '%)';
+          stepsUl.appendChild(li);
+        });
+        milestoneBox.appendChild(stepsUl);
+      }
+
+      var trackingRow = document.createElement('div');
+      trackingRow.className = 'order-tracking';
+      var trackingInfo = document.createElement('div');
+      trackingInfo.className = 'order-tracking__info';
+      if (order.trackingCode) {
+        var trkLbl = document.createElement('span');
+        trkLbl.textContent = order.trackingCarrier ? order.trackingCarrier + ' Tracking:' : 'Tracking Code:';
+        var trkCode = document.createElement('code');
+        trkCode.className = 'order-tracking__code';
+        trkCode.textContent = order.trackingCode;
+        trackingInfo.appendChild(trkLbl);
+        trackingInfo.appendChild(trkCode);
+
+        var copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'order-tracking__copy';
+        copyBtn.textContent = 'COPY CODE';
+        copyBtn.addEventListener('click', function () {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(order.trackingCode).then(function () {
+              showToast('Tracking code copied');
+            }).catch(function () {
+              showToast('Tracking: ' + order.trackingCode);
+            });
+          } else {
+            showToast('Tracking: ' + order.trackingCode);
+          }
+        });
+        trackingRow.appendChild(trackingInfo);
+        trackingRow.appendChild(copyBtn);
+      } else {
+        var pending = document.createElement('span');
+        pending.className = 'order-tracking__pending';
+        pending.textContent = ms.cancelled
+          ? 'Order cancelled — no shipment tracking.'
+          : 'Tracking code will appear here once dispatched by REDPOLY.';
+        trackingInfo.appendChild(pending);
+        trackingRow.appendChild(trackingInfo);
+      }
+      milestoneBox.appendChild(trackingRow);
+      card.appendChild(milestoneBox);
+    }
 
     var itemsWrap = document.createElement('div');
     itemsWrap.className = 'order-card__items';
@@ -578,12 +698,26 @@
       sub.textContent = 'Qty ' + item.quantity + ' × ' + money(item.price);
       copy.appendChild(sub);
 
+      var itemActions = document.createElement('div');
+      itemActions.className = 'order-item__actions';
+      if (!isSessionOnly && ms.delivered) {
+        var revHref = reviewUrlForProduct(item.name);
+        if (revHref) {
+          var revLink = document.createElement('a');
+          revLink.className = 'order-item__review-link';
+          revLink.href = revHref;
+          revLink.textContent = 'REVIEW ↗';
+          itemActions.appendChild(revLink);
+        }
+      }
+
       var lineTot = document.createElement('span');
       lineTot.className = 'order-item__total';
       lineTot.textContent = money(Number(item.price) * Number(item.quantity));
+      itemActions.appendChild(lineTot);
 
       row.appendChild(copy);
-      row.appendChild(lineTot);
+      row.appendChild(itemActions);
       itemsWrap.appendChild(row);
     });
     card.appendChild(itemsWrap);
@@ -592,13 +726,18 @@
     bottom.className = 'order-card__bottom';
     var shipNote = document.createElement('p');
     shipNote.className = 'order-card__ship';
-    if (order.address || order.city || order.pin) {
-      if (order.customerName) {
-        var destStrong = document.createElement('strong');
-        destStrong.textContent = order.customerName + (order.city || order.pin ? ' · ' : '');
-        shipNote.appendChild(destStrong);
-      }
-      shipNote.appendChild(document.createTextNode([order.city, order.pin].filter(Boolean).join(' · ')));
+    if (order.customerName) {
+      var destStrong = document.createElement('strong');
+      destStrong.textContent = order.customerName;
+      shipNote.appendChild(destStrong);
+    }
+    var shipLines = [
+      order.address,
+      [order.city, order.state].filter(Boolean).join(', ') + (order.pin ? ' — ' + order.pin : ''),
+      order.phone ? '+91 ' + order.phone : ''
+    ].filter(Boolean).join(' · ');
+    if (shipLines) {
+      shipNote.appendChild(document.createTextNode((order.customerName ? ' · ' : '') + shipLines));
     }
 
     var actions = document.createElement('div');
@@ -626,7 +765,7 @@
         });
         writeCart(cart);
         renderCartSection();
-        renderStats();
+        renderTabCounts();
         showToast('Order items added to cart');
         window.dispatchEvent(new CustomEvent('redpoly:open-cart'));
       });
@@ -765,7 +904,7 @@
           window.RedpolyFirebase.removeWishlistItem(item.name).catch(function (err) { console.error(err); });
         }
         renderFavoritesSection();
-        renderStats();
+        renderTabCounts();
         showToast(item.name + ' removed from favorites');
       });
 
@@ -862,7 +1001,7 @@
         }
         writeCart(latest);
         renderCartSection();
-        renderStats();
+        renderTabCounts();
       });
 
       var qtySpan = document.createElement('span');
@@ -882,7 +1021,7 @@
           window.RedpolyFirebase.syncCartItem(target).catch(function (err) { console.error(err); });
         }
         renderCartSection();
-        renderStats();
+        renderTabCounts();
       });
 
       stepper.appendChild(decBtn);
@@ -900,7 +1039,7 @@
           window.RedpolyFirebase.removeCartItem(item.name).catch(function (err) { console.error(err); });
         }
         renderCartSection();
-        renderStats();
+        renderTabCounts();
         showToast(item.name + ' removed from cart');
       });
 
@@ -955,32 +1094,20 @@
     cartContainer.appendChild(grid);
   }
 
-  function renderStats() {
-    var rec = activeAddressRecord();
-    var hasAddr = hasCompleteAddress(rec.data);
-    if (statAddress) statAddress.textContent = hasAddr ? (rec.data.pinCode || 'SAVED') : 'NONE';
-    if (statAddressSub) {
-      statAddressSub.textContent = hasAddr
-        ? [rec.data.city, rec.data.state].filter(Boolean).join(', ')
-        : 'Not set';
-    }
-
+  function renderTabCounts() {
     var fb = window.RedpolyFirebase;
     var user = fb ? fb.getUser() : null;
     var cloudOrders = fb ? fb.getOrders() : [];
     var sessionOrder = readSessionDemoOrder();
     var orderCount = user ? cloudOrders.length : (sessionOrder ? 1 : 0);
-    if (statOrders) statOrders.textContent = String(orderCount);
-    if (statOrdersSub) statOrdersSub.textContent = user ? 'Synced' : (sessionOrder ? 'Session' : 'None');
+    if (tabOrdersCount) tabOrdersCount.textContent = String(orderCount);
 
     var favs = readFavorites();
-    if (statFavorites) statFavorites.textContent = String(favs.length);
+    if (tabFavCount) tabFavCount.textContent = String(favs.length);
 
     var cart = readCart();
     var pieces = cart.reduce(function (s, i) { return s + i.quantity; }, 0);
-    var subtotal = cart.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
-    if (statCart) statCart.textContent = money(subtotal);
-    if (statCartSub) statCartSub.textContent = pieces + (pieces === 1 ? ' item' : ' items');
+    if (tabCartCount) tabCartCount.textContent = String(pieces);
   }
 
   function renderAll() {
@@ -989,7 +1116,7 @@
     renderOrdersSection();
     renderFavoritesSection();
     renderCartSection();
-    renderStats();
+    renderTabCounts();
   }
 
   // PIN code lookup for the delivery address editor
@@ -1101,7 +1228,7 @@
             addressStatus.textContent = 'Saved';
           }
           renderAddressSection();
-          renderStats();
+          renderTabCounts();
           showToast('Address saved');
         } catch (err) {
           if (addressStatus) {
@@ -1119,7 +1246,7 @@
           addressStatus.textContent = 'Saved on device';
         }
         renderAddressSection();
-        renderStats();
+        renderTabCounts();
         showToast('Address saved');
       }
     });
@@ -1171,14 +1298,6 @@
     });
   }
 
-  document.querySelectorAll('.account-stat[data-tab-link]').forEach(function (card) {
-    card.addEventListener('click', function (event) {
-      event.preventDefault();
-      var targetTab = card.getAttribute('data-tab-link');
-      activateTab(targetTab, true);
-    });
-  });
-
   function syncTabFromHash() {
     var hash = (window.location.hash || '').replace(/^#/, '');
     activateTab(hash ? resolveTab(hash) : 'orders', false);
@@ -1194,27 +1313,27 @@
   window.addEventListener('redpoly:profile-updated', function () {
     formDirty = false;
     renderAddressSection();
-    renderStats();
+    renderTabCounts();
   });
   window.addEventListener('redpoly:orders-updated', function () {
     renderOrdersSection();
-    renderStats();
+    renderTabCounts();
   });
   window.addEventListener('redpoly:cart-updated', function () {
     renderCartSection();
-    renderStats();
+    renderTabCounts();
   });
   window.addEventListener('redpoly:cart-local-sync', function () {
     renderCartSection();
-    renderStats();
+    renderTabCounts();
   });
   window.addEventListener('redpoly:wishlist-updated', function () {
     renderFavoritesSection();
-    renderStats();
+    renderTabCounts();
   });
   window.addEventListener('redpoly:wishlist-local-sync', function () {
     renderFavoritesSection();
-    renderStats();
+    renderTabCounts();
   });
   window.addEventListener('storage', renderAll);
 

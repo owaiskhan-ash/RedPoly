@@ -164,6 +164,54 @@
         QTY_MAX: 99
       };
       var WISH_KEY = 'redpoly-wishlist-v1';
+      var FREE_STANDARD_FROM = 2000;
+      var FREE_EXPRESS_FROM = 5000;
+      var FREE_GIFT_FROM = 3500;
+      var GST_RATE = 12;
+      var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
+      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos'];
+
+      function normalizeOrderStatus(raw) {
+        var str = String(raw || '');
+        return VALID_ORDER_STATUSES.indexOf(str) !== -1 ? str : 'placed';
+      }
+      function isDeliveredStatus(status) {
+        return status === 'delivered' || status === 'fulfilled';
+      }
+      function isValidProductSlug(slug) {
+        return VALID_PRODUCT_SLUGS.indexOf(slug) !== -1;
+      }
+      function itemSlugMatchesProduct(itemSlugVal, productSlug) {
+        if (productSlug === 'cute-dinos') {
+          return itemSlugVal === 'cute-dinos-green' || itemSlugVal === 'cute-dinos-red' || itemSlugVal === 'cute-dinos-teal' || itemSlugVal === 'cute-dinos-trio';
+        }
+        return itemSlugVal === productSlug;
+      }
+      function toReviewRecord(docId, d, fallbackSlug) {
+        var createdTs = d.createdAt;
+        var modTs = d.moderatedAt;
+        var rawSlug = String(d.productSlug || fallbackSlug || '');
+        var productSlug = isValidProductSlug(rawSlug) ? rawSlug : 'bubble-gun';
+        var rawStatus = String(d.status || 'pending');
+        var status = (rawStatus === 'approved' || rawStatus === 'rejected') ? rawStatus : 'pending';
+        return {
+          id: docId,
+          uid: String(d.uid || ''),
+          orderId: String(d.orderId || ''),
+          orderReference: String(d.orderReference || ''),
+          productSlug: productSlug,
+          itemSlug: String(d.itemSlug || ''),
+          productName: String(d.productName || ''),
+          authorName: String(d.authorName || 'Verified Buyer'),
+          rating: Math.max(1, Math.min(5, Math.round(Number(d.rating || 5)))),
+          title: String(d.title || ''),
+          body: String(d.body || ''),
+          status: status,
+          verifiedPurchase: d.verifiedPurchase !== false,
+          createdAtMs: createdTs && typeof createdTs.toMillis === 'function' ? createdTs.toMillis() : 0,
+          moderatedAtMs: modTs && typeof modTs.toMillis === 'function' ? modTs.toMillis() : 0
+        };
+      }
 
       function handleFirestoreError(error, operationType, path) {
         var u = auth.currentUser;
@@ -424,7 +472,9 @@
             } catch (error) {
               handleFirestoreError(error, 'list', itemsPath);
             }
-            var statusVal = (d.status === 'fulfilled' || d.status === 'cancelled') ? d.status : 'placed';
+            var statusVal = normalizeOrderStatus(d.status);
+            var deliveredTs = d.deliveredAt;
+            var deliveredAtMs = deliveredTs && typeof deliveredTs.toMillis === 'function' ? deliveredTs.toMillis() : 0;
             orders.push({
               id: docSnap.id,
               uid: String(d.uid || uid),
@@ -446,6 +496,9 @@
               total: Number(d.total || 0),
               itemCount: Number(d.itemCount || lineItems.reduce(function (sum, item) { return sum + Number(item.quantity || 0); }, 0)),
               status: statusVal,
+              trackingCode: String(d.trackingCode || ''),
+              trackingCarrier: String(d.trackingCarrier || ''),
+              deliveredAtMs: deliveredAtMs,
               createdAtMs: createdAtMs,
               items: lineItems
             });
@@ -652,7 +705,9 @@
               } catch (itemErr) {
                 handleFirestoreError(itemErr, 'list', docSnap.ref.path + '/items');
               }
-              var statusVal = (d.status === 'fulfilled' || d.status === 'cancelled') ? d.status : 'placed';
+              var statusVal = normalizeOrderStatus(d.status);
+              var deliveredTs = d.deliveredAt;
+              var deliveredAtMs = deliveredTs && typeof deliveredTs.toMillis === 'function' ? deliveredTs.toMillis() : 0;
               return {
                 id: docSnap.id,
                 uid: orderUid,
@@ -674,6 +729,9 @@
                 total: Number(d.total || 0),
                 itemCount: Number(d.itemCount || lineItems.reduce(function (sum, item) { return sum + Number(item.quantity || 0); }, 0)),
                 status: statusVal,
+                trackingCode: String(d.trackingCode || ''),
+                trackingCarrier: String(d.trackingCarrier || ''),
+                deliveredAtMs: deliveredAtMs,
                 createdAtMs: createdAtMs,
                 items: lineItems
               };
@@ -687,12 +745,206 @@
         updateOrderStatus: async function (uid, orderId, status) {
           if (!isAdminUser()) throw new Error('Admin access required to update order status.');
           if (!LIMITS.ID_PATTERN.test(uid) || !LIMITS.ID_PATTERN.test(orderId)) throw new Error('Invalid order identifier.');
-          if (status !== 'placed' && status !== 'fulfilled' && status !== 'cancelled') throw new Error('Invalid order status.');
+          if (VALID_ORDER_STATUSES.indexOf(status) === -1) throw new Error('Invalid order status.');
           var orderPath = 'users/' + uid + '/orders/' + orderId;
           try {
-            await fsMod.updateDoc(fsMod.doc(db, 'users', uid, 'orders', orderId), { status: status });
+            var payload = { status: status };
+            if (isDeliveredStatus(status)) payload.deliveredAt = fsMod.serverTimestamp();
+            await fsMod.updateDoc(fsMod.doc(db, 'users', uid, 'orders', orderId), payload);
           } catch (error) {
             handleFirestoreError(error, 'update', orderPath);
+          }
+        },
+        updateOrderDetails: async function (uid, orderId, patch) {
+          if (!isAdminUser()) throw new Error('Admin access required to edit order details.');
+          if (!LIMITS.ID_PATTERN.test(uid) || !LIMITS.ID_PATTERN.test(orderId)) throw new Error('Invalid order identifier.');
+          var orderPath = 'users/' + uid + '/orders/' + orderId;
+          var orderRef = fsMod.doc(db, 'users', uid, 'orders', orderId);
+          try {
+            var existingSnap = await fsMod.getDoc(orderRef);
+            if (!existingSnap.exists()) throw new Error('Order does not exist.');
+            var existingData = existingSnap.data();
+            var customerName = String(patch.customerName !== undefined ? patch.customerName : (existingData.customerName || '')).trim().slice(0, LIMITS.FULL_NAME_MAX);
+            var email = String(patch.email !== undefined ? patch.email : (existingData.email || '')).trim().slice(0, LIMITS.EMAIL_MAX);
+            var phone = String(patch.phone !== undefined ? patch.phone : (existingData.phone || '')).trim();
+            var address = String(patch.address !== undefined ? patch.address : (existingData.address || '')).trim().slice(0, LIMITS.ADDRESS_MAX);
+            var pin = String(patch.pin !== undefined ? patch.pin : (existingData.pin || '')).trim();
+            var city = String(patch.city !== undefined ? patch.city : (existingData.city || '')).trim().slice(0, LIMITS.CITY_MAX);
+            var state = String(patch.state !== undefined ? patch.state : (existingData.state || '')).trim().slice(0, LIMITS.STATE_MAX);
+            if (!customerName) throw new Error('Customer name is required.');
+            if (!email || email.length < 3) throw new Error('Valid email is required.');
+            if (!LIMITS.PHONE_PATTERN.test(phone)) throw new Error('Enter a valid 10-digit Indian mobile number.');
+            if (!address) throw new Error('Street address is required.');
+            if (!LIMITS.PIN_PATTERN.test(pin)) throw new Error('Enter a valid 6-digit Indian PIN code.');
+            if (!city || !state) throw new Error('City and state are required.');
+            var shippingMethod = (patch.shippingMethod || existingData.shippingMethod) === 'express' ? 'express' : 'standard';
+            var nextStatus = patch.status !== undefined ? normalizeOrderStatus(patch.status) : normalizeOrderStatus(existingData.status);
+            var trackingCode = String(patch.trackingCode !== undefined ? patch.trackingCode : (existingData.trackingCode || '')).trim().slice(0, 64);
+            var trackingCarrier = String(patch.trackingCarrier !== undefined ? patch.trackingCarrier : (existingData.trackingCarrier || '')).trim().slice(0, 64);
+
+            var existingItemsSnap = await fsMod.getDocs(fsMod.collection(orderRef, 'items'));
+            var existingItemsMap = new Map();
+            existingItemsSnap.forEach(function (docSnap) {
+              var d = docSnap.data();
+              if (typeof d.name === 'string') existingItemsMap.set(docSnap.id, { name: d.name, price: Number(d.price), quantity: clampQty(d.quantity) });
+            });
+            var resolvedItems = patch.items !== undefined
+              ? patch.items.filter(function (i) { return inCatalogue(i.name, i.price); }).map(function (i) { return { name: i.name, price: catalogue[i.name].price, quantity: clampQty(i.quantity) }; })
+              : Array.from(existingItemsMap.values());
+            if (!resolvedItems.length) throw new Error('Order must contain at least one valid product.');
+
+            var mergedBySlug = new Map();
+            resolvedItems.forEach(function (item) {
+              var slug = itemSlug(item.name);
+              if (!LIMITS.ID_PATTERN.test(slug)) return;
+              var prev = mergedBySlug.get(slug);
+              if (prev) prev.quantity = clampQty(prev.quantity + item.quantity);
+              else mergedBySlug.set(slug, Object.assign({}, item));
+            });
+
+            var finalItems = Array.from(mergedBySlug.values());
+            var subtotal = finalItems.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
+            var itemCount = finalItems.reduce(function (s, i) { return s + i.quantity; }, 0);
+            var freeShipping = shippingMethod === 'express' ? subtotal >= FREE_EXPRESS_FROM : subtotal >= FREE_STANDARD_FROM;
+            var freeGift = subtotal >= FREE_GIFT_FROM;
+            var shippingCost = freeShipping ? 0 : (shippingMethod === 'express' ? 120 : 30);
+            var gst = Math.round((subtotal * GST_RATE) / (100 + GST_RATE));
+            var total = subtotal + shippingCost;
+
+            var orderUpdate = {
+              customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
+              shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
+              subtotal: subtotal, gst: gst, total: total, itemCount: itemCount, status: nextStatus,
+              trackingCode: trackingCode, trackingCarrier: trackingCarrier
+            };
+            var existingDeliveredTs = existingData.deliveredAt;
+            var alreadyDeliveredAtMs = existingDeliveredTs && typeof existingDeliveredTs.toMillis === 'function' ? existingDeliveredTs.toMillis() : 0;
+            var prevStatus = normalizeOrderStatus(existingData.status);
+            if (isDeliveredStatus(nextStatus) && (!isDeliveredStatus(prevStatus) || !alreadyDeliveredAtMs)) {
+              orderUpdate.deliveredAt = fsMod.serverTimestamp();
+            }
+
+            var batch = fsMod.writeBatch(db);
+            if (patch.items !== undefined) {
+              existingItemsMap.forEach(function (_v, slug) {
+                if (!mergedBySlug.has(slug)) batch.delete(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug));
+              });
+              mergedBySlug.forEach(function (item, slug) {
+                batch.set(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug), {
+                  uid: uid, orderId: orderId, name: item.name, price: item.price, quantity: item.quantity
+                });
+              });
+            }
+            batch.update(orderRef, orderUpdate);
+            await batch.commit();
+
+            var createdTs = existingData.createdAt;
+            return {
+              id: orderId, uid: uid, reference: String(existingData.reference || ''),
+              customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
+              shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
+              subtotal: subtotal, gstRate: Number(existingData.gstRate || GST_RATE), gst: gst, total: total, itemCount: itemCount,
+              status: nextStatus, trackingCode: trackingCode, trackingCarrier: trackingCarrier,
+              deliveredAtMs: isDeliveredStatus(nextStatus) ? (alreadyDeliveredAtMs || Date.now()) : alreadyDeliveredAtMs,
+              createdAtMs: createdTs && typeof createdTs.toMillis === 'function' ? createdTs.toMillis() : 0,
+              items: finalItems
+            };
+          } catch (error) {
+            if (error instanceof Error && error.message && error.message.charAt(0) !== '{') throw error;
+            handleFirestoreError(error, 'update', orderPath);
+          }
+        },
+        listProductReviews: async function (productSlug) {
+          if (!isValidProductSlug(productSlug)) return { approved: [], mine: [] };
+          var reviewsPath = 'products/' + productSlug + '/reviews';
+          try {
+            var approvedSnap = await fsMod.getDocs(fsMod.query(fsMod.collection(db, 'products', productSlug, 'reviews'), fsMod.where('status', '==', 'approved')));
+            var approved = [];
+            approvedSnap.forEach(function (docSnap) { approved.push(toReviewRecord(docSnap.id, docSnap.data(), productSlug)); });
+            approved.sort(function (a, b) { return b.createdAtMs - a.createdAtMs; });
+            var mine = [];
+            if (currentUser) {
+              var mineSnap = await fsMod.getDocs(fsMod.query(fsMod.collection(db, 'products', productSlug, 'reviews'), fsMod.where('uid', '==', currentUser.uid)));
+              mineSnap.forEach(function (docSnap) { mine.push(toReviewRecord(docSnap.id, docSnap.data(), productSlug)); });
+              mine.sort(function (a, b) { return b.createdAtMs - a.createdAtMs; });
+            }
+            return { approved: approved, mine: mine };
+          } catch (error) {
+            handleFirestoreError(error, 'list', reviewsPath);
+          }
+        },
+        submitProductReview: async function (input) {
+          if (!currentUser || !currentUser.emailVerified) throw new Error('Sign in with your verified Google account to submit a review.');
+          if (!isValidProductSlug(input.productSlug)) throw new Error('Invalid product.');
+          var orderId = String(input.orderId || '').trim();
+          var itemSlugVal = String(input.itemSlug || '').trim();
+          if (!LIMITS.ID_PATTERN.test(orderId)) throw new Error('Invalid order identifier.');
+          if (!itemSlugMatchesProduct(itemSlugVal, input.productSlug)) throw new Error('Purchased item does not match this product.');
+          var uid = currentUser.uid;
+          var reviewId = uid + '__' + orderId + '__' + input.productSlug;
+          if (!LIMITS.ID_PATTERN.test(reviewId)) throw new Error('Invalid review identifier.');
+          var authorName = String(input.authorName || currentUser.displayName || 'REDPOLY Buyer').trim().slice(0, 80);
+          var title = String(input.title || '').trim().slice(0, 120);
+          var body = String(input.body || '').trim().slice(0, 1000);
+          var rating = Math.max(1, Math.min(5, Math.round(Number(input.rating || 5))));
+          var productName = String(input.productName || '').trim().slice(0, 80);
+          var orderReference = String(input.orderReference || '').trim();
+          if (!authorName) throw new Error('Please enter your name.');
+          if (!title) throw new Error('Please enter a short review headline.');
+          if (body.length < 5) throw new Error('Review must be at least 5 characters.');
+          if (!/^RED-DEMO-[0-9]{6}$/.test(orderReference)) throw new Error('Invalid order reference.');
+          var reviewPath = 'products/' + input.productSlug + '/reviews/' + reviewId;
+          try {
+            await fsMod.setDoc(fsMod.doc(db, 'products', input.productSlug, 'reviews', reviewId), {
+              uid: uid, orderId: orderId, orderReference: orderReference, productSlug: input.productSlug, itemSlug: itemSlugVal,
+              productName: productName, authorName: authorName, rating: rating, title: title, body: body,
+              status: 'pending', verifiedPurchase: true, createdAt: fsMod.serverTimestamp()
+            });
+            return {
+              id: reviewId, uid: uid, orderId: orderId, orderReference: orderReference, productSlug: input.productSlug, itemSlug: itemSlugVal,
+              productName: productName, authorName: authorName, rating: rating, title: title, body: body,
+              status: 'pending', verifiedPurchase: true, createdAtMs: Date.now(), moderatedAtMs: 0
+            };
+          } catch (error) {
+            handleFirestoreError(error, 'create', reviewPath);
+          }
+        },
+        listAllReviews: async function () {
+          if (!isAdminUser()) throw new Error('Admin access required to manage product reviews.');
+          try {
+            var snap = await fsMod.getDocs(fsMod.collectionGroup(db, 'reviews'));
+            var reviews = [];
+            snap.forEach(function (docSnap) {
+              var parentSlug = docSnap.ref.parent && docSnap.ref.parent.parent ? docSnap.ref.parent.parent.id : '';
+              reviews.push(toReviewRecord(docSnap.id, docSnap.data(), parentSlug));
+            });
+            reviews.sort(function (a, b) { return b.createdAtMs - a.createdAtMs; });
+            return reviews;
+          } catch (error) {
+            handleFirestoreError(error, 'list', 'reviews');
+          }
+        },
+        moderateReview: async function (productSlug, reviewId, status) {
+          if (!isAdminUser()) throw new Error('Admin access required to moderate reviews.');
+          if (!isValidProductSlug(productSlug) || !LIMITS.ID_PATTERN.test(reviewId)) throw new Error('Invalid review identifier.');
+          if (status !== 'pending' && status !== 'approved' && status !== 'rejected') throw new Error('Invalid review moderation status.');
+          var reviewPath = 'products/' + productSlug + '/reviews/' + reviewId;
+          try {
+            await fsMod.updateDoc(fsMod.doc(db, 'products', productSlug, 'reviews', reviewId), {
+              status: status, moderatedAt: fsMod.serverTimestamp()
+            });
+          } catch (error) {
+            handleFirestoreError(error, 'update', reviewPath);
+          }
+        },
+        deleteReview: async function (productSlug, reviewId) {
+          if (!isAdminUser()) throw new Error('Admin access required to delete reviews.');
+          if (!isValidProductSlug(productSlug) || !LIMITS.ID_PATTERN.test(reviewId)) throw new Error('Invalid review identifier.');
+          var reviewPath = 'products/' + productSlug + '/reviews/' + reviewId;
+          try {
+            await fsMod.deleteDoc(fsMod.doc(db, 'products', productSlug, 'reviews', reviewId));
+          } catch (error) {
+            handleFirestoreError(error, 'delete', reviewPath);
           }
         }
       };
@@ -1811,6 +2063,797 @@
       var last = focusable[focusable.length - 1];
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+  })();
+
+  // ---------- ACTIVE ORDER PROGRESS BUBBLE ----------
+  (function initActiveOrderBubble() {
+    if (document.body.classList.contains('dashboard-page') || document.body.classList.contains('account-page')) return;
+
+    var FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
+    var RING_CIRCUMFERENCE = 113.097;
+    var ORDER_STEPS = {
+      placed: { label: 'Order Created', percent: 0 },
+      created: { label: 'Order Created', percent: 0 },
+      processed: { label: 'Order Processed', percent: 15 },
+      shipped: { label: 'Order Shipped', percent: 50 },
+      out_for_delivery: { label: 'Order Out for Delivery', percent: 90 },
+      delivered: { label: 'Order Delivered', percent: 100 },
+      fulfilled: { label: 'Order Delivered', percent: 100 },
+      cancelled: { label: 'Cancelled', percent: 0 }
+    };
+    var PRODUCT_PATHS = {
+      'bubble-gun': '/bubble-gun',
+      'stunt-pet': '/stunt-pet',
+      'mini-cool-car': '/mini-cool-car',
+      'gel-storm': '/gel-storm',
+      'mecha-rover': '/mecha-rover',
+      'pixel-splash': '/pixel-splash',
+      'cute-dinos-green': '/cute-dinos',
+      'cute-dinos-red': '/cute-dinos',
+      'cute-dinos-teal': '/cute-dinos',
+      'cute-dinos-trio': '/cute-dinos'
+    };
+
+    function itemToSlug(name) {
+      return String(name || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    function stepFor(status) {
+      return ORDER_STEPS[status] || ORDER_STEPS.created;
+    }
+
+    function isDelivered(status) {
+      return status === 'delivered' || status === 'fulfilled';
+    }
+
+    function filterTrackableOrders(orders) {
+      var now = Date.now();
+      return (orders || []).filter(function (order) {
+        if (!order || order.status === 'cancelled') return false;
+        if (!isDelivered(order.status)) return true;
+        var deliveredRef = order.deliveredAtMs || order.createdAtMs || 0;
+        return deliveredRef > 0 && (now - deliveredRef) <= FIVE_DAYS_MS;
+      }).sort(function (a, b) {
+        var aActive = isDelivered(a.status) ? 0 : 1;
+        var bActive = isDelivered(b.status) ? 0 : 1;
+        if (aActive !== bActive) return bActive - aActive;
+        return (b.createdAtMs || 0) - (a.createdAtMs || 0);
+      });
+    }
+
+    var root = null;
+    var triggerBtn = null;
+    var popover = null;
+    var listEl = null;
+    var countNode = null;
+    var ringFill = null;
+    var ringPct = null;
+    var statusLabelEl = null;
+    var titleEl = null;
+    var lastOrders = [];
+    var barObserver = null;
+
+    function syncLiftedState() {
+      if (!root) return;
+      var mobileBarVisible = Boolean(document.querySelector('.mobile-buy-bar.mobile-buy-bar--visible'));
+      var checkoutBarVisible = Boolean(document.querySelector('.checkout-paybar.is-visible'));
+      root.classList.toggle('is-lifted', mobileBarVisible || checkoutBarVisible);
+    }
+
+    function ensureShell() {
+      if (root) return;
+      root = document.createElement('div');
+      root.className = 'order-bubble';
+      root.hidden = true;
+
+      popover = document.createElement('div');
+      popover.className = 'order-bubble__popover';
+      popover.id = 'order-bubble-popover';
+      popover.hidden = true;
+      popover.setAttribute('role', 'dialog');
+      popover.setAttribute('aria-label', 'Active order tracker');
+
+      var popHead = document.createElement('div');
+      popHead.className = 'order-bubble__pop-head';
+      var popTitle = document.createElement('h3');
+      popTitle.textContent = 'LIVE ORDERS';
+      var closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'order-bubble__pop-close';
+      closeBtn.setAttribute('aria-label', 'Close order tracker');
+      closeBtn.textContent = '×';
+      closeBtn.addEventListener('click', function () {
+        setOpen(false);
+        triggerBtn.focus();
+      });
+      popHead.appendChild(popTitle);
+      popHead.appendChild(closeBtn);
+
+      listEl = document.createElement('div');
+      listEl.className = 'order-bubble__list';
+
+      var popFoot = document.createElement('div');
+      popFoot.className = 'order-bubble__pop-foot';
+      var footNote = document.createElement('span');
+      footNote.textContent = 'REDPOLY TRACKER';
+      var accountLink = document.createElement('a');
+      accountLink.href = '/account#orders';
+      accountLink.textContent = 'VIEW ALL IN ACCOUNT ↗';
+      popFoot.appendChild(footNote);
+      popFoot.appendChild(accountLink);
+
+      popover.appendChild(popHead);
+      popover.appendChild(listEl);
+      popover.appendChild(popFoot);
+
+      triggerBtn = document.createElement('button');
+      triggerBtn.type = 'button';
+      triggerBtn.className = 'order-bubble__trigger';
+      triggerBtn.setAttribute('aria-expanded', 'false');
+      triggerBtn.setAttribute('aria-controls', 'order-bubble-popover');
+
+      var ringWrap = document.createElement('span');
+      ringWrap.className = 'order-bubble__ring';
+      ringWrap.setAttribute('aria-hidden', 'true');
+      var svgNS = 'http://www.w3.org/2000/svg';
+      var svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('viewBox', '0 0 44 44');
+      var track = document.createElementNS(svgNS, 'circle');
+      track.setAttribute('class', 'order-bubble__ring-track');
+      track.setAttribute('cx', '22');
+      track.setAttribute('cy', '22');
+      track.setAttribute('r', '18');
+      ringFill = document.createElementNS(svgNS, 'circle');
+      ringFill.setAttribute('class', 'order-bubble__ring-fill');
+      ringFill.setAttribute('cx', '22');
+      ringFill.setAttribute('cy', '22');
+      ringFill.setAttribute('r', '18');
+      ringFill.setAttribute('stroke-dasharray', String(RING_CIRCUMFERENCE));
+      ringFill.setAttribute('stroke-dashoffset', String(RING_CIRCUMFERENCE));
+      svg.appendChild(track);
+      svg.appendChild(ringFill);
+      ringPct = document.createElement('span');
+      ringPct.className = 'order-bubble__pct';
+      ringPct.textContent = '0%';
+      ringWrap.appendChild(svg);
+      ringWrap.appendChild(ringPct);
+
+      var copyWrap = document.createElement('span');
+      copyWrap.className = 'order-bubble__meta';
+      titleEl = document.createElement('span');
+      titleEl.className = 'order-bubble__eyebrow';
+      statusLabelEl = document.createElement('strong');
+      statusLabelEl.className = 'order-bubble__status';
+      copyWrap.appendChild(titleEl);
+      copyWrap.appendChild(statusLabelEl);
+
+      countNode = document.createElement('span');
+      countNode.className = 'order-bubble__badge';
+      countNode.hidden = true;
+
+      triggerBtn.appendChild(ringWrap);
+      triggerBtn.appendChild(copyWrap);
+      triggerBtn.appendChild(countNode);
+
+      triggerBtn.addEventListener('click', function () {
+        setOpen(popover.hidden);
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && popover && !popover.hidden) {
+          setOpen(false);
+          triggerBtn.focus();
+        }
+      });
+
+      document.addEventListener('click', function (event) {
+        if (!root || popover.hidden) return;
+        if (!root.contains(event.target)) setOpen(false);
+      });
+
+      root.appendChild(popover);
+      root.appendChild(triggerBtn);
+      document.body.appendChild(root);
+
+      var mobileBar = document.querySelector('.mobile-buy-bar');
+      var checkoutBar = document.querySelector('.checkout-paybar');
+      if (window.MutationObserver && (mobileBar || checkoutBar)) {
+        barObserver = new MutationObserver(syncLiftedState);
+        if (mobileBar) barObserver.observe(mobileBar, { attributes: true, attributeFilter: ['class'] });
+        if (checkoutBar) barObserver.observe(checkoutBar, { attributes: true, attributeFilter: ['class'] });
+      }
+      window.addEventListener('scroll', syncLiftedState, { passive: true });
+      syncLiftedState();
+    }
+
+    function setOpen(open) {
+      if (!popover || !triggerBtn) return;
+      popover.hidden = !open;
+      triggerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    function renderBubble(orders) {
+      lastOrders = filterTrackableOrders(orders);
+      if (!lastOrders.length) {
+        if (root) {
+          setOpen(false);
+          root.hidden = true;
+        }
+        return;
+      }
+
+      ensureShell();
+      var primary = lastOrders[0];
+      var step = stepFor(primary.status);
+      var pct = Math.max(0, Math.min(100, step.percent));
+      var visualPct = pct === 0 ? 4 : pct;
+      var offset = RING_CIRCUMFERENCE * (1 - visualPct / 100);
+
+      ringFill.setAttribute('stroke-dashoffset', offset.toFixed(2));
+      ringPct.textContent = pct + '%';
+      titleEl.textContent = primary.reference || 'ACTIVE ORDER';
+      statusLabelEl.textContent = step.label;
+      root.classList.toggle('is-delivered', isDelivered(primary.status));
+
+      if (lastOrders.length > 1) {
+        countNode.textContent = String(lastOrders.length);
+        countNode.hidden = false;
+      } else {
+        countNode.hidden = true;
+      }
+
+      listEl.textContent = '';
+      lastOrders.forEach(function (order) {
+        var oStep = stepFor(order.status);
+        var card = document.createElement('div');
+        card.className = 'order-bubble__card' + (isDelivered(order.status) ? ' is-delivered' : '');
+
+        var cardTop = document.createElement('div');
+        cardTop.className = 'order-bubble__card-top';
+        var refEl = document.createElement('span');
+        refEl.className = 'order-bubble__ref';
+        refEl.textContent = order.reference || order.id;
+        var pctEl = document.createElement('span');
+        pctEl.textContent = oStep.percent + '%';
+        cardTop.appendChild(refEl);
+        cardTop.appendChild(pctEl);
+        card.appendChild(cardTop);
+
+        var stageEl = document.createElement('div');
+        stageEl.className = 'order-bubble__stage';
+        stageEl.textContent = oStep.label;
+        card.appendChild(stageEl);
+
+        var trackBar = document.createElement('div');
+        trackBar.className = 'order-bubble__bar';
+        var fillBar = document.createElement('span');
+        fillBar.style.width = Math.max(4, oStep.percent) + '%';
+        trackBar.appendChild(fillBar);
+        card.appendChild(trackBar);
+
+        if (order.trackingCode) {
+          var trackingLine = document.createElement('p');
+          trackingLine.className = 'order-bubble__trk';
+          trackingLine.appendChild(document.createTextNode((order.trackingCarrier ? order.trackingCarrier + ' ' : 'Tracking ') + ' '));
+          var codeEl = document.createElement('code');
+          codeEl.textContent = order.trackingCode;
+          trackingLine.appendChild(codeEl);
+          card.appendChild(trackingLine);
+        }
+
+        if (isDelivered(order.status) && Array.isArray(order.items) && order.items.length) {
+          var reviewRow = document.createElement('div');
+          reviewRow.className = 'order-bubble__card-links';
+          var seenPages = {};
+          order.items.forEach(function (item) {
+            var slug = itemToSlug(item.name);
+            var href = PRODUCT_PATHS[slug];
+            if (!href || seenPages[href]) return;
+            seenPages[href] = true;
+            var link = document.createElement('a');
+            link.className = 'order-bubble__link';
+            link.href = href + '#product-reviews';
+            link.textContent = 'Review ' + item.name + ' ↗';
+            reviewRow.appendChild(link);
+          });
+          if (reviewRow.childNodes.length) card.appendChild(reviewRow);
+        }
+
+        listEl.appendChild(card);
+      });
+
+      root.hidden = false;
+      syncLiftedState();
+    }
+
+    function refreshBubble() {
+      var fb = window.RedpolyFirebase;
+      var user = fb && typeof fb.getUser === 'function' ? fb.getUser() : null;
+      if (!user || !user.emailVerified || typeof fb.getOrders !== 'function') {
+        renderBubble([]);
+        return;
+      }
+      var orders = fb.getOrders();
+      renderBubble(Array.isArray(orders) ? orders : []);
+    }
+
+    window.addEventListener('redpoly:firebase-ready', refreshBubble);
+    window.addEventListener('redpoly:auth-changed', refreshBubble);
+    window.addEventListener('redpoly:orders-updated', refreshBubble);
+    ensureFirebaseClient().then(refreshBubble).catch(function () { /* Fail closed cleanly. */ });
+  })();
+
+  // ---------- VERIFIED PRODUCT REVIEWS ----------
+  (function initProductReviews() {
+    var section = document.getElementById('product-reviews');
+    if (!section) return;
+
+    var productSlug = String(section.getAttribute('data-product-slug') || '').trim();
+    if (!productSlug) return;
+
+    var ELIGIBLE_ITEM_SLUGS = {
+      'bubble-gun': ['bubble-gun'],
+      'stunt-pet': ['stunt-pet'],
+      'mini-cool-car': ['mini-cool-car'],
+      'gel-storm': ['gel-storm'],
+      'mecha-rover': ['mecha-rover'],
+      'pixel-splash': ['pixel-splash'],
+      'cute-dinos': ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio']
+    };
+    var matchingItemSlugs = ELIGIBLE_ITEM_SLUGS[productSlug] || [productSlug];
+
+    function toItemSlug(name) {
+      return String(name || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    function isDelivered(status) {
+      return status === 'delivered' || status === 'fulfilled';
+    }
+
+    function formatStars(rating) {
+      var n = Math.max(1, Math.min(5, Math.round(Number(rating || 5))));
+      return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);
+    }
+
+    function formatReviewDate(ms) {
+      if (!ms) return 'RECENTLY';
+      try {
+        return new Date(ms).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+      } catch (_err) {
+        return '';
+      }
+    }
+
+    function buildStructure() {
+      section.textContent = '';
+
+      var wrap = document.createElement('div');
+      wrap.className = 'product-reviews__wrap';
+
+      var head = document.createElement('div');
+      head.className = 'product-reviews__head';
+      var headCopy = document.createElement('div');
+      var eyebrow = document.createElement('p');
+      eyebrow.className = 'product-reviews__eyebrow';
+      eyebrow.textContent = 'VERIFIED CUSTOMER REVIEWS';
+      var title = document.createElement('h2');
+      title.className = 'product-reviews__title';
+      title.id = 'product-reviews-title';
+      title.textContent = 'WHAT BUYERS SAY';
+      headCopy.appendChild(eyebrow);
+      headCopy.appendChild(title);
+
+      var summary = document.createElement('div');
+      summary.className = 'product-reviews__summary';
+      summary.hidden = true;
+      head.appendChild(headCopy);
+      head.appendChild(summary);
+      wrap.appendChild(head);
+
+      var approvedWrap = document.createElement('div');
+      approvedWrap.className = 'product-reviews__approved';
+      approvedWrap.hidden = true;
+      var approvedGrid = document.createElement('div');
+      approvedGrid.className = 'product-reviews__grid';
+      approvedWrap.appendChild(approvedGrid);
+      wrap.appendChild(approvedWrap);
+
+      var buyerSlot = document.createElement('div');
+      buyerSlot.className = 'product-reviews__buyer-slot';
+      wrap.appendChild(buyerSlot);
+      section.appendChild(wrap);
+
+      return {
+        summary: summary,
+        approvedList: approvedWrap,
+        approvedGrid: approvedGrid,
+        buyerSlot: buyerSlot
+      };
+    }
+
+    var ui = buildStructure();
+    var currentUser = null;
+    var stateData = { approved: [], mine: [], eligibleOrders: [] };
+
+    function renderReviewCard(review, options) {
+      if (options && options.own) {
+        var ownCard = document.createElement('article');
+        ownCard.className = 'review-own-card';
+
+        var ownHead = document.createElement('div');
+        ownHead.className = 'review-own-card__head';
+        var ownMeta = document.createElement('span');
+        ownMeta.textContent = 'YOUR REVIEW · ' + formatStars(review.rating) + (review.orderReference ? ' · ' + review.orderReference : '');
+        var ownBadge = document.createElement('span');
+        ownBadge.className = review.status === 'rejected'
+          ? 'review-own-card__badge review-own-card__badge--rejected'
+          : 'review-own-card__badge';
+        ownBadge.textContent = review.status === 'rejected' ? 'NOT PUBLISHED' : 'PENDING MODERATION';
+        ownHead.appendChild(ownMeta);
+        ownHead.appendChild(ownBadge);
+        ownCard.appendChild(ownHead);
+
+        var ownTitle = document.createElement('strong');
+        ownTitle.textContent = review.title;
+        var ownBody = document.createElement('p');
+        ownBody.textContent = review.body;
+        ownCard.appendChild(ownTitle);
+        ownCard.appendChild(ownBody);
+        return ownCard;
+      }
+
+      var card = document.createElement('article');
+      card.className = 'review-card';
+
+      var top = document.createElement('div');
+      top.className = 'review-card__top';
+
+      var stars = document.createElement('span');
+      stars.className = 'review-card__stars';
+      stars.setAttribute('aria-label', review.rating + ' out of 5 stars');
+      stars.textContent = formatStars(review.rating);
+
+      var badge = document.createElement('span');
+      badge.className = 'review-card__verified';
+      badge.textContent = 'VERIFIED BUYER';
+
+      top.appendChild(stars);
+      top.appendChild(badge);
+      card.appendChild(top);
+
+      var headline = document.createElement('h3');
+      headline.className = 'review-card__headline';
+      headline.textContent = review.title;
+      card.appendChild(headline);
+
+      var body = document.createElement('p');
+      body.className = 'review-card__comment';
+      body.textContent = review.body;
+      card.appendChild(body);
+
+      var meta = document.createElement('div');
+      meta.className = 'review-card__meta';
+      var author = document.createElement('span');
+      author.textContent = review.authorName + (review.productName && productSlug === 'cute-dinos' ? ' · ' + review.productName : '');
+      var date = document.createElement('span');
+      date.textContent = formatReviewDate(review.createdAtMs);
+      meta.appendChild(author);
+      meta.appendChild(date);
+      card.appendChild(meta);
+
+      return card;
+    }
+
+    function renderComposer(orderCandidates) {
+      var box = document.createElement('div');
+      box.className = 'product-reviews__composer';
+
+      var head = document.createElement('div');
+      head.className = 'product-reviews__composer-head';
+      var heading = document.createElement('h3');
+      heading.textContent = 'WRITE A VERIFIED REVIEW';
+      var pill = document.createElement('span');
+      pill.className = 'product-reviews__order-pill';
+      pill.textContent = 'DELIVERED · ' + orderCandidates[0].order.reference;
+      head.appendChild(heading);
+      head.appendChild(pill);
+      box.appendChild(head);
+
+      var form = document.createElement('form');
+      form.className = 'review-form';
+      form.noValidate = true;
+
+      var orderSelect = null;
+      if (orderCandidates.length > 1) {
+        var orderLabel = document.createElement('label');
+        orderLabel.className = 'review-field';
+        orderLabel.textContent = 'DELIVERED ORDER';
+        orderSelect = document.createElement('select');
+        orderCandidates.forEach(function (cand, idx) {
+          var opt = document.createElement('option');
+          opt.value = String(idx);
+          opt.textContent = cand.order.reference + ' · ' + cand.item.name;
+          orderSelect.appendChild(opt);
+        });
+        orderSelect.addEventListener('change', function () {
+          var chosen = orderCandidates[Number(orderSelect.value || 0)] || orderCandidates[0];
+          pill.textContent = 'DELIVERED · ' + chosen.order.reference;
+        });
+        orderLabel.appendChild(orderSelect);
+        form.appendChild(orderLabel);
+      }
+
+      var selectedRating = 5;
+      var starRow = document.createElement('div');
+      starRow.className = 'review-stars-input';
+      starRow.setAttribute('role', 'radiogroup');
+      starRow.setAttribute('aria-label', 'Star rating');
+      var ratingCap = document.createElement('span');
+      ratingCap.className = 'review-stars-input__label';
+      ratingCap.textContent = 'RATING';
+      starRow.appendChild(ratingCap);
+      var starButtons = [];
+
+      function syncStars() {
+        starButtons.forEach(function (btn, idx) {
+          var val = idx + 1;
+          var active = val <= selectedRating;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-checked', val === selectedRating ? 'true' : 'false');
+        });
+      }
+
+      for (var r = 1; r <= 5; r += 1) {
+        (function (val) {
+          var starBtn = document.createElement('button');
+          starBtn.type = 'button';
+          starBtn.className = 'review-star-btn is-active';
+          starBtn.setAttribute('role', 'radio');
+          starBtn.setAttribute('aria-label', val + (val === 1 ? ' star' : ' stars'));
+          starBtn.setAttribute('aria-checked', val === 5 ? 'true' : 'false');
+          starBtn.textContent = '★';
+          starBtn.addEventListener('click', function () {
+            selectedRating = val;
+            syncStars();
+          });
+          starButtons.push(starBtn);
+          starRow.appendChild(starBtn);
+        })(r);
+      }
+      form.appendChild(starRow);
+
+      var nameField = document.createElement('label');
+      nameField.className = 'review-field';
+      nameField.textContent = 'YOUR NAME';
+      var nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.maxLength = 80;
+      nameInput.required = true;
+      nameInput.value = (orderCandidates[0].order.customerName || (currentUser && currentUser.displayName) || '').trim();
+      nameField.appendChild(nameInput);
+      form.appendChild(nameField);
+
+      var titleField = document.createElement('label');
+      titleField.className = 'review-field';
+      titleField.textContent = 'HEADLINE';
+      var titleInput = document.createElement('input');
+      titleInput.type = 'text';
+      titleInput.maxLength = 120;
+      titleInput.required = true;
+      titleInput.placeholder = 'e.g. Fast delivery and super sturdy build';
+      titleField.appendChild(titleInput);
+      form.appendChild(titleField);
+
+      var bodyField = document.createElement('label');
+      bodyField.className = 'review-field';
+      bodyField.textContent = 'YOUR REVIEW';
+      var bodyInput = document.createElement('textarea');
+      bodyInput.rows = 3;
+      bodyInput.maxLength = 1000;
+      bodyInput.required = true;
+      bodyInput.placeholder = 'Share how it performed out of the box.';
+      bodyField.appendChild(bodyInput);
+      form.appendChild(bodyField);
+
+      var foot = document.createElement('div');
+      foot.className = 'review-form__foot';
+
+      var submitBtn = document.createElement('button');
+      submitBtn.type = 'submit';
+      submitBtn.className = 'review-submit-btn';
+      submitBtn.textContent = 'SUBMIT REVIEW';
+
+      var statusNote = document.createElement('p');
+      statusNote.className = 'review-form__status';
+      statusNote.hidden = true;
+      statusNote.setAttribute('aria-live', 'polite');
+
+      foot.appendChild(submitBtn);
+      foot.appendChild(statusNote);
+      form.appendChild(foot);
+
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        statusNote.hidden = true;
+        var chosenIdx = orderSelect ? Number(orderSelect.value || 0) : 0;
+        var target = orderCandidates[chosenIdx] || orderCandidates[0];
+        var authorVal = nameInput.value.trim();
+        var titleVal = titleInput.value.trim();
+        var bodyVal = bodyInput.value.trim();
+
+        if (!authorVal) {
+          statusNote.textContent = 'Please enter your display name.';
+          statusNote.className = 'review-form__status is-error';
+          statusNote.hidden = false;
+          nameInput.focus();
+          return;
+        }
+        if (!titleVal) {
+          statusNote.textContent = 'Please enter a short review headline.';
+          statusNote.className = 'review-form__status is-error';
+          statusNote.hidden = false;
+          titleInput.focus();
+          return;
+        }
+        if (bodyVal.length < 5) {
+          statusNote.textContent = 'Please write at least 5 characters for your review.';
+          statusNote.className = 'review-form__status is-error';
+          statusNote.hidden = false;
+          bodyInput.focus();
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'SUBMITTING...';
+        try {
+          var created = await window.RedpolyFirebase.submitProductReview({
+            orderId: target.order.id,
+            orderReference: target.order.reference,
+            productSlug: productSlug,
+            itemSlug: target.itemSlug,
+            productName: target.item.name,
+            authorName: authorVal,
+            rating: selectedRating,
+            title: titleVal,
+            body: bodyVal
+          });
+          stateData.mine.unshift(created);
+          renderAll();
+        } catch (err) {
+          statusNote.textContent = err && err.message ? err.message : 'Could not submit review right now.';
+          statusNote.className = 'review-form__status is-error';
+          statusNote.hidden = false;
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'SUBMIT REVIEW';
+        }
+      });
+
+      box.appendChild(form);
+      return box;
+    }
+
+    function renderAll() {
+      var approved = stateData.approved || [];
+      var mine = stateData.mine || [];
+      var eligibleOrders = stateData.eligibleOrders || [];
+
+      var reviewedOrderIds = {};
+      mine.forEach(function (rev) { reviewedOrderIds[rev.orderId] = true; });
+      var unreviewed = eligibleOrders.filter(function (cand) { return !reviewedOrderIds[cand.order.id]; });
+
+      var hasVisibleApproved = approved.length > 0;
+      var hasVisibleOwn = mine.length > 0;
+      var hasComposer = unreviewed.length > 0;
+
+      if (!hasVisibleApproved && !hasVisibleOwn && !hasComposer) {
+        section.hidden = true;
+        return;
+      }
+
+      section.hidden = false;
+
+      if (hasVisibleApproved) {
+        var avg = approved.reduce(function (sum, item) { return sum + Number(item.rating || 5); }, 0) / approved.length;
+        ui.summary.textContent = '';
+        var avgScore = document.createElement('span');
+        avgScore.className = 'product-reviews__score';
+        avgScore.textContent = avg.toFixed(1);
+        var avgCopy = document.createElement('div');
+        avgCopy.className = 'product-reviews__summary-copy';
+        var avgStars = document.createElement('strong');
+        avgStars.textContent = formatStars(Math.round(avg));
+        var avgCount = document.createElement('span');
+        avgCount.textContent = approved.length + (approved.length === 1 ? ' VERIFIED REVIEW' : ' VERIFIED REVIEWS');
+        avgCopy.appendChild(avgStars);
+        avgCopy.appendChild(avgCount);
+        ui.summary.appendChild(avgScore);
+        ui.summary.appendChild(avgCopy);
+        ui.summary.hidden = false;
+
+        ui.approvedGrid.textContent = '';
+        approved.forEach(function (rev) {
+          ui.approvedGrid.appendChild(renderReviewCard(rev, { own: false }));
+        });
+        ui.approvedList.hidden = false;
+      } else {
+        ui.summary.hidden = true;
+        ui.approvedList.hidden = true;
+        ui.approvedGrid.textContent = '';
+      }
+
+      ui.buyerSlot.textContent = '';
+      mine.forEach(function (rev) {
+        if (rev.status !== 'approved') {
+          ui.buyerSlot.appendChild(renderReviewCard(rev, { own: true }));
+        } else {
+          var liveNote = document.createElement('div');
+          liveNote.className = 'review-own-card';
+          var liveHead = document.createElement('div');
+          liveHead.className = 'review-own-card__head';
+          liveHead.textContent = 'Your verified review for order ' + (rev.orderReference || rev.orderId) + ' is published above.';
+          liveNote.appendChild(liveHead);
+          ui.buyerSlot.appendChild(liveNote);
+        }
+      });
+
+      if (hasComposer) {
+        ui.buyerSlot.appendChild(renderComposer(unreviewed));
+      }
+    }
+
+    function syncEligibleOrdersOnly() {
+      var fb = window.RedpolyFirebase;
+      var user = fb && typeof fb.getUser === 'function' ? fb.getUser() : null;
+      currentUser = user && user.emailVerified ? user : null;
+      stateData.eligibleOrders = [];
+      if (currentUser && fb && typeof fb.getOrders === 'function') {
+        var orders = fb.getOrders() || [];
+        orders.forEach(function (order) {
+          if (!order || !isDelivered(order.status) || !Array.isArray(order.items)) return;
+          for (var i = 0; i < order.items.length; i += 1) {
+            var item = order.items[i];
+            var slug = toItemSlug(item.name);
+            if (matchingItemSlugs.indexOf(slug) !== -1) {
+              stateData.eligibleOrders.push({ order: order, item: item, itemSlug: slug });
+              break;
+            }
+          }
+        });
+      }
+      renderAll();
+    }
+
+    var lastLoadedAuthKey = '__init__';
+    async function refreshReviews(forceFetch) {
+      var fb = window.RedpolyFirebase;
+      if (!fb || typeof fb.listProductReviews !== 'function') return;
+      var user = typeof fb.getUser === 'function' ? fb.getUser() : null;
+      currentUser = user && user.emailVerified ? user : null;
+      var nextAuthKey = currentUser ? currentUser.uid : 'anon';
+
+      if (forceFetch || nextAuthKey !== lastLoadedAuthKey) {
+        lastLoadedAuthKey = nextAuthKey;
+        try {
+          var res = await fb.listProductReviews(productSlug);
+          stateData.approved = (res && res.approved) || [];
+          stateData.mine = currentUser ? ((res && res.mine) || []) : [];
+        } catch (_ignoreReviewErr) {
+          stateData.approved = [];
+          stateData.mine = [];
+        }
+      }
+
+      syncEligibleOrdersOnly();
+    }
+
+    window.addEventListener('redpoly:firebase-ready', function () { refreshReviews(false); });
+    window.addEventListener('redpoly:auth-changed', function () { refreshReviews(true); });
+    window.addEventListener('redpoly:orders-updated', syncEligibleOrdersOnly);
+    ensureFirebaseClient().then(function () {
+      refreshReviews(false);
+    }).catch(function () {
+      section.hidden = true;
     });
   })();
 })();
