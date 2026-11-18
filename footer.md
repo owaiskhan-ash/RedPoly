@@ -26,7 +26,7 @@ Styles live in `styles.css` under the `Shared site footer` comment, so one style
 
 ## Pages that carry it
 
-`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `account.html`, `stories/index.html` (15 pages).
+`index.html`, `products/*.html` (10), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `account.html`, `stories/index.html` (18 pages).
 
 ## Editing it
 

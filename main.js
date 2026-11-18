@@ -2163,8 +2163,11 @@
       if (!btn) return;
       var out = Boolean(rec && rec.initialized && rec.stock === 0);
       if (rec) btn.setAttribute('data-price', String(rec.price));
+      if (!Object.prototype.hasOwnProperty.call(btn.dataset, 'baseHtml')) {
+        btn.dataset.baseHtml = btn.innerHTML.trim() || defaultLabel || 'ADD TO CART';
+      }
       if (!Object.prototype.hasOwnProperty.call(btn.dataset, 'baseLabel')) {
-        btn.dataset.baseLabel = defaultLabel || btn.textContent.trim();
+        btn.dataset.baseLabel = btn.textContent.trim() || defaultLabel || 'ADD TO CART';
       }
       if (out) {
         clearTimeout(btn._addedTimer);
@@ -2175,11 +2178,12 @@
         btn.setAttribute('aria-disabled', 'true');
         btn.textContent = outLabel || 'OUT OF STOCK';
       } else {
+        var wasOut = btn.classList.contains('is-out-of-stock');
         btn.classList.remove('is-out-of-stock');
         btn.disabled = false;
         btn.removeAttribute('aria-disabled');
-        if (!btn.classList.contains('added')) {
-          btn.textContent = btn.dataset.baseLabel;
+        if (wasOut && !btn.classList.contains('added')) {
+          btn.innerHTML = btn.dataset.baseHtml || btn.dataset.baseLabel;
         }
       }
     }
@@ -2374,7 +2378,7 @@
         }
 
         card.classList.toggle('is-out-of-stock', Boolean(rec.initialized && rec.stock === 0));
-        applyButtonStockState(addBtn, rec, '+ ADD', 'OUT OF STOCK');
+        applyButtonStockState(addBtn, rec, 'ADD TO CART', 'OUT OF STOCK');
       });
 
       // 3) Cute Dinos variant inputs (if on /cute-dinos)
@@ -2469,12 +2473,20 @@
           applyButtonStockState(pageBuy, activeRec, 'ADD TO CART', 'OUT OF STOCK');
           var finalBuy = document.querySelector('.char-buy--final');
           if (finalBuy) {
-            finalBuy.setAttribute('data-name', activeSku);
-            applyButtonStockState(finalBuy, activeRec, 'ADD TO CART · ' + money(activeRec.price), 'OUT OF STOCK');
-            if (!finalBuy.disabled && !finalBuy.classList.contains('added')) {
-              finalBuy.textContent = 'ADD TO CART · ' + money(activeRec.price);
+            var finalSku = document.getElementById('magnetic-picker')
+              ? activeSku
+              : (finalBuy.getAttribute('data-name') || activeSku);
+            var finalRec = getLiveRecord(finalSku) || activeRec;
+            finalBuy.setAttribute('data-name', finalSku);
+            if (document.getElementById('magnetic-picker')) {
+              var magFinalText = 'ADD TO CART · ' + money(finalRec.price);
+              finalBuy.dataset.baseLabel = magFinalText;
+              finalBuy.dataset.baseHtml = magFinalText + ' <span aria-hidden="true">↗</span>';
+              if (!finalBuy.disabled && !finalBuy.classList.contains('added') && !finalBuy.classList.contains('is-out-of-stock')) {
+                finalBuy.innerHTML = finalBuy.dataset.baseHtml;
+              }
             }
-            finalBuy.dataset.baseLabel = 'ADD TO CART · ' + money(activeRec.price);
+            applyButtonStockState(finalBuy, finalRec, finalBuy.textContent.trim() || 'ADD TO CART', 'OUT OF STOCK');
           }
           if (stickyPriceNode) {
             stickyPriceNode.textContent = money(activeRec.price);

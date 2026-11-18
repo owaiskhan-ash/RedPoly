@@ -25,7 +25,7 @@ Styles live in `styles.css` (`site-header`, phone menu rules, and shared cart/sa
 
 ## Pages that carry it
 
-`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `account.html`, `stories/index.html` (15 pages).
+`index.html`, `products/*.html` (10), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `account.html`, `stories/index.html` (18 pages).
 
 ## Notes
 
