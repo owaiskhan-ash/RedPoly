@@ -11,12 +11,13 @@ There is **one** header on the site, and every page carries exactly the same mar
     <nav class="site-header__nav" aria-label="Main navigation">
       <a href="/#shop">SHOP</a>
       <a href="/stories">COMIC</a>
+      <a href="/account">ACCOUNT</a>
       <a href="/help">HELP</a>
       <a href="/help#shipping">POLICIES</a>
     </nav>
     <button class="site-header__menu" id="site-menu-toggle" …>…</button>
   </div>
-  <nav class="site-menu wrap" id="site-menu" aria-label="Menu">…same four links…</nav>
+  <nav class="site-menu wrap" id="site-menu" aria-label="Menu">…same five links…</nav>
 </header>
 ```
 
@@ -26,7 +27,7 @@ chrome in `accessories.css`. `main.js` adds the cart and saved buttons into
 
 ## Pages that carry it
 
-`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `stories/index.html` — 14 pages.
+`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `account.html`, `stories/index.html` — 15 pages.
 
 ## Notes
 

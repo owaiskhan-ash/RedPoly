@@ -34,8 +34,8 @@ button{font-family:inherit;cursor:pointer}
 .site-header__next:hover span,.site-header__next:focus-visible span{color:#111}
 .site-header__nav a{position:relative;padding:12px 0;color:#ddd;font-size:9px;font-weight:900;letter-spacing:1.4px;white-space:nowrap;transition:color .2s ease}
 .site-header__nav a::after{content:"";position:absolute;right:0;bottom:5px;left:0;height:2px;background:var(--lime);transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
-.site-header__nav a:hover,.site-header__nav a:focus-visible{color:var(--lime)}
-.site-header__nav a:hover::after,.site-header__nav a:focus-visible::after{transform:scaleX(1)}
+.site-header__nav a:hover,.site-header__nav a:focus-visible,.site-header__nav a[aria-current="page"]{color:var(--lime)}
+.site-header__nav a:hover::after,.site-header__nav a:focus-visible::after,.site-header__nav a[aria-current="page"]::after{transform:scaleX(1)}
 .site-header__cta{display:inline-flex;flex:none;align-items:center;gap:14px;padding:12px 15px;background:var(--lime);box-shadow:4px 4px 0 rgba(255,107,26,.8);color:#111;font-size:9px;font-weight:900;letter-spacing:1px;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
 .site-header__cta span{font-size:15px;line-height:.8}
 .site-header__cta:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(255,107,26,.8);background:#d8ff4d}
@@ -773,6 +773,8 @@ body.creature-page .auth-toggle__initial{background:var(--character-accent,var(-
 .google-signin-btn svg{width:18px;height:18px;flex:none}
 .account-panel__status{min-height:16px;margin-top:11px;color:#a52b18;font-size:11px;font-weight:800;line-height:1.45}
 .account-panel__status.is-ok{color:#355900}
+.account-panel__page-link{display:flex;align-items:center;justify-content:center;width:100%;margin-top:12px;padding:12px 14px;border:2px solid #171512;background:#fff;color:#171512;font:900 10px/1 'Archivo',sans-serif;letter-spacing:1px;text-transform:uppercase;box-shadow:3px 3px 0 #171512;transition:background .16s ease,color .16s ease}
+.account-panel__page-link:hover,.account-panel__page-link:focus-visible{background:#171512;color:#c8ff00}
 
 .account-user-card{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:13px;border:2px solid #171512;background:#fff;box-shadow:4px 4px 0 #171512}
 .account-user-card__info{display:flex;align-items:center;gap:11px;min-width:0}

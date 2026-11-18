@@ -75,6 +75,8 @@ const rewrites = {
   '/gel-storm': 'products/gel-storm.html',
   '/pixel-splash': 'products/pixel-splash.html',
   '/mecha-rover': 'products/mecha-rover.html',
+  '/account': 'account.html',
+  '/my-account': 'account.html',
   '/help': 'help.html',
   '/privacy': 'privacy.html',
   '/privacy-policy': 'privacy.html',

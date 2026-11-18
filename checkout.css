@@ -197,6 +197,9 @@
 .checkout-account__copy span{display:block;margin-top:4px;font-size:11px;line-height:1.45;color:#5b554d;font-weight:600}
 .checkout-account__btn{display:inline-flex;align-items:center;gap:8px;padding:10px 13px;border:2px solid #171512;background:#c8ff00;color:#111;font:900 10px/1 'Archivo',sans-serif;letter-spacing:.9px;text-transform:uppercase;cursor:pointer}
 .checkout-account__btn:hover:not(:disabled){background:#d9ff55}
+.checkout-account__actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.checkout-account__btn--link{background:#fff;color:#171512;text-decoration:none}
+.checkout-account__btn--link:hover{background:#171512;color:#c8ff00}
 .checkout-account__btn svg{width:15px;height:15px;flex:none}
 .checkout-account__save{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed #c8c0b4;font-size:11px;font-weight:700;color:#2b2722;cursor:pointer}
 .checkout-account__save input{accent-color:#5b7600}

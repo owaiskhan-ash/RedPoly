@@ -9,6 +9,8 @@
     { "source": "/gel-storm", "destination": "/products/gel-storm" },
     { "source": "/pixel-splash", "destination": "/products/pixel-splash" },
     { "source": "/mecha-rover", "destination": "/products/mecha-rover" },
+    { "source": "/account", "destination": "/account.html" },
+    { "source": "/my-account", "destination": "/account.html" },
     { "source": "/help", "destination": "/help.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/privacy-policy", "destination": "/privacy.html" },

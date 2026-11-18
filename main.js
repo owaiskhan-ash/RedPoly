@@ -773,6 +773,11 @@
         accountBody.appendChild(copy);
         accountBody.appendChild(perks);
         accountBody.appendChild(btn);
+        var guestPageLink = document.createElement('a');
+        guestPageLink.className = 'account-panel__page-link';
+        guestPageLink.href = '/account';
+        guestPageLink.textContent = 'OPEN FULL MY ACCOUNT PAGE →';
+        accountBody.appendChild(guestPageLink);
         return;
       }
 
@@ -824,6 +829,12 @@
       card.appendChild(info);
       card.appendChild(signOutBtn);
       accountBody.appendChild(card);
+
+      var pageLink = document.createElement('a');
+      pageLink.className = 'account-panel__page-link';
+      pageLink.href = '/account';
+      pageLink.textContent = 'OPEN FULL MY ACCOUNT PAGE (ADDRESS, ORDERS & FAVORITES) →';
+      accountBody.appendChild(pageLink);
 
       // Delivery profile section
       var profileSection = document.createElement('section');
@@ -968,6 +979,7 @@
     function money(amount) { return '₹' + Number(amount).toLocaleString('en-IN'); }
     function persistCart() {
       try { window.localStorage.setItem(cartStorageKey, JSON.stringify(cartItems)); } catch (ignoreSaveError) { /* Cart remains usable for this page view. */ }
+      window.dispatchEvent(new CustomEvent('redpoly:cart-local-sync', { detail: { items: cartItems.slice() } }));
     }
     function renderCart() {
       var quantity = cartItems.reduce(function (total, item) { return total + item.quantity; }, 0);
@@ -1127,6 +1139,7 @@
       cartItems = event.detail.items.slice();
       renderCart();
     });
+    window.addEventListener('redpoly:open-cart', openCart);
     renderCart();
     var editCartUrl = new URL(window.location.href);
     if (editCartUrl.searchParams.get('editCart') === '1') {
@@ -1333,6 +1346,7 @@
     try { wishItems = parseWish(window.localStorage.getItem(wishKey)); } catch (ignoreWishStorage) { wishItems = []; }
     function persistWish() {
       try { window.localStorage.setItem(wishKey, JSON.stringify(wishItems)); } catch (ignoreWishSave) { /* Hearts still work for this page view. */ }
+      window.dispatchEvent(new CustomEvent('redpoly:wishlist-local-sync', { detail: { items: wishItems.slice() } }));
     }
     function isWished(name) { return wishItems.some(function (item) { return item.name === name; }); }
 
