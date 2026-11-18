@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="/styles.css?v=toys-label-20261130" />
   <link rel="stylesheet" href="/product.css?v=header-one-20261130" />
   <link rel="stylesheet" href="/accessories.css?v=header-one-20261130" />
-  <link rel="stylesheet" href="/pixel-splash.css?v=header-one-20261130" />
+  <link rel="stylesheet" href="/pixel-splash.css?v=pixel-demo-20261118" />
   <meta property="og:type" content="product" />
   <meta property="og:site_name" content="REDPOLY" />
   <meta property="og:title" content="Pixel Splash Water Blaster | REDPOLY" />
@@ -174,11 +174,13 @@
       </div>
     </section>
 
-    <section class="char-file" aria-labelledby="char-file-title">
+    <section class="char-file" id="pixel-details" aria-labelledby="char-file-title">
       <div class="char-file__card">
         <div class="char-file__portrait">
           <span class="char-file__no">40<small>CM LONG</small></span>
           <img class="char-file__photo" src="/assets/images/redpoly/products/pixel-splash-lifestyle.webp?v=pixel-20261117-v3" alt="Pixel Splash firing a blue water jet from a grass-block plinth in a sunny backyard." width="2048" height="1872" loading="lazy" />
+          <video class="char-file__video" id="pixel-demo-video" data-src="https://vycvmsqjseeiiotjjbep.supabase.co/storage/v1/object/public/Red%20POly%20Website/Prodcuts/Pixel%20Gun/Pixel%20Gun.mp4" muted playsinline loop preload="none" aria-label="Pixel Splash product demonstration"></video>
+          <button class="char-file__video-toggle" id="pixel-demo-toggle" type="button" aria-controls="pixel-demo-video" hidden>Play demo</button>
           <span class="char-file__stamp" aria-hidden="true">AUTO<br />RGB</span>
         </div>
         <div class="char-file__body">
@@ -223,7 +225,7 @@
 
     <section class="pixel-inventory" id="pixel-gallery" aria-labelledby="pixel-gallery-title">
       <div class="pixel-inventory__head">
-        <div><p>HD LOOT CHEST / 6 SHOTS</p><h2 id="pixel-gallery-title">EVERY <span>BLOCK</span> IN DETAIL.</h2></div>
+        <div><p>HD LOOT CHEST / 6 SHOTS + 1 CLIP</p><h2 id="pixel-gallery-title">EVERY <span>BLOCK</span> IN DETAIL.</h2></div>
         <button class="pixel-button" type="button" data-media-open aria-haspopup="dialog" aria-controls="media-viewer">OPEN HD GALLERY ↗</button>
       </div>
       <div class="pixel-inventory__grid">
@@ -233,8 +235,12 @@
         <a class="pixel-slot" href="/assets/images/redpoly/products/pixel-splash-box.webp?v=pixel-20261117-v3" target="_blank" rel="noopener" aria-label="Open regenerated HD retail box image"><span class="pixel-slot__frame"><img src="/assets/images/redpoly/products/pixel-splash-box.webp?v=pixel-20261117-v3" alt="Regenerated green LO’S WORLD retail box with pixel-world lake artwork." width="2048" height="1480" loading="lazy" /><span class="pixel-slot__hint">HD</span></span><span class="pixel-slot__label"><span>REGENERATED BOX</span><b>04</b></span></a>
         <a class="pixel-slot" href="/assets/images/redpoly/products/pixel-splash-tank.webp?v=pixel-20261117-v3" target="_blank" rel="noopener" aria-label="Open HD blue water cube close-up"><span class="pixel-slot__frame"><img src="/assets/images/redpoly/products/pixel-splash-tank.webp?v=pixel-20261117-v3" alt="Close-up of the transparent blue cube water tank with cyan water and black circuit-line artwork." width="2048" height="2048" loading="lazy" /><span class="pixel-slot__hint">HD</span></span><span class="pixel-slot__label"><span>BLUE WATER CUBE</span><b>05</b></span></a>
         <a class="pixel-slot" href="/assets/images/redpoly/products/pixel-splash-lifestyle.webp?v=pixel-20261117-v3" target="_blank" rel="noopener" aria-label="Open HD backyard lifestyle image"><span class="pixel-slot__frame"><img src="/assets/images/redpoly/products/pixel-splash-lifestyle.webp?v=pixel-20261117-v3" alt="Pixel Splash firing from a grass-block plinth in a sunny backyard." width="2048" height="1872" loading="lazy" /><span class="pixel-slot__hint">HD</span></span><span class="pixel-slot__label"><span>BACKYARD BATTLE</span><b>06</b></span></a>
+        <button class="pixel-slot pixel-slot--contain pixel-slot--video" type="button" data-media-open="video" aria-haspopup="dialog" aria-controls="media-viewer" aria-label="Open the Pixel Splash demo video">
+          <span class="pixel-slot__frame"><img src="/assets/images/redpoly/products/pixel-splash-thumb.webp?v=pixel-20261117-v3" alt="" width="480" height="480" loading="lazy" /><span class="pixel-slot__hint" aria-hidden="true">&#9654; PLAY</span></span>
+          <span class="pixel-slot__label"><span>VIDEO DEMO</span><b>07</b></span>
+        </button>
       </div>
-      <p class="pixel-note">Tip: select any inventory slot to open its full-size HD file in a new tab, or use the HD gallery button for the guided slideshow. Pixel-world styling is an original REDPOLY theme inspired by block-building games; REDPOLY and Pixel Splash are not affiliated with or endorsed by Mojang or Minecraft.</p>
+      <p class="pixel-note">Tip: open a photo in a new tab, or use the HD gallery for all six photos and the demo clip. Pixel-world styling is an original REDPOLY theme inspired by block-building games; REDPOLY and Pixel Splash are not affiliated with or endorsed by Mojang or Minecraft.</p>
     </section>
 
     <section class="accessory-policy-panel accessory-policy-panel--product" aria-label="Shipping, care and returns information">
@@ -256,7 +262,7 @@
       <div class="media-viewer__panel">
         <header class="media-viewer__bar">
           <p class="media-viewer__title" id="media-viewer-title">PIXEL SPLASH / HD GALLERY</p>
-          <p class="media-viewer__count"><span id="media-viewer-index">1</span> / <span id="media-viewer-total">6</span></p>
+          <p class="media-viewer__count"><span id="media-viewer-index">1</span> / <span id="media-viewer-total">7</span></p>
           <button class="media-viewer__close" type="button" data-media-close aria-label="Close gallery">&#215;</button>
         </header>
         <div class="media-viewer__stage" id="media-viewer-stage"></div>
@@ -271,6 +277,7 @@
         <li data-type="image" data-src="/assets/images/redpoly/products/pixel-splash-box.webp?v=pixel-20261117-v3" data-alt="Regenerated green LO’S WORLD retail box with a pixel-world lake and blaster artwork" data-caption="REGENERATED BOX &middot; HD"></li>
         <li data-type="image" data-src="/assets/images/redpoly/products/pixel-splash-tank.webp?v=pixel-20261117-v3" data-alt="Close-up of the transparent blue cube water tank with cyan water and circuit-line artwork" data-caption="BLUE WATER CUBE &middot; DETAIL"></li>
         <li data-type="image" data-src="/assets/images/redpoly/products/pixel-splash-lifestyle.webp?v=pixel-20261117-v3" data-alt="Pixel Splash firing from a grass-block plinth in a sunny backyard" data-caption="BACKYARD BATTLE &middot; LIFESTYLE"></li>
+        <li data-type="video" data-src="https://vycvmsqjseeiiotjjbep.supabase.co/storage/v1/object/public/Red%20POly%20Website/Prodcuts/Pixel%20Gun/Pixel%20Gun.mp4" data-poster="/assets/images/redpoly/products/pixel-splash-thumb.webp?v=pixel-20261117-v3" data-alt="Pixel Splash product demonstration" data-caption="PIXEL SPLASH DEMO &middot; STARTS MUTED"></li>
       </ul>
     </div>
   </main>
@@ -283,6 +290,7 @@
   </div>
 </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/main.js?v=header-one-20261130" defer></script>
+  <script src="/main.js?v=pixel-demo-20261118" defer></script>
+  <script src="/products/pixel-splash.js?v=pixel-demo-20261118" defer></script>
 </body>
 </html>

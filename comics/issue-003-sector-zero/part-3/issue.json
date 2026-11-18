@@ -61,6 +61,18 @@
         { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
         { "name": "PIXEL SPLASH", "href": "/pixel-splash", "image": "/assets/images/redpoly/products/pixel-splash-thumb.webp?v=pixel-20261117-v3" }
       ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-3/pages/page-07.webp?v=issue03-part3-20261118",
+      "alt": "Page 7: The dinos find a box marked Lo's World, and Reno wants to unbox it. CC-01 flags an anomaly as a green Pixel Splash water blaster rises from the glowing box. To be continued in Lo's World.",
+      "shop": [
+        { "name": "PIXEL SPLASH", "href": "/pixel-splash", "image": "/assets/images/redpoly/products/pixel-splash-thumb.webp?v=pixel-20261117-v3" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" }
+      ]
     }
   ]
 }
