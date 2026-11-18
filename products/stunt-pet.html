@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=products-admin-20261121" />
-  <link rel="stylesheet" href="/product.css?v=products-admin-20261121" />
+  <link rel="stylesheet" href="/product.css?v=portrait-video-20261121" />
   <link rel="stylesheet" href="/accessories.css?v=header-cleanup-20261120" />
   <meta property="og:type" content="product" />
   <meta property="og:site_name" content="REDPOLY" />
@@ -192,9 +192,11 @@
 
     <section class="char-file" aria-labelledby="char-file-title">
       <div class="char-file__card">
-        <div class="char-file__portrait">
+        <div class="char-file__portrait has-portrait-video">
           <span class="char-file__no">3+<small>YEARS</small></span>
           <img class="char-file__photo" src="/assets/images/redpoly/products/stunt-pet-card-side.jpg?v=pet-card-20261118" alt="" width="900" height="1205" loading="lazy" />
+          <video class="char-file__video" id="stunt-pet-demo-video" data-src="https://vycvmsqjseeiiotjjbep.supabase.co/storage/v1/object/public/Red%20POly%20Website/Prodcuts/Rabbit%20360/20230918_d9ffa0ce8c4cad67_428643791976_mp4_264_hd_unlimit_taobao.mp4" muted loop playsinline preload="none" aria-label="Stunt Pet demo clip, the rabbit rolling with its lights and music on"></video>
+          <button class="char-file__video-toggle" type="button" aria-controls="stunt-pet-demo-video" aria-pressed="false" hidden>Play demo</button>
           <span class="char-file__stamp" aria-hidden="true">LIGHT<br />+ MUSIC</span>
         </div>
         <div class="char-file__body">
@@ -289,6 +291,6 @@
 </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="/firebase-client.js?v=products-admin-20261121" defer></script>
-  <script src="/main.js?v=products-admin-20261121" defer></script>
+  <script src="/main.js?v=portrait-video-20261121" defer></script>
 </body>
 </html>

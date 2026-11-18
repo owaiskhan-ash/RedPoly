@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=products-admin-20261121" />
-  <link rel="stylesheet" href="/product.css?v=products-admin-20261121" />
+  <link rel="stylesheet" href="/product.css?v=portrait-video-20261121" />
   <link rel="stylesheet" href="/accessories.css?v=header-cleanup-20261120" />
   <meta property="og:type" content="product" />
   <meta property="og:site_name" content="REDPOLY" />
@@ -220,10 +220,12 @@
 
     <section class="char-file" aria-labelledby="char-file-title">
       <div class="char-file__card">
-        <div class="char-file__portrait">
+        <div class="char-file__portrait has-portrait-video">
           <span class="char-file__no">18m<small>MONTHS</small></span>
           <span class="char-file__brandmark"><img src="/assets/images/redpoly/cute-dinos-logo.png?v=dinos-20261116" alt="" width="900" height="477" loading="lazy" aria-hidden="true" /></span>
           <img class="char-file__photo" src="/assets/images/redpoly/products/cute-dinos-sand.jpg?v=dinos-immersive-20261116" alt="The three Cute Dinos colours, red, green and teal, standing together on a sunlit sandbank, a big lime-green ring behind them and three-toed footprints trailing across the sand." width="900" height="1206" loading="lazy" />
+          <video class="char-file__video" id="cute-dinos-demo-video" data-src="https://vycvmsqjseeiiotjjbep.supabase.co/storage/v1/object/public/Red%20POly%20Website/Prodcuts/Dino%20Walk/Dino%20Vi.mp4" muted loop playsinline preload="none" aria-label="Cute Dinos push-and-go dinosaur demo video"></video>
+          <button class="char-file__video-toggle" type="button" aria-controls="cute-dinos-demo-video" aria-pressed="false" hidden>Play demo</button>
           <span class="char-file__stamp" aria-hidden="true">PUSH<br />&amp; GO</span>
         </div>
         <div class="char-file__body">
@@ -318,7 +320,7 @@
 </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="/firebase-client.js?v=products-admin-20261121" defer></script>
-  <script src="/main.js?v=products-admin-20261121" defer></script>
+  <script src="/main.js?v=portrait-video-20261121" defer></script>
   <script src="/products/cute-dinos.js?v=products-admin-20261121" defer></script>
 </body>
 </html>

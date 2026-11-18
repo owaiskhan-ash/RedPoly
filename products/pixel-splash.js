@@ -4,7 +4,8 @@
   var video = document.getElementById('pixel-demo-video');
   var toggle = document.getElementById('pixel-demo-toggle');
   var gallery = document.getElementById('media-viewer');
-  if (!video || !toggle) return;
+  if (!video || !toggle || video.dataset.portraitManaged === '1') return;
+  video.dataset.portraitManaged = '1';
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   var inView = false;
