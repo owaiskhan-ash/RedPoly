@@ -490,7 +490,7 @@ html.redpoly-splash-seen .brand-splash{display:none}
 .foot__links a:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
 @media(hover:none){.quick-view-trigger{opacity:1;transform:none}}
 @media(max-width:640px){.foot__inner{grid-template-columns:1fr;align-items:flex-start;gap:12px}.foot__links{justify-content:flex-start;justify-self:start;align-self:start}.foot__aside{width:100%;gap:6px}}
-#figures,#accessories,#bundle-builder,#collections,#story{scroll-margin-top:145px}
+#figures,#accessories,#bundle-builder,#story{scroll-margin-top:145px}
 
 /* ===== Store UX update: one-row phone header, tappable hero boxes, limited buy button, stickers, GST-inclusive prices ===== */
 .site-header__menu,.site-menu{display:none}
@@ -543,7 +543,7 @@ html.motion-ready .c-card__soon{transition:transform .2s ease}
   .site-menu a:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--lime)}
   .site-header .cart-toggle>span,.site-header .wish-toggle>span{display:none}
   .site-header .cart-toggle,.site-header .wish-toggle{padding:9px 10px}
-  #figures,#accessories,#bundle-builder,#collections,#story,#featured,#limited,#crew{scroll-margin-top:74px}
+  #figures,#accessories,#bundle-builder,#story,#featured,#limited,#crew{scroll-margin-top:74px}
 }
 @media(max-width:640px){
   /* Boxed figures move up under the headline so they sit on the first screen */
@@ -683,8 +683,11 @@ html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out 
 .shop-all__eyebrow{display:inline-block;padding:6px 11px;border:2px solid var(--black);background:var(--lime);font-size:9px;font-weight:900;letter-spacing:1.7px}
 .shop-all__head h2{margin:11px 0 0;font:400 clamp(38px,5.6vw,72px)/.92 'Anton',sans-serif;letter-spacing:.4px}
 .shop-all__head h2 span{color:var(--orange)}
-.shop-all__note{max-width:36ch;margin:0;color:#4a443a;font-size:12px;font-weight:600;line-height:1.65}
-.shop-all__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(14px,1.6vw,22px)}
+.shop-all__note{max-width:52ch;margin:10px 0 0;color:#4a443a;font-size:12px;font-weight:600;line-height:1.65}
+.shop-all__hint{margin:0;color:#5d5548;font-size:9px;font-weight:900;letter-spacing:2px}
+.shop-all__grid{display:flex;gap:clamp(12px,1.4vw,18px);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:4px max(clamp(18px,4vw,40px),calc((100vw - 1280px)/2 + 28px)) 20px;scrollbar-width:none}
+.shop-all__grid::-webkit-scrollbar{display:none}
+.shop-all__grid>.shop-card{flex:0 0 clamp(228px,62vw,290px);scroll-snap-align:start}
 .shop-card{display:flex;flex-direction:column;border:2px solid var(--black);background:#fffdf7;color:var(--black);box-shadow:6px 6px 0 var(--black);transition:transform .18s ease,box-shadow .18s ease}
 .shop-card:hover{transform:translateY(-4px);box-shadow:6px 10px 0 var(--black)}
 .shop-card__media{position:relative;display:grid;place-items:center;aspect-ratio:1;padding:9%;border-bottom:2px solid var(--black);background:var(--card-tint,#f2ece0)}
@@ -705,50 +708,17 @@ html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out 
 .shop-card__link{justify-self:start;font-size:10px;font-weight:900;letter-spacing:1.1px;color:var(--black);text-decoration:none;border-bottom:2px solid var(--orange);padding-bottom:3px}
 .shop-card__link:hover,.shop-card__link:focus-visible{color:var(--orange)}
 .shop-card__link:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
-@media(max-width:1180px){.shop-all__grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:1000px){.shop-all__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1180px){
+  .shop-all__grid>.shop-card{flex:0 0 clamp(280px,26vw,340px)}
+}
 @media(max-width:560px){
   .shop-all{padding:36px 0}
-  .shop-all__grid{grid-template-columns:1fr;gap:12px}
+  .shop-all__grid{gap:12px}
+  .shop-all__grid>.shop-card{flex:0 0 min(78vw,300px)}
   .shop-card__media{aspect-ratio:5/4}
 }
 @media(prefers-reduced-motion:reduce){
   .shop-card,.shop-card__media img,.shop-card__add{transition:none}
   .shop-card:hover{transform:none;box-shadow:6px 6px 0 var(--black)}
   .shop-card:hover .shop-card__media img{transform:none}
-}
-
-/* Mobile-first collection rail: tall poster tiles that snap-scroll sideways. */
-.collection{padding:clamp(40px,5.6vw,70px) 0 clamp(30px,3.4vw,44px);background:var(--black);color:#fff}
-.collection__head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 24px;margin-bottom:clamp(16px,2.4vw,24px)}
-.collection__eyebrow{display:inline-block;margin:0;padding:6px 11px;border:2px solid var(--lime);background:transparent;color:var(--lime);font-size:9px;font-weight:900;letter-spacing:1.7px}
-.collection__head h2{margin:11px 0 0;font:400 clamp(32px,5vw,62px)/.94 'Anton',sans-serif;letter-spacing:.4px}
-.collection__head h2 span{color:var(--lime)}
-.collection__hint{margin:0;color:rgba(244,240,230,.68);font-size:9px;font-weight:900;letter-spacing:2px}
-.collection__rail{display:flex;gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:4px clamp(18px,4vw,40px) 18px;scrollbar-width:none}
-.collection__rail::-webkit-scrollbar{display:none}
-.collection__tile{position:relative;flex:0 0 clamp(210px,62vw,260px);display:flex;flex-direction:column;justify-content:flex-end;min-height:300px;padding:16px;border:2px solid #000;box-shadow:6px 6px 0 #000;color:var(--black);text-decoration:none;scroll-snap-align:start;overflow:hidden;isolation:isolate}
-.collection__tile::before{content:"";position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(135deg,rgba(0,0,0,.06) 0 14px,transparent 14px 28px)}
-.collection__tag{align-self:flex-start;margin-bottom:auto;padding:5px 9px;background:var(--black);color:var(--lime);font-size:8px;font-weight:900;letter-spacing:1.4px}
-.collection__art{position:absolute;inset:38px 10px 86px;z-index:-1;display:grid;place-items:center;pointer-events:none}
-.collection__art img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 10px 8px rgba(0,0,0,.28));transition:transform .26s cubic-bezier(.2,.8,.2,1)}
-.collection__tile:hover .collection__art img,.collection__tile:focus-visible .collection__art img{transform:scale(1.06) rotate(-2deg)}
-.collection__name{font:400 clamp(24px,3.4vw,30px)/.92 'Anton',sans-serif;letter-spacing:.6px}
-.collection__meta{margin-top:6px;font-size:9px;font-weight:900;letter-spacing:1px;color:rgba(10,10,10,.72)}
-.collection__tile:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
-.collection__tile--water{background:#bfe9ff}
-.collection__tile--rc{background:#ffd9c4}
-.collection__tile--build{background:#dbe4ff}
-.collection__tile--dinos{background:#dcf5c4}
-.collection__tile--bubble{background:#d8ecff}
-.collection__tile--pets{background:#ffd9e6}
-.collection__tile--gel{background:#ffe07a}
-@media(min-width:1000px){
-  .collection__rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible;max-width:1240px;margin-inline:auto;padding:4px 24px 18px;gap:14px}
-  .collection__tile{flex:1 1 auto;min-height:330px}
-  .collection__hint{display:none}
-}
-@media(prefers-reduced-motion:reduce){
-  .collection__art img{transition:none}
-  .collection__tile:hover .collection__art img{transform:none}
 }
