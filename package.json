@@ -5,9 +5,9 @@
   "description": "REDPOLY storefront static server",
   "main": "server.js",
   "scripts": {
-    "dev": "esbuild src/firebase-client.ts --bundle --format=iife --platform=browser --outfile=dist/firebase-client.js && node server.js",
+    "dev": "esbuild src/firebase-client.ts --bundle --format=iife --platform=browser --outfile=firebase-client.js && node server.js",
     "start": "node server.js",
-    "build": "tsc --noEmit && esbuild src/firebase-client.ts --bundle --format=iife --platform=browser --minify --outfile=dist/firebase-client.js && node --check server.js",
+    "build": "tsc --noEmit && esbuild src/firebase-client.ts --bundle --format=iife --platform=browser --minify --outfile=firebase-client.js && node --check server.js",
     "lint": "tsc --noEmit && eslint firestore.rules && node --check server.js"
   },
   "dependencies": {

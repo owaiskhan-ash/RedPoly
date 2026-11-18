@@ -181,11 +181,23 @@
       signInBtn.className = 'checkout-account__btn';
       signInBtn.innerHTML = googleIconSvg + '<span>SIGN IN WITH GOOGLE</span>';
       signInBtn.addEventListener('click', function () {
-        if (!window.RedpolyFirebase) return;
+        if (!window.RedpolyFirebase) {
+          if (status) status.textContent = 'Could not load /firebase-client.js. Please refresh or ensure the latest build is deployed.';
+          return;
+        }
         signInBtn.disabled = true;
         window.RedpolyFirebase.signInWithGoogle().catch(function (err) {
           console.error(err);
-          if (status) status.textContent = 'Could not complete Google sign-in. Please try again.';
+          var code = err && err.code ? String(err.code) : '';
+          var msg = err && err.message ? err.message : '';
+          if (!status) return;
+          if (code === 'auth/unauthorized-domain' || msg.indexOf('unauthorized-domain') !== -1) {
+            status.textContent = 'This domain (' + window.location.hostname + ') must be added to Firebase Console → Authentication → Settings → Authorized domains.';
+          } else if (code === 'auth/popup-blocked' || msg.indexOf('popup-blocked') !== -1) {
+            status.textContent = 'Popup was blocked by your browser. Please allow popups and try again.';
+          } else {
+            status.textContent = 'Could not complete Google sign-in. Please try again.';
+          }
         }).finally(function () {
           signInBtn.disabled = false;
         });

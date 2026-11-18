@@ -87,7 +87,7 @@ Object.entries(rewrites).forEach(([routePath, filePath]) => {
 });
 
 app.get('/firebase-client.js', (req, res) => {
-  res.sendFile(path.join(ROOT, 'dist', 'firebase-client.js'));
+  res.sendFile(path.join(ROOT, 'firebase-client.js'));
 });
 
 app.use(

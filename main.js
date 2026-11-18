@@ -194,11 +194,33 @@
         btn.className = 'google-signin-btn';
         btn.innerHTML = googleSvg + '<span>CONTINUE WITH GOOGLE</span>';
         btn.addEventListener('click', async function () {
+          btn.disabled = true;
           if (!window.RedpolyFirebase) {
-            setAccountStatus('Authentication is still loading. Please try again in a second.', false);
+            setAccountStatus('Loading authentication…', true);
+            await new Promise(function (resolve) {
+              var settled = false;
+              function done() {
+                if (settled) return;
+                settled = true;
+                resolve();
+              }
+              window.addEventListener('redpoly:firebase-ready', done, { once: true });
+              var existingScript = document.querySelector('script[src*="/firebase-client.js"]');
+              if (!existingScript) {
+                var s = document.createElement('script');
+                s.src = '/firebase-client.js';
+                s.onload = function () { setTimeout(done, 50); };
+                s.onerror = done;
+                document.head.appendChild(s);
+              }
+              setTimeout(done, 2500);
+            });
+          }
+          if (!window.RedpolyFirebase) {
+            btn.disabled = false;
+            setAccountStatus('Could not load /firebase-client.js. Please refresh the page or ensure the latest build is deployed.', false);
             return;
           }
-          btn.disabled = true;
           setAccountStatus('Opening Google sign-in…', true);
           try {
             var signedIn = await window.RedpolyFirebase.signInWithGoogle();
@@ -209,8 +231,17 @@
               setAccountStatus('', false);
             }
           } catch (err) {
+            var code = err && err.code ? String(err.code) : '';
             var msg = err && err.message ? err.message : 'Google sign-in failed.';
-            setAccountStatus(msg.indexOf('popup-blocked') !== -1 ? 'Popup was blocked by your browser. Please allow popups and try again.' : 'Could not sign in with Google. Please try again.', false);
+            if (code === 'auth/unauthorized-domain' || msg.indexOf('unauthorized-domain') !== -1) {
+              setAccountStatus('This domain (' + window.location.hostname + ') must be added to Firebase Console → Authentication → Settings → Authorized domains.', false);
+            } else if (code === 'auth/popup-blocked' || msg.indexOf('popup-blocked') !== -1) {
+              setAccountStatus('Popup was blocked by your browser. Please allow popups and try again.', false);
+            } else if (code === 'auth/operation-not-allowed') {
+              setAccountStatus('Google Sign-In is not enabled in Firebase Authentication for this project.', false);
+            } else {
+              setAccountStatus('Could not sign in with Google. Please try again.', false);
+            }
           } finally {
             btn.disabled = false;
           }
