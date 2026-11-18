@@ -39,17 +39,120 @@ service cloud.firestore {
       return isVerified() && request.auth.token.email == 'ashketchupkeke@gmail.com';
     }
 
+    function isValidSkuSlug(slug) {
+      return slug in [
+        'bubble-gun',
+        'stunt-pet',
+        'mini-cool-car',
+        'gel-storm',
+        'mecha-rover',
+        'pixel-splash',
+        'cute-dinos-green',
+        'cute-dinos-red',
+        'cute-dinos-teal',
+        'cute-dinos-trio'
+      ];
+    }
+
+    function skuSlugForName(name) {
+      return name == 'BUBBLE GUN' ? 'bubble-gun' :
+        name == 'STUNT PET' ? 'stunt-pet' :
+        name == 'MINI COOL CAR' ? 'mini-cool-car' :
+        name == 'GEL STORM' ? 'gel-storm' :
+        name == 'MECHA ROVER' ? 'mecha-rover' :
+        name == 'PIXEL SPLASH' ? 'pixel-splash' :
+        name == 'CUTE DINOS GREEN' ? 'cute-dinos-green' :
+        name == 'CUTE DINOS RED' ? 'cute-dinos-red' :
+        name == 'CUTE DINOS TEAL' ? 'cute-dinos-teal' :
+        name == 'CUTE DINOS TRIO' ? 'cute-dinos-trio' : '';
+    }
+
+    function nameForSkuSlug(slug) {
+      return slug == 'bubble-gun' ? 'BUBBLE GUN' :
+        slug == 'stunt-pet' ? 'STUNT PET' :
+        slug == 'mini-cool-car' ? 'MINI COOL CAR' :
+        slug == 'gel-storm' ? 'GEL STORM' :
+        slug == 'mecha-rover' ? 'MECHA ROVER' :
+        slug == 'pixel-splash' ? 'PIXEL SPLASH' :
+        slug == 'cute-dinos-green' ? 'CUTE DINOS GREEN' :
+        slug == 'cute-dinos-red' ? 'CUTE DINOS RED' :
+        slug == 'cute-dinos-teal' ? 'CUTE DINOS TEAL' :
+        slug == 'cute-dinos-trio' ? 'CUTE DINOS TRIO' : '';
+    }
+
+    function defaultPriceForName(name) {
+      return name == 'BUBBLE GUN' ? 499 :
+        name == 'STUNT PET' ? 599 :
+        name == 'MINI COOL CAR' ? 749 :
+        name == 'GEL STORM' ? 1999 :
+        name == 'MECHA ROVER' ? 499 :
+        name == 'PIXEL SPLASH' ? 1749 :
+        name == 'CUTE DINOS GREEN' ? 249 :
+        name == 'CUTE DINOS RED' ? 249 :
+        name == 'CUTE DINOS TEAL' ? 249 :
+        name == 'CUTE DINOS TRIO' ? 549 : -1;
+    }
+
     function isValidCatalogueItem(name, price) {
-      return (name == 'BUBBLE GUN' && price == 499) ||
-        (name == 'STUNT PET' && price == 599) ||
-        (name == 'MINI COOL CAR' && price == 749) ||
-        (name == 'GEL STORM' && price == 1999) ||
-        (name == 'MECHA ROVER' && price == 499) ||
-        (name == 'PIXEL SPLASH' && price == 1749) ||
-        (name == 'CUTE DINOS GREEN' && price == 249) ||
-        (name == 'CUTE DINOS RED' && price == 249) ||
-        (name == 'CUTE DINOS TEAL' && price == 249) ||
-        (name == 'CUTE DINOS TRIO' && price == 549);
+      return skuSlugForName(name) != '' &&
+        (price is int || price is float) &&
+        (
+          exists(/databases/$(database)/documents/products/$(skuSlugForName(name)))
+            ? price == get(/databases/$(database)/documents/products/$(skuSlugForName(name))).data.price
+            : price == defaultPriceForName(name)
+        );
+    }
+
+    function isValidPriceComparisonEntry(entry) {
+      return entry is map &&
+        entry.keys().hasAll(['platform', 'price']) &&
+        entry.keys().hasOnly(['platform', 'price']) &&
+        entry.platform is string &&
+        entry.platform.size() >= 1 &&
+        entry.platform.size() <= 32 &&
+        (entry.price is int || entry.price is float) &&
+        entry.price > 0 &&
+        entry.price <= 500000;
+    }
+
+    function isValidPriceComparisonList(list) {
+      return list is list &&
+        list.size() <= 5 &&
+        (list.size() < 1 || isValidPriceComparisonEntry(list[0])) &&
+        (list.size() < 2 || isValidPriceComparisonEntry(list[1])) &&
+        (list.size() < 3 || isValidPriceComparisonEntry(list[2])) &&
+        (list.size() < 4 || isValidPriceComparisonEntry(list[3])) &&
+        (list.size() < 5 || isValidPriceComparisonEntry(list[4]));
+    }
+
+    function isValidProductCatalogDoc(data, skuSlug) {
+      return data.keys().hasAll([
+          'sku', 'name', 'price', 'compareAtPrice', 'stock', 'lowStockThreshold',
+          'cardTag', 'priceComparisons', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'sku', 'name', 'price', 'compareAtPrice', 'stock', 'lowStockThreshold',
+          'cardTag', 'priceComparisons', 'updatedAt'
+        ]) &&
+        data.sku is string && data.sku == skuSlug && isValidSkuSlug(skuSlug) &&
+        data.name is string && data.name == nameForSkuSlug(skuSlug) &&
+        (data.price is int || data.price is float) && data.price >= 1 && data.price <= 500000 &&
+        (data.compareAtPrice is int || data.compareAtPrice is float) && data.compareAtPrice >= 0 && data.compareAtPrice <= 500000 &&
+        data.stock is int && data.stock >= 0 && data.stock <= 100000 &&
+        data.lowStockThreshold is int && data.lowStockThreshold >= 0 && data.lowStockThreshold <= 10000 &&
+        data.cardTag is string && data.cardTag.size() <= 32 &&
+        isValidPriceComparisonList(data.priceComparisons) &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidStockDecrement(nextData, prevData) {
+      return nextData.diff(prevData).affectedKeys().hasOnly(['stock', 'updatedAt']) &&
+        nextData.stock is int &&
+        prevData.stock is int &&
+        nextData.stock >= 0 &&
+        nextData.stock < prevData.stock &&
+        (prevData.stock - nextData.stock) <= 99 &&
+        nextData.updatedAt == request.time;
     }
 
     function isValidUserAccount(data, userId) {
@@ -219,6 +322,23 @@ service cloud.firestore {
       allow list: if isAdmin();
     }
 
+    match /products/{skuSlug} {
+      allow get: if isValidSkuSlug(skuSlug);
+      allow list: if true;
+      allow create: if isAdmin() && isValidSkuSlug(skuSlug) &&
+        isValidProductCatalogDoc(incoming(), skuSlug) &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidSkuSlug(skuSlug) && (
+        (isAdmin() &&
+          isValidProductCatalogDoc(incoming(), skuSlug) &&
+          incoming().sku == existing().sku &&
+          incoming().name == existing().name &&
+          incoming().updatedAt == request.time) ||
+        (isVerified() && isValidStockDecrement(incoming(), existing()))
+      );
+      allow delete: if false;
+    }
+
     match /products/{productSlug}/reviews/{reviewId} {
       allow get: if isValidId(reviewId) && isValidProductSlug(productSlug) && (
         resource.data.status == 'approved' ||
@@ -295,9 +415,8 @@ service cloud.firestore {
           isValidCartItem(incoming(), userId) &&
           incoming().uid == existing().uid &&
           incoming().name == existing().name &&
-          incoming().price == existing().price &&
           incoming().updatedAt == request.time &&
-          incoming().diff(existing()).affectedKeys().hasOnly(['quantity', 'updatedAt']) &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['quantity', 'price', 'updatedAt']) &&
           exists(/databases/$(database)/documents/users/$(userId));
         allow delete: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(itemId);
       }

@@ -21,9 +21,46 @@
   };
 
   var GOOGLE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5H1.2v3.1C3.2 21.4 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.2C.4 8.2 0 10.1 0 12s.4 3.8 1.2 5.4l4-3.1z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3.3.6 4.6 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.3 0 3.2 2.6 1.2 6.6l4 3.1c1-2.9 3.7-5 6.8-5z"/></svg>';
+  var CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v1';
+  var liveCatalogMap = {};
+  (function hydrateAccountCatalog() {
+    try {
+      var cached = JSON.parse(window.sessionStorage.getItem(CATALOG_CACHE_KEY) || '{}');
+      if (cached && typeof cached === 'object') {
+        Object.keys(cached).forEach(function (k) {
+          var rec = cached[k];
+          if (rec && rec.name && Object.prototype.hasOwnProperty.call(CATALOGUE, rec.name)) {
+            if (Number.isFinite(Number(rec.price)) && Number(rec.price) > 0) {
+              CATALOGUE[rec.name].price = Math.round(Number(rec.price));
+            }
+            liveCatalogMap[rec.name] = rec;
+            if (rec.sku) liveCatalogMap[rec.sku] = rec;
+          }
+        });
+      }
+    } catch (ignoreCache) {}
+  })();
 
-  function inCatalogue(name, price) {
-    return Object.prototype.hasOwnProperty.call(CATALOGUE, name) && CATALOGUE[name].price === Number(price);
+  function isKnownProduct(name) {
+    return Object.prototype.hasOwnProperty.call(CATALOGUE, name);
+  }
+  function getLiveProduct(name) {
+    var fb = window.RedpolyFirebase;
+    if (fb && typeof fb.getProduct === 'function') {
+      var rec = fb.getProduct(name);
+      if (rec) return rec;
+    }
+    return liveCatalogMap[name] || null;
+  }
+  function syncCatalogueMap(map) {
+    if (!map || typeof map !== 'object') return;
+    liveCatalogMap = map;
+    Object.keys(CATALOGUE).forEach(function (name) {
+      var rec = map[name];
+      if (rec && Number.isFinite(Number(rec.price)) && Number(rec.price) > 0) {
+        CATALOGUE[name].price = Math.round(Number(rec.price));
+      }
+    });
   }
   function money(amount) {
     return '₹' + Number(amount || 0).toLocaleString('en-IN');
@@ -47,9 +84,9 @@
       var parsed = JSON.parse(window.localStorage.getItem(CART_KEY) || '[]');
       if (!Array.isArray(parsed)) return [];
       return parsed.filter(function (item) {
-        return item && typeof item.name === 'string' && inCatalogue(item.name, item.price) && Number(item.quantity) >= 1;
+        return item && typeof item.name === 'string' && isKnownProduct(item.name) && Number(item.quantity) >= 1;
       }).map(function (item) {
-        var price = Number(item.price);
+        var price = CATALOGUE[item.name].price;
         return {
           id: item.name.toLowerCase() + '|' + price,
           name: item.name,
@@ -75,13 +112,13 @@
       var parsed = JSON.parse(window.localStorage.getItem(WISH_KEY) || '[]');
       if (!Array.isArray(parsed)) return [];
       return parsed.filter(function (item) {
-        return item && typeof item.name === 'string' && isSitePath(item.href) && inCatalogue(item.name, item.price);
+        return item && typeof item.name === 'string' && isSitePath(item.href) && isKnownProduct(item.name);
       }).map(function (item) {
         return {
           name: item.name,
           href: item.href,
           image: isSitePath(item.image) ? item.image : CATALOGUE[item.name].image,
-          price: Number(item.price)
+          price: CATALOGUE[item.name].price
         };
       });
     } catch (e) {
@@ -201,14 +238,29 @@
   }
 
   function addItemToCart(name, price, openDrawer) {
-    if (!inCatalogue(name, price)) return;
+    if (!isKnownProduct(name)) return;
+    var rec = getLiveProduct(name);
+    var livePrice = rec && rec.price > 0 ? rec.price : CATALOGUE[name].price;
     var items = readCart();
-    var id = name.toLowerCase() + '|' + Number(price);
+    if (rec && rec.initialized) {
+      if (rec.stock <= 0) {
+        showToast(name + ' is out of stock');
+        return;
+      }
+      var curQty = items.reduce(function (sum, entry) {
+        return entry.name === name ? sum + entry.quantity : sum;
+      }, 0);
+      if (curQty + 1 > rec.stock) {
+        showToast('Only ' + rec.stock + ' left in stock for ' + name);
+        return;
+      }
+    }
+    var id = name.toLowerCase() + '|' + livePrice;
     var existing = items.find(function (entry) { return entry.id === id; });
     if (existing) {
       existing.quantity = Math.min(99, existing.quantity + 1);
     } else {
-      existing = { id: id, name: name, price: Number(price), quantity: 1 };
+      existing = { id: id, name: name, price: livePrice, quantity: 1 };
       items.push(existing);
     }
     writeCart(items);
@@ -882,12 +934,17 @@
       gst.textContent = 'INCL. GST';
       price.appendChild(gst);
 
+      var favRec = getLiveProduct(item.name);
+      var favOut = Boolean(favRec && favRec.initialized && favRec.stock === 0);
+      var favLow = Boolean(favRec && favRec.initialized && favRec.stock > 0 && favRec.stock <= favRec.lowStockThreshold);
+
       var actions = document.createElement('div');
       actions.className = 'fav-card__actions';
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
       addBtn.className = 'fav-card__add';
-      addBtn.textContent = 'ADD TO CART';
+      addBtn.textContent = favOut ? 'OUT OF STOCK' : 'ADD TO CART';
+      addBtn.disabled = favOut;
       addBtn.addEventListener('click', function () {
         addItemToCart(item.name, item.price, true);
       });
@@ -912,6 +969,12 @@
       actions.appendChild(removeBtn);
       body.appendChild(titleLink);
       body.appendChild(price);
+      if (favOut || favLow) {
+        var stockHint = document.createElement('p');
+        stockHint.className = 'fav-card__stock ' + (favOut ? 'is-out' : 'is-low');
+        stockHint.textContent = favOut ? 'CURRENTLY OUT OF STOCK' : 'ONLY ' + favRec.stock + ' LEFT!';
+        body.appendChild(stockHint);
+      }
       body.appendChild(actions);
       card.appendChild(imgLink);
       card.appendChild(body);
@@ -953,9 +1016,17 @@
 
     var list = document.createElement('div');
     list.className = 'account-cart-list';
+    var anyStockBlocked = false;
 
     items.forEach(function (item) {
       var cat = CATALOGUE[item.name] || { href: '/#shop', image: '' };
+      var rec = getLiveProduct(item.name);
+      var stockManaged = Boolean(rec && rec.initialized);
+      var availStock = stockManaged ? rec.stock : null;
+      var isOut = stockManaged && availStock === 0;
+      var exceedsStock = stockManaged && item.quantity > availStock;
+      if (isOut || exceedsStock) anyStockBlocked = true;
+
       var row = document.createElement('article');
       row.className = 'account-cart-row';
 
@@ -976,6 +1047,16 @@
       priceLine.textContent = money(item.price) + ' each';
       info.appendChild(nameLink);
       info.appendChild(priceLine);
+      if (isOut || exceedsStock || (stockManaged && availStock <= rec.lowStockThreshold)) {
+        var rowStock = document.createElement('p');
+        rowStock.className = 'account-cart-row__stock ' + (isOut || exceedsStock ? 'is-out' : 'is-low');
+        rowStock.textContent = isOut
+          ? 'OUT OF STOCK — remove to check out'
+          : exceedsStock
+            ? 'ONLY ' + availStock + ' LEFT — reduce quantity'
+            : 'ONLY ' + availStock + ' LEFT!';
+        info.appendChild(rowStock);
+      }
 
       var controls = document.createElement('div');
       controls.className = 'account-cart-row__controls';
@@ -1011,10 +1092,16 @@
       incBtn.type = 'button';
       incBtn.textContent = '+';
       incBtn.setAttribute('aria-label', 'Increase quantity of ' + item.name);
+      if (stockManaged && item.quantity >= availStock) incBtn.disabled = true;
       incBtn.addEventListener('click', function () {
         var latest = readCart();
         var target = latest.find(function (c) { return c.id === item.id; });
         if (!target) return;
+        var live = getLiveProduct(item.name);
+        if (live && live.initialized && target.quantity + 1 > live.stock) {
+          showToast('Only ' + live.stock + ' left in stock for ' + item.name);
+          return;
+        }
         target.quantity = Math.min(99, target.quantity + 1);
         writeCart(latest);
         if (window.RedpolyFirebase && window.RedpolyFirebase.getUser()) {
@@ -1080,9 +1167,9 @@
     }
 
     var checkoutLink = document.createElement('a');
-    checkoutLink.className = 'account-btn';
+    checkoutLink.className = 'account-btn' + (anyStockBlocked ? ' account-btn--disabled' : '');
     checkoutLink.href = '/checkout';
-    checkoutLink.textContent = 'PROCEED TO CHECKOUT ↗';
+    checkoutLink.textContent = anyStockBlocked ? 'ADJUST OUT-OF-STOCK ITEMS' : 'PROCEED TO CHECKOUT ↗';
 
     summary.appendChild(sumTitle);
     summary.appendChild(sumLine);
@@ -1305,7 +1392,17 @@
   window.addEventListener('hashchange', syncTabFromHash);
 
   // Sync live with Firebase bridge, header drawers, and other browser tabs
-  window.addEventListener('redpoly:firebase-ready', renderAll);
+  window.addEventListener('redpoly:firebase-ready', function () {
+    var fb = window.RedpolyFirebase;
+    if (fb && typeof fb.getCatalogMap === 'function') syncCatalogueMap(fb.getCatalogMap());
+    renderAll();
+  });
+  window.addEventListener('redpoly:catalog-updated', function (event) {
+    if (event.detail && event.detail.map) syncCatalogueMap(event.detail.map);
+    renderFavoritesSection();
+    renderCartSection();
+    renderTabCounts();
+  });
   window.addEventListener('redpoly:auth-changed', function () {
     formDirty = false;
     renderAll();

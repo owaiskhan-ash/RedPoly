@@ -132,6 +132,27 @@ export const dirtyDozenPayloads = {
     operation: 'get',
     expected: 'PERMISSION_DENIED',
   },
+  nonAdminProductPriceWriteRejected: {
+    auth: { uid: 'userB', email_verified: true, email: 'userb@example.com' },
+    path: 'products/bubble-gun',
+    updatePayload: { price: 1, updatedAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  stockIncreaseByBuyerRejected: {
+    auth: { uid: 'userB', email_verified: true, email: 'userb@example.com' },
+    path: 'products/bubble-gun',
+    updatePayload: { stock: 9999, updatedAt: 'SERVER_TIME' },
+    expected: 'PERMISSION_DENIED',
+  },
+  productComparisonGhostFieldRejected: {
+    auth: { uid: 'admin', email_verified: true, email: 'ashketchupkeke@gmail.com' },
+    path: 'products/bubble-gun',
+    updatePayload: {
+      priceComparisons: [{ platform: 'Amazon', price: 749, href: 'https://evil.example' }],
+      updatedAt: 'SERVER_TIME',
+    },
+    expected: 'PERMISSION_DENIED',
+  },
 };
 
 export { assertFails, assertSucceeds };

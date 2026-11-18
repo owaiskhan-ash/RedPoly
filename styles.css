@@ -1004,4 +1004,21 @@ body.cart-open{overflow:hidden}
   .order-bubble__badge{position:absolute;top:-5px;right:-5px}
 }
 
+/* Live catalog pricing, stock pills, and out-of-stock states */
+.hero-product__stock{margin-top:2px;padding:2px 6px;border-radius:3px;background:#171512;color:#ff9f2e;font:900 8px/1.2 'Archivo',sans-serif;letter-spacing:.7px;text-transform:uppercase}
+.hero-product__stock.is-out{background:#a52b18;color:#fff}
+.shop-card__tag[hidden],.shop-card__stock[hidden],.shop-card__mrp[hidden]{display:none!important}
+.shop-card__stock{position:absolute;right:10px;bottom:10px;padding:5px 8px;border:1.5px solid var(--black);background:#fff4d6;color:#7a3e00;font:900 8px/1 'Archivo',sans-serif;letter-spacing:.9px;text-transform:uppercase}
+.shop-card__stock.is-out{background:#a52b18;border-color:#171512;color:#fff}
+.shop-card__mrp{color:#756c5d;font:700 14px/1 'Archivo',sans-serif;text-decoration:line-through;text-decoration-thickness:1.5px}
+.shop-card.is-out-of-stock .shop-card__media img{opacity:.58;filter:grayscale(.25)}
+.shop-card__add:disabled,.shop-card__add.is-out-of-stock{background:#ddd5c7;color:#5d5548;border-color:#9e9585;box-shadow:none;cursor:not-allowed;transform:none}
+.shop-card__add:disabled:hover,.shop-card__add.is-out-of-stock:hover{transform:none;box-shadow:none}
+.mobile-buy-bar__button:disabled,.mobile-buy-bar__button.is-out-of-stock{background:#ddd5c7;color:#5d5548;border-color:#9e9585;box-shadow:none;cursor:not-allowed;transform:none}
+.cart-item__stock{margin-top:5px;font-size:10px;font-weight:900;letter-spacing:.6px;text-transform:uppercase}
+.cart-item__stock--low{color:#b45309}
+.cart-item__stock--out{color:#a52b18}
+.cart-quantity-button:disabled{opacity:.35;cursor:not-allowed}
+
+
 

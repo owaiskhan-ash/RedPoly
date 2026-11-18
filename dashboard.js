@@ -18,6 +18,41 @@
     'CUTE DINOS TEAL': { price: 249, href: '/cute-dinos?colour=teal', image: '/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TRIO': { price: 549, href: '/cute-dinos?pack=trio', image: '/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' }
   };
+  var SKU_ORDER = [
+    'mecha-rover', 'bubble-gun', 'stunt-pet',
+    'cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio',
+    'mini-cool-car', 'gel-storm', 'pixel-splash'
+  ];
+  var SKU_TO_NAME = {
+    'mecha-rover': 'MECHA ROVER',
+    'bubble-gun': 'BUBBLE GUN',
+    'stunt-pet': 'STUNT PET',
+    'cute-dinos-green': 'CUTE DINOS GREEN',
+    'cute-dinos-red': 'CUTE DINOS RED',
+    'cute-dinos-teal': 'CUTE DINOS TEAL',
+    'cute-dinos-trio': 'CUTE DINOS TRIO',
+    'mini-cool-car': 'MINI COOL CAR',
+    'gel-storm': 'GEL STORM',
+    'pixel-splash': 'PIXEL SPLASH'
+  };
+  var NAME_TO_SKU = {};
+  Object.keys(SKU_TO_NAME).forEach(function (sku) {
+    NAME_TO_SKU[SKU_TO_NAME[sku]] = sku;
+  });
+  var DEFAULT_CARD_TAGS = {
+    'mecha-rover': '',
+    'bubble-gun': 'IN STORE NOW',
+    'stunt-pet': 'NEW IN STORE',
+    'cute-dinos-green': 'NEW IN STORE',
+    'cute-dinos-red': '',
+    'cute-dinos-teal': '',
+    'cute-dinos-trio': '',
+    'mini-cool-car': 'NEW IN STORE',
+    'gel-storm': 'JUST LANDED',
+    'pixel-splash': 'NEW IN STORE'
+  };
+  var DEFAULT_LOW_STOCK_THRESHOLD = 5;
+  var INITIAL_SEED_STOCK = 20;
 
   var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
   var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos'];
@@ -68,7 +103,8 @@
       typeof window.RedpolyFirebase.listAllOrders === 'function' &&
       typeof window.RedpolyFirebase.updateOrderDetails === 'function' &&
       typeof window.RedpolyFirebase.listAllReviews === 'function' &&
-      typeof window.RedpolyFirebase.listAllWishlists === 'function'
+      typeof window.RedpolyFirebase.listAllWishlists === 'function' &&
+      typeof window.RedpolyFirebase.listAllProducts === 'function'
     ) {
       return Promise.resolve(window.RedpolyFirebase);
     }
@@ -92,7 +128,8 @@
         typeof window.RedpolyFirebase.listAllOrders === 'function' &&
         typeof window.RedpolyFirebase.updateOrderDetails === 'function' &&
         typeof window.RedpolyFirebase.listAllReviews === 'function' &&
-        typeof window.RedpolyFirebase.listAllWishlists === 'function'
+        typeof window.RedpolyFirebase.listAllWishlists === 'function' &&
+        typeof window.RedpolyFirebase.listAllProducts === 'function'
       ) {
         return window.RedpolyFirebase;
       }
@@ -308,11 +345,54 @@
           if (!LIMITS.ID_PATTERN.test(uid) || !LIMITS.ID_PATTERN.test(orderId)) throw new Error('Invalid order identifier.');
           if (VALID_ORDER_STATUSES.indexOf(status) === -1) throw new Error('Invalid order status.');
           var orderPath = 'users/' + uid + '/orders/' + orderId;
+          var orderRef = fsMod.doc(db, 'users', uid, 'orders', orderId);
           try {
-            var payload = { status: status };
-            if (isDeliveredStatus(status)) payload.deliveredAt = fsMod.serverTimestamp();
-            await fsMod.updateDoc(fsMod.doc(db, 'users', uid, 'orders', orderId), payload);
+            var itemsSnap = await fsMod.getDocs(fsMod.collection(orderRef, 'items'));
+            var orderItems = [];
+            itemsSnap.forEach(function (docSnap) {
+              var d = docSnap.data();
+              if (typeof d.name === 'string' && NAME_TO_SKU[d.name]) {
+                orderItems.push({ slug: NAME_TO_SKU[d.name], name: d.name, quantity: clampQty(d.quantity) });
+              }
+            });
+            await fsMod.runTransaction(db, async function (tx) {
+              var snap = await tx.get(orderRef);
+              if (!snap.exists()) throw new Error('Order does not exist.');
+              var prevStatus = normalizeOrderStatus(snap.data().status);
+              var wasCancelled = prevStatus === 'cancelled';
+              var willBeCancelled = status === 'cancelled';
+              var productOps = [];
+              if (!wasCancelled && willBeCancelled) {
+                for (var i = 0; i < orderItems.length; i += 1) {
+                  var pRef = fsMod.doc(db, 'products', orderItems[i].slug);
+                  var pSnap = await tx.get(pRef);
+                  if (pSnap.exists()) {
+                    var cur = Math.max(0, Math.floor(Number(pSnap.data().stock != null ? pSnap.data().stock : 0)));
+                    productOps.push({ ref: pRef, nextStock: cur + orderItems[i].quantity });
+                  }
+                }
+              } else if (wasCancelled && !willBeCancelled) {
+                for (var j = 0; j < orderItems.length; j += 1) {
+                  var pRef2 = fsMod.doc(db, 'products', orderItems[j].slug);
+                  var pSnap2 = await tx.get(pRef2);
+                  if (pSnap2.exists()) {
+                    var cur2 = Math.max(0, Math.floor(Number(pSnap2.data().stock != null ? pSnap2.data().stock : 0)));
+                    if (cur2 < orderItems[j].quantity) {
+                      throw new Error('Cannot restore order: only ' + cur2 + ' left in stock for ' + orderItems[j].name + '.');
+                    }
+                    productOps.push({ ref: pRef2, nextStock: cur2 - orderItems[j].quantity });
+                  }
+                }
+              }
+              var payload = { status: status };
+              if (isDeliveredStatus(status)) payload.deliveredAt = fsMod.serverTimestamp();
+              tx.update(orderRef, payload);
+              productOps.forEach(function (op) {
+                tx.update(op.ref, { stock: op.nextStock, updatedAt: fsMod.serverTimestamp() });
+              });
+            });
           } catch (error) {
+            if (error instanceof Error && error.message && error.message.charAt(0) !== '{') throw error;
             handleFirestoreError(error, 'update', orderPath);
           }
         },
@@ -322,30 +402,6 @@
           var orderPath = 'users/' + uid + '/orders/' + orderId;
           var orderRef = fsMod.doc(db, 'users', uid, 'orders', orderId);
           try {
-            var existingSnap = await fsMod.getDoc(orderRef);
-            if (!existingSnap.exists()) throw new Error('Order does not exist.');
-            var existingData = existingSnap.data();
-
-            var customerName = String(patch.customerName !== undefined ? patch.customerName : (existingData.customerName || '')).trim().slice(0, LIMITS.FULL_NAME_MAX);
-            var email = String(patch.email !== undefined ? patch.email : (existingData.email || '')).trim().slice(0, LIMITS.EMAIL_MAX);
-            var phone = String(patch.phone !== undefined ? patch.phone : (existingData.phone || '')).trim();
-            var address = String(patch.address !== undefined ? patch.address : (existingData.address || '')).trim().slice(0, LIMITS.ADDRESS_MAX);
-            var pin = String(patch.pin !== undefined ? patch.pin : (existingData.pin || '')).trim();
-            var city = String(patch.city !== undefined ? patch.city : (existingData.city || '')).trim().slice(0, LIMITS.CITY_MAX);
-            var state = String(patch.state !== undefined ? patch.state : (existingData.state || '')).trim().slice(0, LIMITS.STATE_MAX);
-
-            if (!customerName) throw new Error('Customer name is required.');
-            if (!email || email.length < 3) throw new Error('Valid email is required.');
-            if (!LIMITS.PHONE_PATTERN.test(phone)) throw new Error('Enter a valid 10-digit Indian mobile number.');
-            if (!address) throw new Error('Street address is required.');
-            if (!LIMITS.PIN_PATTERN.test(pin)) throw new Error('Enter a valid 6-digit Indian PIN code.');
-            if (!city || !state) throw new Error('City and state are required.');
-
-            var shippingMethod = (patch.shippingMethod || existingData.shippingMethod) === 'express' ? 'express' : 'standard';
-            var nextStatus = patch.status !== undefined ? normalizeOrderStatus(patch.status) : normalizeOrderStatus(existingData.status);
-            var trackingCode = String(patch.trackingCode !== undefined ? patch.trackingCode : (existingData.trackingCode || '')).trim().slice(0, 64);
-            var trackingCarrier = String(patch.trackingCarrier !== undefined ? patch.trackingCarrier : (existingData.trackingCarrier || '')).trim().slice(0, 64);
-
             var existingItemsSnap = await fsMod.getDocs(fsMod.collection(orderRef, 'items'));
             var existingItemsMap = new Map();
             existingItemsSnap.forEach(function (docSnap) {
@@ -353,71 +409,294 @@
               if (typeof d.name === 'string') existingItemsMap.set(docSnap.id, { name: d.name, price: Number(d.price), quantity: clampQty(d.quantity) });
             });
 
-            var resolvedItems = patch.items !== undefined
-              ? patch.items.filter(function (i) { return inCatalogue(i.name, i.price); }).map(function (i) { return { name: i.name, price: CATALOGUE[i.name].price, quantity: clampQty(i.quantity) }; })
-              : Array.from(existingItemsMap.values());
-            if (!resolvedItems.length) throw new Error('Order must contain at least one valid product.');
+            var result = await fsMod.runTransaction(db, async function (tx) {
+              var existingSnap = await tx.get(orderRef);
+              if (!existingSnap.exists()) throw new Error('Order does not exist.');
+              var existingData = existingSnap.data();
 
-            var mergedBySlug = new Map();
-            resolvedItems.forEach(function (item) {
-              var slug = itemSlug(item.name);
-              if (!LIMITS.ID_PATTERN.test(slug)) return;
-              var prev = mergedBySlug.get(slug);
-              if (prev) prev.quantity = clampQty(prev.quantity + item.quantity);
-              else mergedBySlug.set(slug, Object.assign({}, item));
-            });
+              var customerName = String(patch.customerName !== undefined ? patch.customerName : (existingData.customerName || '')).trim().slice(0, LIMITS.FULL_NAME_MAX);
+              var email = String(patch.email !== undefined ? patch.email : (existingData.email || '')).trim().slice(0, LIMITS.EMAIL_MAX);
+              var phone = String(patch.phone !== undefined ? patch.phone : (existingData.phone || '')).trim();
+              var address = String(patch.address !== undefined ? patch.address : (existingData.address || '')).trim().slice(0, LIMITS.ADDRESS_MAX);
+              var pin = String(patch.pin !== undefined ? patch.pin : (existingData.pin || '')).trim();
+              var city = String(patch.city !== undefined ? patch.city : (existingData.city || '')).trim().slice(0, LIMITS.CITY_MAX);
+              var state = String(patch.state !== undefined ? patch.state : (existingData.state || '')).trim().slice(0, LIMITS.STATE_MAX);
 
-            var finalItems = Array.from(mergedBySlug.values());
-            var subtotal = finalItems.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
-            var itemCount = finalItems.reduce(function (s, i) { return s + i.quantity; }, 0);
-            var freeShipping = shippingMethod === 'express' ? subtotal >= FREE_EXPRESS_FROM : subtotal >= FREE_STANDARD_FROM;
-            var freeGift = subtotal >= FREE_GIFT_FROM;
-            var shippingCost = freeShipping ? 0 : (shippingMethod === 'express' ? 120 : 30);
-            var gst = Math.round((subtotal * GST_RATE) / (100 + GST_RATE));
-            var total = subtotal + shippingCost;
+              if (!customerName) throw new Error('Customer name is required.');
+              if (!email || email.length < 3) throw new Error('Valid email is required.');
+              if (!LIMITS.PHONE_PATTERN.test(phone)) throw new Error('Enter a valid 10-digit Indian mobile number.');
+              if (!address) throw new Error('Street address is required.');
+              if (!LIMITS.PIN_PATTERN.test(pin)) throw new Error('Enter a valid 6-digit Indian PIN code.');
+              if (!city || !state) throw new Error('City and state are required.');
 
-            var orderUpdate = {
-              customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
-              shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
-              subtotal: subtotal, gst: gst, total: total, itemCount: itemCount, status: nextStatus,
-              trackingCode: trackingCode, trackingCarrier: trackingCarrier
-            };
+              var shippingMethod = (patch.shippingMethod || existingData.shippingMethod) === 'express' ? 'express' : 'standard';
+              var nextStatus = patch.status !== undefined ? normalizeOrderStatus(patch.status) : normalizeOrderStatus(existingData.status);
+              var trackingCode = String(patch.trackingCode !== undefined ? patch.trackingCode : (existingData.trackingCode || '')).trim().slice(0, 64);
+              var trackingCarrier = String(patch.trackingCarrier !== undefined ? patch.trackingCarrier : (existingData.trackingCarrier || '')).trim().slice(0, 64);
 
-            var existingDeliveredTs = existingData.deliveredAt;
-            var alreadyDeliveredAtMs = existingDeliveredTs && typeof existingDeliveredTs.toMillis === 'function' ? existingDeliveredTs.toMillis() : 0;
-            var prevStatus = normalizeOrderStatus(existingData.status);
-            if (isDeliveredStatus(nextStatus) && (!isDeliveredStatus(prevStatus) || !alreadyDeliveredAtMs)) {
-              orderUpdate.deliveredAt = fsMod.serverTimestamp();
-            }
+              var resolvedItems = patch.items !== undefined
+                ? patch.items.filter(function (i) { return Boolean(CATALOGUE[i.name]); }).map(function (i) { return { name: i.name, price: Number(i.price) || CATALOGUE[i.name].price, quantity: clampQty(i.quantity) }; })
+                : Array.from(existingItemsMap.values());
+              if (!resolvedItems.length) throw new Error('Order must contain at least one valid product.');
 
-            var batch = fsMod.writeBatch(db);
-            if (patch.items !== undefined) {
-              existingItemsMap.forEach(function (_v, slug) {
-                if (!mergedBySlug.has(slug)) batch.delete(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug));
+              var mergedBySlug = new Map();
+              resolvedItems.forEach(function (item) {
+                var slug = itemSlug(item.name);
+                if (!LIMITS.ID_PATTERN.test(slug)) return;
+                var prev = mergedBySlug.get(slug);
+                if (prev) prev.quantity = clampQty(prev.quantity + item.quantity);
+                else mergedBySlug.set(slug, Object.assign({}, item));
               });
-              mergedBySlug.forEach(function (item, slug) {
-                batch.set(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug), {
-                  uid: uid, orderId: orderId, name: item.name, price: item.price, quantity: item.quantity
+
+              var finalItems = Array.from(mergedBySlug.values());
+              var prevStatus = normalizeOrderStatus(existingData.status);
+              var wasCancelled = prevStatus === 'cancelled';
+              var willBeCancelled = nextStatus === 'cancelled';
+
+              var allSlugs = new Set();
+              existingItemsMap.forEach(function (_v, slug) { allSlugs.add(slug); });
+              mergedBySlug.forEach(function (_v, slug) { allSlugs.add(slug); });
+
+              var stockPlans = [];
+              var slugArr = Array.from(allSlugs);
+              for (var sIdx = 0; sIdx < slugArr.length; sIdx += 1) {
+                var sSlug = slugArr[sIdx];
+                if (!SKU_TO_NAME[sSlug]) continue;
+                var prevQty = wasCancelled ? 0 : (existingItemsMap.get(sSlug) ? existingItemsMap.get(sSlug).quantity : 0);
+                var nextQty = willBeCancelled ? 0 : (mergedBySlug.get(sSlug) ? mergedBySlug.get(sSlug).quantity : 0);
+                var delta = nextQty - prevQty;
+                if (delta !== 0) {
+                  var pRef = fsMod.doc(db, 'products', sSlug);
+                  var pSnap = await tx.get(pRef);
+                  if (pSnap.exists()) {
+                    var curStock = Math.max(0, Math.floor(Number(pSnap.data().stock != null ? pSnap.data().stock : 0)));
+                    var updatedStock = curStock - delta;
+                    if (updatedStock < 0) {
+                      throw new Error('Only ' + curStock + ' left in stock for ' + SKU_TO_NAME[sSlug] + '.');
+                    }
+                    stockPlans.push({ ref: pRef, nextStock: updatedStock });
+                  }
+                }
+              }
+
+              var subtotal = finalItems.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
+              var itemCount = finalItems.reduce(function (s, i) { return s + i.quantity; }, 0);
+              var freeShipping = shippingMethod === 'express' ? subtotal >= FREE_EXPRESS_FROM : subtotal >= FREE_STANDARD_FROM;
+              var freeGift = subtotal >= FREE_GIFT_FROM;
+              var shippingCost = freeShipping ? 0 : (shippingMethod === 'express' ? 120 : 30);
+              var gst = Math.round((subtotal * GST_RATE) / (100 + GST_RATE));
+              var total = subtotal + shippingCost;
+
+              var orderUpdate = {
+                customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
+                shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
+                subtotal: subtotal, gst: gst, total: total, itemCount: itemCount, status: nextStatus,
+                trackingCode: trackingCode, trackingCarrier: trackingCarrier
+              };
+
+              var existingDeliveredTs = existingData.deliveredAt;
+              var alreadyDeliveredAtMs = existingDeliveredTs && typeof existingDeliveredTs.toMillis === 'function' ? existingDeliveredTs.toMillis() : 0;
+              if (isDeliveredStatus(nextStatus) && (!isDeliveredStatus(prevStatus) || !alreadyDeliveredAtMs)) {
+                orderUpdate.deliveredAt = fsMod.serverTimestamp();
+              }
+
+              if (patch.items !== undefined) {
+                existingItemsMap.forEach(function (_v, slug) {
+                  if (!mergedBySlug.has(slug)) tx.delete(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug));
                 });
+                mergedBySlug.forEach(function (item, slug) {
+                  tx.set(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug), {
+                    uid: uid, orderId: orderId, name: item.name, price: item.price, quantity: item.quantity
+                  });
+                });
+              }
+              tx.update(orderRef, orderUpdate);
+              stockPlans.forEach(function (sp) {
+                tx.update(sp.ref, { stock: sp.nextStock, updatedAt: fsMod.serverTimestamp() });
               });
-            }
-            batch.update(orderRef, orderUpdate);
-            await batch.commit();
 
-            var createdTs = existingData.createdAt;
-            return {
-              id: orderId, uid: uid, reference: String(existingData.reference || ''),
-              customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
-              shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
-              subtotal: subtotal, gstRate: Number(existingData.gstRate || GST_RATE), gst: gst, total: total, itemCount: itemCount,
-              status: nextStatus, trackingCode: trackingCode, trackingCarrier: trackingCarrier,
-              deliveredAtMs: isDeliveredStatus(nextStatus) ? (alreadyDeliveredAtMs || Date.now()) : alreadyDeliveredAtMs,
-              createdAtMs: createdTs && typeof createdTs.toMillis === 'function' ? createdTs.toMillis() : 0,
-              items: finalItems
-            };
+              var createdTs = existingData.createdAt;
+              return {
+                id: orderId, uid: uid, reference: String(existingData.reference || ''),
+                customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
+                shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
+                subtotal: subtotal, gstRate: Number(existingData.gstRate || GST_RATE), gst: gst, total: total, itemCount: itemCount,
+                status: nextStatus, trackingCode: trackingCode, trackingCarrier: trackingCarrier,
+                deliveredAtMs: isDeliveredStatus(nextStatus) ? (alreadyDeliveredAtMs || Date.now()) : alreadyDeliveredAtMs,
+                createdAtMs: createdTs && typeof createdTs.toMillis === 'function' ? createdTs.toMillis() : 0,
+                items: finalItems
+              };
+            });
+            return result;
           } catch (error) {
             if (error instanceof Error && error.message && error.message.charAt(0) !== '{') throw error;
             handleFirestoreError(error, 'update', orderPath);
+          }
+        },
+        getCatalog: function () {
+          return SKU_ORDER.map(function (sku) {
+            var name = SKU_TO_NAME[sku];
+            var base = CATALOGUE[name];
+            return {
+              sku: sku, name: name, price: base.price, compareAtPrice: 0, stock: null,
+              lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[sku] || '',
+              priceComparisons: [], href: base.href, image: base.image, initialized: false, updatedAtMs: 0
+            };
+          });
+        },
+        getCatalogMap: function () {
+          var map = {};
+          this.getCatalog().forEach(function (r) { map[r.sku] = r; map[r.name] = r; });
+          return map;
+        },
+        getProduct: function (skuOrName) {
+          var key = String(skuOrName || '').trim();
+          var slug = SKU_TO_NAME[key] ? key : (NAME_TO_SKU[key.toUpperCase()] || '');
+          if (!slug) return null;
+          var name = SKU_TO_NAME[slug];
+          var base = CATALOGUE[name];
+          return {
+            sku: slug, name: name, price: base.price, compareAtPrice: 0, stock: null,
+            lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[slug] || '',
+            priceComparisons: [], href: base.href, image: base.image, initialized: false, updatedAtMs: 0
+          };
+        },
+        listAllProducts: async function () {
+          if (!isAdminUser()) throw new Error('Admin access required to manage store products.');
+          try {
+            var snap = await fsMod.getDocs(fsMod.collection(db, 'products'));
+            var existingMap = new Map();
+            snap.forEach(function (docSnap) {
+              if (SKU_TO_NAME[docSnap.id]) existingMap.set(docSnap.id, docSnap.data());
+            });
+            var missing = SKU_ORDER.filter(function (s) { return !existingMap.has(s); });
+            if (missing.length) {
+              var batch = fsMod.writeBatch(db);
+              missing.forEach(function (s) {
+                var n = SKU_TO_NAME[s];
+                var seedPayload = {
+                  sku: s, name: n, price: CATALOGUE[n].price, compareAtPrice: 0, stock: INITIAL_SEED_STOCK,
+                  lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[s] || '',
+                  priceComparisons: [], updatedAt: fsMod.serverTimestamp()
+                };
+                batch.set(fsMod.doc(db, 'products', s), seedPayload);
+                existingMap.set(s, seedPayload);
+              });
+              await batch.commit();
+            }
+            var records = SKU_ORDER.map(function (s) {
+              var d = existingMap.get(s) || {};
+              var n = SKU_TO_NAME[s];
+              var base = CATALOGUE[n];
+              var price = Math.max(1, Math.round(Number(d.price != null ? d.price : base.price)));
+              CATALOGUE[n].price = price;
+              var comps = Array.isArray(d.priceComparisons)
+                ? d.priceComparisons.filter(function (c) { return c && c.platform && Number(c.price) > 0; }).map(function (c) {
+                  return { platform: String(c.platform).trim().slice(0, 40), price: Math.round(Number(c.price)) };
+                })
+                : [];
+              var ts = d.updatedAt;
+              return {
+                sku: s, name: n, price: price,
+                compareAtPrice: Math.max(0, Math.round(Number(d.compareAtPrice != null ? d.compareAtPrice : 0))),
+                stock: Math.max(0, Math.floor(Number(d.stock != null ? d.stock : INITIAL_SEED_STOCK))),
+                lowStockThreshold: Math.max(0, Math.floor(Number(d.lowStockThreshold != null ? d.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD))),
+                cardTag: typeof d.cardTag === 'string' ? d.cardTag.trim().slice(0, 28) : (DEFAULT_CARD_TAGS[s] || ''),
+                priceComparisons: comps, href: base.href, image: base.image, initialized: true,
+                updatedAtMs: ts && typeof ts.toMillis === 'function' ? ts.toMillis() : Date.now()
+              };
+            });
+            return records;
+          } catch (error) {
+            handleFirestoreError(error, 'list', 'products');
+          }
+        },
+        updateProduct: async function (sku, patch) {
+          if (!isAdminUser()) throw new Error('Admin access required to update products.');
+          if (!SKU_TO_NAME[sku]) throw new Error('Unknown product SKU.');
+          var path = 'products/' + sku;
+          var ref = fsMod.doc(db, 'products', sku);
+          var n = SKU_TO_NAME[sku];
+          var base = CATALOGUE[n];
+          try {
+            var updated = await fsMod.runTransaction(db, async function (tx) {
+              var snap = await tx.get(ref);
+              var prev = snap.exists() ? snap.data() : {
+                sku: sku, name: n, price: base.price, compareAtPrice: 0, stock: INITIAL_SEED_STOCK,
+                lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[sku] || '', priceComparisons: []
+              };
+              var nextPrice = patch.price !== undefined ? Math.round(Number(patch.price)) : Math.round(Number(prev.price || base.price));
+              if (!Number.isFinite(nextPrice) || nextPrice < 1 || nextPrice > 100000) throw new Error('Enter a valid price between ₹1 and ₹1,00,000.');
+              var nextCompareAt = patch.compareAtPrice !== undefined ? Math.round(Number(patch.compareAtPrice)) : Math.round(Number(prev.compareAtPrice || 0));
+              if (!Number.isFinite(nextCompareAt) || nextCompareAt < 0 || nextCompareAt > 200000) throw new Error('Compare-at MRP must be between ₹0 and ₹2,00,000.');
+              var nextStock = patch.stock !== undefined ? Math.floor(Number(patch.stock)) : Math.floor(Number(prev.stock != null ? prev.stock : INITIAL_SEED_STOCK));
+              if (!Number.isFinite(nextStock) || nextStock < 0 || nextStock > 100000) throw new Error('Stock must be between 0 and 1,00,000.');
+              var nextThreshold = patch.lowStockThreshold !== undefined ? Math.floor(Number(patch.lowStockThreshold)) : Math.floor(Number(prev.lowStockThreshold != null ? prev.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD));
+              if (!Number.isFinite(nextThreshold) || nextThreshold < 0 || nextThreshold > 1000) throw new Error('Low-stock threshold must be between 0 and 1,000.');
+              var nextTag = patch.cardTag !== undefined ? String(patch.cardTag || '').trim().slice(0, 28) : String(prev.cardTag || '');
+              var rawComps = patch.priceComparisons !== undefined ? patch.priceComparisons : (Array.isArray(prev.priceComparisons) ? prev.priceComparisons : []);
+              var nextComps = (rawComps || []).filter(function (c) { return c && c.platform && Number(c.price) > 0; }).slice(0, 6).map(function (c) {
+                return { platform: String(c.platform).trim().slice(0, 40), price: Math.round(Number(c.price)) };
+              });
+              tx.set(ref, {
+                sku: sku, name: n, price: nextPrice, compareAtPrice: nextCompareAt,
+                stock: nextStock, lowStockThreshold: nextThreshold, cardTag: nextTag,
+                priceComparisons: nextComps, updatedAt: fsMod.serverTimestamp()
+              });
+              CATALOGUE[n].price = nextPrice;
+              return {
+                sku: sku, name: n, price: nextPrice, compareAtPrice: nextCompareAt,
+                stock: nextStock, lowStockThreshold: nextThreshold, cardTag: nextTag,
+                priceComparisons: nextComps, href: base.href, image: base.image,
+                initialized: true, updatedAtMs: Date.now()
+              };
+            });
+            return updated;
+          } catch (error) {
+            if (error instanceof Error && error.message && error.message.charAt(0) !== '{') throw error;
+            handleFirestoreError(error, 'update', path);
+          }
+        },
+        adjustProductStock: async function (sku, delta) {
+          if (!isAdminUser()) throw new Error('Admin access required to update inventory.');
+          if (!SKU_TO_NAME[sku]) throw new Error('Unknown product SKU.');
+          var dInt = Math.trunc(Number(delta));
+          if (!Number.isFinite(dInt)) throw new Error('Invalid stock adjustment.');
+          var ref = fsMod.doc(db, 'products', sku);
+          var n = SKU_TO_NAME[sku];
+          var base = CATALOGUE[n];
+          try {
+            var updated = await fsMod.runTransaction(db, async function (tx) {
+              var snap = await tx.get(ref);
+              var prev = snap.exists() ? snap.data() : {
+                sku: sku, name: n, price: base.price, compareAtPrice: 0, stock: INITIAL_SEED_STOCK,
+                lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[sku] || '', priceComparisons: []
+              };
+              var curStock = Math.max(0, Math.floor(Number(prev.stock != null ? prev.stock : INITIAL_SEED_STOCK)));
+              var nextStock = Math.max(0, Math.min(100000, curStock + dInt));
+              tx.set(ref, {
+                sku: sku, name: n, price: Math.round(Number(prev.price || base.price)),
+                compareAtPrice: Math.round(Number(prev.compareAtPrice || 0)),
+                stock: nextStock,
+                lowStockThreshold: Math.floor(Number(prev.lowStockThreshold != null ? prev.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD)),
+                cardTag: typeof prev.cardTag === 'string' ? prev.cardTag : (DEFAULT_CARD_TAGS[sku] || ''),
+                priceComparisons: Array.isArray(prev.priceComparisons) ? prev.priceComparisons : [],
+                updatedAt: fsMod.serverTimestamp()
+              });
+              return {
+                sku: sku, name: n, price: Math.round(Number(prev.price || base.price)),
+                compareAtPrice: Math.round(Number(prev.compareAtPrice || 0)),
+                stock: nextStock,
+                lowStockThreshold: Math.floor(Number(prev.lowStockThreshold != null ? prev.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD)),
+                cardTag: typeof prev.cardTag === 'string' ? prev.cardTag : (DEFAULT_CARD_TAGS[sku] || ''),
+                priceComparisons: Array.isArray(prev.priceComparisons) ? prev.priceComparisons : [],
+                href: base.href, image: base.image, initialized: true, updatedAtMs: Date.now()
+              };
+            });
+            return updated;
+          } catch (error) {
+            if (error instanceof Error && error.message && error.message.charAt(0) !== '{') throw error;
+            handleFirestoreError(error, 'update', 'products/' + sku);
           }
         },
         listAllWishlists: async function () {
@@ -538,9 +817,11 @@
   var sidebar = document.getElementById('dash-sidebar');
   var sidebarBackdrop = document.getElementById('sidebar-backdrop');
   var navOrdersLink = document.getElementById('nav-orders');
+  var navProductsLink = document.getElementById('nav-products');
   var navReviewsLink = document.getElementById('nav-reviews');
   var navFavoritesLink = document.getElementById('nav-favorites');
   var sidebarOrdersCount = document.getElementById('sidebar-orders-count');
+  var sidebarProductsCount = document.getElementById('sidebar-products-count');
   var sidebarReviewsCount = document.getElementById('sidebar-reviews-count');
   var sidebarFavoritesCount = document.getElementById('sidebar-favorites-count');
   var pageTitleEl = document.getElementById('page-title');
@@ -551,6 +832,7 @@
   var authGate = document.getElementById('auth-gate');
   var dashboardContent = document.getElementById('dashboard-content');
   var ordersView = document.getElementById('orders-view');
+  var productsView = document.getElementById('products-view');
   var reviewsView = document.getElementById('reviews-view');
   var favoritesView = document.getElementById('favorites-view');
 
@@ -674,10 +956,62 @@
   var favoritesFooter = document.getElementById('favorites-footer');
   var favoritesShowingText = document.getElementById('favorites-showing-text');
 
+  // Products View DOM
+  var metricTotalProducts = document.getElementById('metric-total-products');
+  var metricTotalUnits = document.getElementById('metric-total-units');
+  var metricLowStockProducts = document.getElementById('metric-low-stock-products');
+  var metricOutStockProducts = document.getElementById('metric-out-stock-products');
+  var productsErrorBanner = document.getElementById('products-error-banner');
+  var productsErrorText = document.getElementById('products-error-text');
+  var productsRetryBtn = document.getElementById('products-retry-btn');
+  var productsFilterTabs = document.getElementById('products-filter-tabs');
+  var prodTabAll = document.getElementById('prod-tab-all');
+  var prodTabInStock = document.getElementById('prod-tab-in-stock');
+  var prodTabLowStock = document.getElementById('prod-tab-low-stock');
+  var prodTabOutStock = document.getElementById('prod-tab-out-stock');
+  var prodTabTagged = document.getElementById('prod-tab-tagged');
+  var productsSearchInput = document.getElementById('products-search');
+  var productsSearchClear = document.getElementById('products-search-clear');
+  var productsSortSelect = document.getElementById('products-sort');
+  var productsSkeleton = document.getElementById('products-skeleton');
+  var productsEmpty = document.getElementById('products-empty');
+  var productsEmptyTitle = document.getElementById('products-empty-title');
+  var productsEmptyCopy = document.getElementById('products-empty-copy');
+  var productsResetBtn = document.getElementById('products-reset-btn');
+  var productsTableWrap = document.getElementById('products-table-wrap');
+  var productsTbody = document.getElementById('products-tbody');
+  var productsFooter = document.getElementById('products-footer');
+  var productsShowingText = document.getElementById('products-showing-text');
+
+  // Product Edit Drawer DOM
+  var productDrawerLayer = document.getElementById('product-drawer-layer');
+  var productDrawerBackdrop = document.getElementById('product-drawer-backdrop');
+  var productDrawerEl = document.getElementById('product-drawer');
+  var productDrawerCloseBtn = document.getElementById('product-drawer-close');
+  var productDrawerCancelBtn = document.getElementById('product-drawer-cancel');
+  var productDrawerSaveBtn = document.getElementById('product-drawer-save');
+  var productDrawerTitle = document.getElementById('product-drawer-title');
+  var productDrawerStockBadge = document.getElementById('product-drawer-stock-badge');
+  var productDrawerSku = document.getElementById('product-drawer-sku');
+  var productDrawerStoreLink = document.getElementById('product-drawer-store-link');
+  var productEditForm = document.getElementById('product-edit-form');
+  var prodEditPrice = document.getElementById('prod-edit-price');
+  var prodEditCompareAt = document.getElementById('prod-edit-compare-at');
+  var prodEditStock = document.getElementById('prod-edit-stock');
+  var prodEditThreshold = document.getElementById('prod-edit-threshold');
+  var prodDrawerStockChips = document.getElementById('prod-drawer-stock-chips');
+  var prodEditCardTag = document.getElementById('prod-edit-card-tag');
+  var prodTagPresets = document.getElementById('prod-tag-presets');
+  var prodAddCompBtn = document.getElementById('prod-add-comp-btn');
+  var prodComparisonsList = document.getElementById('prod-comparisons-list');
+  var prodEditError = document.getElementById('prod-edit-error');
+
   var toastEl = document.getElementById('dash-toast');
 
   // State
-  var activeView = window.location.hash === '#reviews' ? 'reviews' : (window.location.hash === '#favorites' ? 'favorites' : 'orders');
+  var activeView = window.location.hash === '#products'
+    ? 'products'
+    : (window.location.hash === '#reviews' ? 'reviews' : (window.location.hash === '#favorites' ? 'favorites' : 'orders'));
   var allOrders = [];
   var activeFilter = 'all';
   var searchQuery = '';
@@ -700,6 +1034,15 @@
   var favoriteSearchQuery = '';
   var favoriteSortMode = 'newest';
   var favoritesLoading = false;
+
+  var allProducts = [];
+  var productFilter = 'all';
+  var productSearchQuery = '';
+  var productSortMode = 'catalog';
+  var productsLoading = false;
+  var selectedProductSku = null;
+  var lastFocusedProductTrigger = null;
+  var draftComparisons = [];
 
   function money(val) {
     return '₹' + Number(val || 0).toLocaleString('en-IN');
@@ -760,21 +1103,32 @@
   }
 
   function switchView(nextView) {
-    activeView = nextView === 'reviews' ? 'reviews' : (nextView === 'favorites' ? 'favorites' : 'orders');
+    activeView = nextView === 'products'
+      ? 'products'
+      : (nextView === 'reviews' ? 'reviews' : (nextView === 'favorites' ? 'favorites' : 'orders'));
     var isOrders = activeView === 'orders';
+    var isProducts = activeView === 'products';
     var isReviews = activeView === 'reviews';
     var isFavorites = activeView === 'favorites';
 
     if (ordersView) ordersView.hidden = !isOrders;
+    if (productsView) productsView.hidden = !isProducts;
     if (reviewsView) reviewsView.hidden = !isReviews;
     if (favoritesView) favoritesView.hidden = !isFavorites;
-    if (pageTitleEl) pageTitleEl.textContent = isOrders ? 'Orders' : (isReviews ? 'Reviews' : 'Favorites');
+    if (pageTitleEl) {
+      pageTitleEl.textContent = isOrders ? 'Orders' : (isProducts ? 'Products' : (isReviews ? 'Reviews' : 'Favorites'));
+    }
     if (exportCsvBtn) exportCsvBtn.hidden = isReviews;
 
     if (navOrdersLink) {
       navOrdersLink.classList.toggle('is-active', isOrders);
       if (isOrders) navOrdersLink.setAttribute('aria-current', 'page');
       else navOrdersLink.removeAttribute('aria-current');
+    }
+    if (navProductsLink) {
+      navProductsLink.classList.toggle('is-active', isProducts);
+      if (isProducts) navProductsLink.setAttribute('aria-current', 'page');
+      else navProductsLink.removeAttribute('aria-current');
     }
     if (navReviewsLink) {
       navReviewsLink.classList.toggle('is-active', isReviews);
@@ -794,7 +1148,9 @@
     }
 
     setSidebarOpen(false);
-    if (isReviews && !allReviews.length && !reviewsLoading) {
+    if (isProducts && !allProducts.length && !productsLoading) {
+      loadAllProducts(true);
+    } else if (isReviews && !allReviews.length && !reviewsLoading) {
       loadAllReviews(true);
     } else if (isFavorites && !allFavorites.length && !favoritesLoading) {
       loadAllWishlists(true);
@@ -805,6 +1161,12 @@
     navOrdersLink.addEventListener('click', function (e) {
       e.preventDefault();
       switchView('orders');
+    });
+  }
+  if (navProductsLink) {
+    navProductsLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      switchView('products');
     });
   }
   if (navReviewsLink) {
@@ -819,6 +1181,12 @@
       switchView('favorites');
     });
   }
+  window.addEventListener('hashchange', function () {
+    var h = window.location.hash.replace(/^#/, '');
+    if (h === 'products' || h === 'reviews' || h === 'favorites' || h === 'orders') {
+      switchView(h);
+    }
+  });
 
   function isCurrentAdmin(user) {
     return Boolean(user && user.emailVerified && user.email === ADMIN_EMAIL);
@@ -1189,13 +1557,20 @@
 
   // ---------- ORDER DRAWER + EDIT MODE ----------
   function populateCatalogueDropdown() {
-    if (!editAddProductSelect || editAddProductSelect.options.length > 0) return;
+    if (!editAddProductSelect) return;
+    var prevVal = editAddProductSelect.value;
+    editAddProductSelect.textContent = '';
+    var fb = window.RedpolyFirebase;
+    var map = (fb && typeof fb.getCatalogMap === 'function') ? fb.getCatalogMap() : null;
     Object.keys(CATALOGUE).forEach(function (name) {
+      var livePrice = map && map[name] ? map[name].price : CATALOGUE[name].price;
+      CATALOGUE[name].price = livePrice;
       var opt = document.createElement('option');
       opt.value = name;
-      opt.textContent = name + ' (' + money(CATALOGUE[name].price) + ')';
+      opt.textContent = name + ' (' + money(livePrice) + ')';
       editAddProductSelect.appendChild(opt);
     });
+    if (prevVal && CATALOGUE[prevVal]) editAddProductSelect.value = prevVal;
   }
 
   function updateEditTotalsPreview() {
@@ -1510,6 +1885,7 @@
         renderTable();
         setDrawerEditMode(false, updated);
         renderDrawerContent(updated);
+        loadAllProducts(true);
         showToast('Order #' + updated.reference + ' saved');
       } catch (err) {
         console.error(err);
@@ -1578,10 +1954,13 @@
         updateMetricsAndCounts();
         renderTable();
         renderDrawerContent(order);
+        loadAllProducts(true);
         showToast('Order #' + order.reference + ' → ' + statusMeta(nextStatus).label);
       } catch (err) {
         console.error(err);
-        drawerStatusError.textContent = 'Could not update order milestone. Ensure updated Firestore rules are published.';
+        drawerStatusError.textContent = (err && err.message && err.message.charAt(0) !== '{')
+          ? err.message
+          : 'Could not update order milestone. Ensure updated Firestore rules are published.';
         drawerStatusError.hidden = false;
         renderDrawerContent(order);
       } finally {
@@ -1653,6 +2032,39 @@
 
   if (exportCsvBtn) {
     exportCsvBtn.addEventListener('click', function () {
+      if (activeView === 'products') {
+        var prodRows = filteredAndSortedProducts();
+        if (!prodRows.length) return;
+        var prodHeaders = ['SKU', 'Product Name', 'Price (INR)', 'Compare-at MRP (INR)', 'Stock', 'Low Stock Threshold', 'Status', 'Card Tag', 'Price Comparisons'];
+        var prodLines = [prodHeaders.map(escapeCsvCell).join(',')];
+        prodRows.forEach(function (p) {
+          var statusText = p.stock === 0 ? 'Out of stock' : (p.stock <= p.lowStockThreshold ? 'Low stock' : 'In stock');
+          var compSummary = (p.priceComparisons || []).map(function (c) { return c.platform + ': ₹' + c.price; }).join('; ');
+          prodLines.push([
+            p.sku,
+            p.name,
+            p.price,
+            p.compareAtPrice || '',
+            p.stock,
+            p.lowStockThreshold,
+            statusText,
+            p.cardTag || '',
+            compSummary
+          ].map(escapeCsvCell).join(','));
+        });
+        var prodBlob = new Blob([prodLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        var prodUrl = URL.createObjectURL(prodBlob);
+        var prodAnchor = document.createElement('a');
+        prodAnchor.href = prodUrl;
+        prodAnchor.download = 'redpoly-products-' + new Date().toISOString().slice(0, 10) + '.csv';
+        document.body.appendChild(prodAnchor);
+        prodAnchor.click();
+        document.body.removeChild(prodAnchor);
+        URL.revokeObjectURL(prodUrl);
+        showToast('Exported ' + prodRows.length + (prodRows.length === 1 ? ' product' : ' products') + ' to CSV');
+        return;
+      }
+
       if (activeView === 'favorites') {
         var favRows = filteredAndSortedFavorites();
         if (!favRows.length) return;
@@ -2248,15 +2660,631 @@
     }
   }
 
+  // ---------- PRODUCTS CATALOG & INVENTORY VIEW ----------
+  function productStockMeta(prod) {
+    var qty = prod && prod.stock != null ? Number(prod.stock) : INITIAL_SEED_STOCK;
+    var threshold = prod && prod.lowStockThreshold != null ? Number(prod.lowStockThreshold) : DEFAULT_LOW_STOCK_THRESHOLD;
+    if (qty <= 0) return { key: 'out_of_stock', label: 'Out of stock', badgeClass: 'status-badge status-badge--cancelled' };
+    if (qty <= threshold) return { key: 'low_stock', label: 'Low stock', badgeClass: 'status-badge status-badge--placed' };
+    return { key: 'in_stock', label: 'In stock', badgeClass: 'status-badge status-badge--fulfilled' };
+  }
+
+  function updateProductMetricsAndTabs() {
+    var total = allProducts.length;
+    var totalUnits = 0;
+    var inStockCount = 0;
+    var lowStockCount = 0;
+    var outStockCount = 0;
+    var taggedCount = 0;
+
+    allProducts.forEach(function (p) {
+      var qty = Number(p.stock != null ? p.stock : 0);
+      totalUnits += qty;
+      var meta = productStockMeta(p);
+      if (meta.key === 'out_of_stock') outStockCount += 1;
+      else if (meta.key === 'low_stock') lowStockCount += 1;
+      else inStockCount += 1;
+      if (p.cardTag && String(p.cardTag).trim()) taggedCount += 1;
+    });
+
+    if (sidebarProductsCount) sidebarProductsCount.textContent = String(total || SKU_ORDER.length);
+    if (metricTotalProducts) metricTotalProducts.textContent = String(total || SKU_ORDER.length);
+    if (metricTotalUnits) metricTotalUnits.textContent = total ? String(totalUnits) : '—';
+    if (metricLowStockProducts) metricLowStockProducts.textContent = String(lowStockCount);
+    if (metricOutStockProducts) metricOutStockProducts.textContent = String(outStockCount);
+
+    if (prodTabAll) prodTabAll.textContent = String(total);
+    if (prodTabInStock) prodTabInStock.textContent = String(inStockCount);
+    if (prodTabLowStock) prodTabLowStock.textContent = String(lowStockCount);
+    if (prodTabOutStock) prodTabOutStock.textContent = String(outStockCount);
+    if (prodTabTagged) prodTabTagged.textContent = String(taggedCount);
+  }
+
+  function filteredAndSortedProducts() {
+    var q = productSearchQuery.trim().toLowerCase();
+    var list = allProducts.filter(function (p) {
+      var meta = productStockMeta(p);
+      if (productFilter === 'in_stock' && meta.key !== 'in_stock') return false;
+      if (productFilter === 'low_stock' && meta.key !== 'low_stock') return false;
+      if (productFilter === 'out_of_stock' && meta.key !== 'out_of_stock') return false;
+      if (productFilter === 'tagged' && (!p.cardTag || !String(p.cardTag).trim())) return false;
+      if (!q) return true;
+      var compStr = (p.priceComparisons || []).map(function (c) { return c.platform + ' ' + c.price; }).join(' ');
+      var hay = [p.sku, p.name, p.cardTag || '', compStr].join(' ').toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+
+    if (productSortMode === 'stock-asc') {
+      list.sort(function (a, b) { return Number(a.stock || 0) - Number(b.stock || 0); });
+    } else if (productSortMode === 'stock-desc') {
+      list.sort(function (a, b) { return Number(b.stock || 0) - Number(a.stock || 0); });
+    } else if (productSortMode === 'price-desc') {
+      list.sort(function (a, b) { return Number(b.price || 0) - Number(a.price || 0); });
+    } else if (productSortMode === 'price-asc') {
+      list.sort(function (a, b) { return Number(a.price || 0) - Number(b.price || 0); });
+    } else if (productSortMode === 'name-asc') {
+      list.sort(function (a, b) { return String(a.name || '').localeCompare(String(b.name || '')); });
+    } else {
+      list.sort(function (a, b) { return SKU_ORDER.indexOf(a.sku) - SKU_ORDER.indexOf(b.sku); });
+    }
+    return list;
+  }
+
+  function upsertProductRecord(updated) {
+    if (!updated || !updated.sku) return;
+    var idx = allProducts.findIndex(function (p) { return p.sku === updated.sku; });
+    if (idx !== -1) allProducts[idx] = updated;
+    else allProducts.push(updated);
+    if (CATALOGUE[updated.name]) {
+      CATALOGUE[updated.name].price = updated.price;
+    }
+    populateCatalogueDropdown();
+    updateProductMetricsAndTabs();
+    renderProductsTable();
+  }
+
+  async function quickAdjustProductStock(prod, delta, triggerEls) {
+    var targetBtn = triggerEls || [];
+    targetBtn.forEach(function (el) { el.disabled = true; });
+    try {
+      var fb = await ensureDashboardFirebase();
+      var updated = await fb.adjustProductStock(prod.sku, delta);
+      upsertProductRecord(updated);
+      if (selectedProductSku === updated.sku && !productDrawerLayer.hidden) {
+        fillProductDrawer(updated);
+      }
+      showToast(updated.name + ' stock → ' + updated.stock);
+    } catch (err) {
+      console.error(err);
+      showToast(err && err.message && err.message.charAt(0) !== '{' ? err.message : 'Could not update stock');
+      renderProductsTable();
+    }
+  }
+
+  async function quickSetProductStock(prod, nextQty, inputEl) {
+    var cleaned = Math.max(0, Math.min(100000, Math.floor(Number(nextQty))));
+    if (!Number.isFinite(cleaned)) {
+      if (inputEl) inputEl.value = String(prod.stock);
+      return;
+    }
+    if (cleaned === Number(prod.stock)) return;
+    if (inputEl) inputEl.disabled = true;
+    try {
+      var fb = await ensureDashboardFirebase();
+      var updated = await fb.updateProduct(prod.sku, { stock: cleaned });
+      upsertProductRecord(updated);
+      if (selectedProductSku === updated.sku && !productDrawerLayer.hidden) {
+        fillProductDrawer(updated);
+      }
+      showToast(updated.name + ' stock → ' + updated.stock);
+    } catch (err) {
+      console.error(err);
+      showToast(err && err.message && err.message.charAt(0) !== '{' ? err.message : 'Could not update stock');
+      renderProductsTable();
+    }
+  }
+
+  function renderProductsTable() {
+    if (!productsTbody || !productsTableWrap || !productsEmpty || !productsSkeleton || !productsFooter) return;
+    productsSkeleton.hidden = !productsLoading;
+
+    if (productsLoading) {
+      productsTableWrap.hidden = true;
+      productsEmpty.hidden = true;
+      productsFooter.hidden = true;
+      return;
+    }
+
+    var rows = filteredAndSortedProducts();
+    productsTbody.textContent = '';
+
+    if (!rows.length) {
+      productsTableWrap.hidden = true;
+      productsFooter.hidden = true;
+      productsEmpty.hidden = false;
+      if (!allProducts.length) {
+        if (productsEmptyTitle) productsEmptyTitle.textContent = 'No catalog items loaded';
+        if (productsEmptyCopy) productsEmptyCopy.textContent = 'Click Refresh to sync all 10 REDPOLY SKUs from Firestore.';
+      } else {
+        if (productsEmptyTitle) productsEmptyTitle.textContent = 'No products match your filters';
+        if (productsEmptyCopy) productsEmptyCopy.textContent = 'Try clearing your search or switching back to the All tab.';
+      }
+      return;
+    }
+
+    productsEmpty.hidden = true;
+    productsTableWrap.hidden = false;
+    productsFooter.hidden = false;
+    productsShowingText.textContent = 'Showing ' + rows.length + ' of ' + allProducts.length + ' products';
+
+    rows.forEach(function (prod) {
+      var tr = document.createElement('tr');
+      if (prod.sku === selectedProductSku) tr.classList.add('is-selected');
+      var stMeta = productStockMeta(prod);
+
+      var tdProd = document.createElement('td');
+      var cellWrap = document.createElement('div');
+      cellWrap.className = 'prod-cell';
+      if (prod.image) {
+        var img = document.createElement('img');
+        img.className = 'prod-cell__img';
+        img.src = prod.image;
+        img.alt = '';
+        img.loading = 'lazy';
+        cellWrap.appendChild(img);
+      }
+      var copy = document.createElement('div');
+      copy.className = 'prod-cell__copy';
+      var title = document.createElement('strong');
+      title.textContent = prod.name;
+      var skuLine = document.createElement('span');
+      skuLine.className = 'prod-cell__sku';
+      skuLine.textContent = prod.sku;
+      copy.appendChild(title);
+      copy.appendChild(skuLine);
+      cellWrap.appendChild(copy);
+      tdProd.appendChild(cellWrap);
+
+      var tdPrice = document.createElement('td');
+      tdPrice.className = 'prod-price-cell';
+      var priceStrong = document.createElement('strong');
+      priceStrong.textContent = money(prod.price);
+      tdPrice.appendChild(priceStrong);
+      if (prod.compareAtPrice > prod.price) {
+        var mrpStrike = document.createElement('s');
+        mrpStrike.textContent = money(prod.compareAtPrice);
+        tdPrice.appendChild(mrpStrike);
+      }
+      if (prod.priceComparisons && prod.priceComparisons.length) {
+        var compNote = document.createElement('span');
+        compNote.className = 'prod-price-cell__comp';
+        compNote.textContent = prod.priceComparisons.map(function (c) { return money(c.price) + ' ' + c.platform; }).join(' · ');
+        tdPrice.appendChild(compNote);
+      }
+
+      var tdTag = document.createElement('td');
+      if (prod.cardTag && String(prod.cardTag).trim()) {
+        var tagSpan = document.createElement('span');
+        tagSpan.className = 'prod-tag-pill';
+        tagSpan.textContent = prod.cardTag;
+        tdTag.appendChild(tagSpan);
+      } else {
+        var noneSpan = document.createElement('span');
+        noneSpan.className = 'prod-tag-empty';
+        noneSpan.textContent = '—';
+        tdTag.appendChild(noneSpan);
+      }
+
+      var tdStatus = document.createElement('td');
+      var stBadge = document.createElement('span');
+      stBadge.className = stMeta.badgeClass;
+      stBadge.textContent = stMeta.label;
+      tdStatus.appendChild(stBadge);
+
+      var tdStock = document.createElement('td');
+      var stockCtrl = document.createElement('div');
+      stockCtrl.className = 'prod-stock-control';
+
+      var decBtn = document.createElement('button');
+      decBtn.type = 'button';
+      decBtn.className = 'prod-stock-btn';
+      decBtn.textContent = '−1';
+      decBtn.disabled = Number(prod.stock || 0) <= 0;
+      decBtn.setAttribute('aria-label', 'Decrease stock for ' + prod.name + ' by 1');
+
+      var stockInput = document.createElement('input');
+      stockInput.type = 'number';
+      stockInput.className = 'prod-stock-input';
+      stockInput.min = '0';
+      stockInput.max = '100000';
+      stockInput.value = String(prod.stock != null ? prod.stock : 0);
+      stockInput.setAttribute('aria-label', 'Stock quantity for ' + prod.name);
+
+      var inc1Btn = document.createElement('button');
+      inc1Btn.type = 'button';
+      inc1Btn.className = 'prod-stock-btn';
+      inc1Btn.textContent = '+1';
+      inc1Btn.setAttribute('aria-label', 'Increase stock for ' + prod.name + ' by 1');
+
+      var inc10Btn = document.createElement('button');
+      inc10Btn.type = 'button';
+      inc10Btn.className = 'prod-stock-btn';
+      inc10Btn.textContent = '+10';
+      inc10Btn.setAttribute('aria-label', 'Increase stock for ' + prod.name + ' by 10');
+
+      var rowCtrls = [decBtn, stockInput, inc1Btn, inc10Btn];
+      decBtn.addEventListener('click', function () { quickAdjustProductStock(prod, -1, rowCtrls); });
+      inc1Btn.addEventListener('click', function () { quickAdjustProductStock(prod, 1, rowCtrls); });
+      inc10Btn.addEventListener('click', function () { quickAdjustProductStock(prod, 10, rowCtrls); });
+      stockInput.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          stockInput.blur();
+        }
+      });
+      stockInput.addEventListener('blur', function () {
+        quickSetProductStock(prod, stockInput.value, stockInput);
+      });
+
+      stockCtrl.appendChild(decBtn);
+      stockCtrl.appendChild(stockInput);
+      stockCtrl.appendChild(inc1Btn);
+      stockCtrl.appendChild(inc10Btn);
+      tdStock.appendChild(stockCtrl);
+
+      var tdAct = document.createElement('td');
+      tdAct.className = 'col-num';
+      var editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'btn btn--secondary btn--sm';
+      editBtn.textContent = 'Edit';
+      editBtn.setAttribute('aria-label', 'Edit ' + prod.name);
+      editBtn.addEventListener('click', function () { openProductDrawer(prod, editBtn); });
+      tdAct.appendChild(editBtn);
+
+      tr.appendChild(tdProd);
+      tr.appendChild(tdPrice);
+      tr.appendChild(tdTag);
+      tr.appendChild(tdStatus);
+      tr.appendChild(tdStock);
+      tr.appendChild(tdAct);
+      productsTbody.appendChild(tr);
+    });
+  }
+
+  function renderProductComparisonRows() {
+    if (!prodComparisonsList) return;
+    prodComparisonsList.textContent = '';
+    if (!draftComparisons.length) {
+      var p = document.createElement('p');
+      p.className = 'prod-comp-empty';
+      p.textContent = 'No marketplace comparison prices added. Click "+ Add platform" to show tags like "₹749 on Amazon".';
+      prodComparisonsList.appendChild(p);
+      return;
+    }
+    draftComparisons.forEach(function (comp, idx) {
+      var row = document.createElement('div');
+      row.className = 'prod-comp-row';
+
+      var platInput = document.createElement('input');
+      platInput.type = 'text';
+      platInput.maxLength = 40;
+      platInput.placeholder = 'Platform (e.g. Amazon)';
+      platInput.value = comp.platform || '';
+      platInput.setAttribute('aria-label', 'Comparison platform ' + (idx + 1));
+      platInput.addEventListener('input', function () {
+        comp.platform = platInput.value;
+      });
+
+      var priceInput = document.createElement('input');
+      priceInput.type = 'number';
+      priceInput.min = '1';
+      priceInput.max = '200000';
+      priceInput.step = '1';
+      priceInput.placeholder = 'Price (₹)';
+      priceInput.value = comp.price ? String(comp.price) : '';
+      priceInput.setAttribute('aria-label', 'Comparison price ' + (idx + 1));
+      priceInput.addEventListener('input', function () {
+        comp.price = Math.round(Number(priceInput.value || 0));
+      });
+
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'btn btn--danger-ghost btn--sm';
+      removeBtn.textContent = 'Remove';
+      removeBtn.addEventListener('click', function () {
+        draftComparisons.splice(idx, 1);
+        renderProductComparisonRows();
+      });
+
+      row.appendChild(platInput);
+      row.appendChild(priceInput);
+      row.appendChild(removeBtn);
+      prodComparisonsList.appendChild(row);
+    });
+  }
+
+  function fillProductDrawer(prod) {
+    if (!prod) return;
+    var stMeta = productStockMeta(prod);
+    if (productDrawerTitle) productDrawerTitle.textContent = prod.name;
+    if (productDrawerSku) productDrawerSku.textContent = prod.sku;
+    if (productDrawerStockBadge) {
+      productDrawerStockBadge.className = stMeta.badgeClass;
+      productDrawerStockBadge.textContent = stMeta.label + ' · ' + prod.stock;
+    }
+    if (productDrawerStoreLink) productDrawerStoreLink.href = prod.href || '/';
+    if (prodEditPrice) prodEditPrice.value = String(prod.price);
+    if (prodEditCompareAt) prodEditCompareAt.value = prod.compareAtPrice > 0 ? String(prod.compareAtPrice) : '';
+    if (prodEditStock) prodEditStock.value = String(prod.stock);
+    if (prodEditThreshold) prodEditThreshold.value = String(prod.lowStockThreshold);
+    if (prodEditCardTag) prodEditCardTag.value = prod.cardTag || '';
+    if (prodEditError) {
+      prodEditError.hidden = true;
+      prodEditError.textContent = '';
+    }
+    draftComparisons = (prod.priceComparisons || []).map(function (c) {
+      return { platform: c.platform, price: c.price };
+    });
+    renderProductComparisonRows();
+  }
+
+  function openProductDrawer(prod, triggerEl) {
+    if (!productDrawerLayer || !productDrawerEl) return;
+    selectedProductSku = prod.sku;
+    lastFocusedProductTrigger = triggerEl || null;
+    fillProductDrawer(prod);
+    renderProductsTable();
+    productDrawerLayer.hidden = false;
+    productDrawerEl.focus();
+  }
+
+  function closeProductDrawer() {
+    if (!productDrawerLayer || productDrawerLayer.hidden) return;
+    productDrawerLayer.hidden = true;
+    selectedProductSku = null;
+    renderProductsTable();
+    if (lastFocusedProductTrigger && document.contains(lastFocusedProductTrigger)) {
+      lastFocusedProductTrigger.focus();
+    } else if (productsFilterTabs) {
+      var activeTab = productsFilterTabs.querySelector('.orders-tab.is-active');
+      if (activeTab) activeTab.focus();
+    }
+    lastFocusedProductTrigger = null;
+  }
+
+  if (productDrawerCloseBtn) productDrawerCloseBtn.addEventListener('click', closeProductDrawer);
+  if (productDrawerCancelBtn) productDrawerCancelBtn.addEventListener('click', closeProductDrawer);
+  if (productDrawerBackdrop) productDrawerBackdrop.addEventListener('click', closeProductDrawer);
+
+  if (prodDrawerStockChips) {
+    prodDrawerStockChips.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('[data-stock-nudge]');
+      if (!btn || !prodEditStock) return;
+      var delta = Number(btn.getAttribute('data-stock-nudge') || 0);
+      var cur = Math.max(0, Math.floor(Number(prodEditStock.value || 0)));
+      prodEditStock.value = String(Math.max(0, Math.min(100000, cur + delta)));
+    });
+  }
+
+  if (prodTagPresets) {
+    prodTagPresets.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('[data-tag-preset]');
+      if (!btn || !prodEditCardTag) return;
+      prodEditCardTag.value = btn.getAttribute('data-tag-preset') || '';
+    });
+  }
+
+  if (prodAddCompBtn) {
+    prodAddCompBtn.addEventListener('click', function () {
+      if (draftComparisons.length >= 6) {
+        showToast('Maximum 6 marketplace comparisons per product');
+        return;
+      }
+      draftComparisons.push({ platform: '', price: 0 });
+      renderProductComparisonRows();
+    });
+  }
+
+  if (productEditForm) {
+    productEditForm.addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      var prod = allProducts.find(function (p) { return p.sku === selectedProductSku; });
+      if (!prod) return;
+
+      if (prodEditError) {
+        prodEditError.hidden = true;
+        prodEditError.textContent = '';
+      }
+
+      var priceVal = Math.round(Number(prodEditPrice ? prodEditPrice.value : 0));
+      var compareRaw = prodEditCompareAt && prodEditCompareAt.value.trim() ? Number(prodEditCompareAt.value) : 0;
+      var compareVal = Math.max(0, Math.round(compareRaw));
+      var stockVal = Math.floor(Number(prodEditStock ? prodEditStock.value : 0));
+      var thresholdVal = Math.floor(Number(prodEditThreshold ? prodEditThreshold.value : DEFAULT_LOW_STOCK_THRESHOLD));
+      var tagVal = (prodEditCardTag ? prodEditCardTag.value : '').trim().slice(0, 28);
+
+      if (!Number.isFinite(priceVal) || priceVal < 1 || priceVal > 100000) {
+        if (prodEditError) {
+          prodEditError.textContent = 'Enter a valid selling price between ₹1 and ₹1,00,000.';
+          prodEditError.hidden = false;
+        }
+        return;
+      }
+      if (!Number.isFinite(compareVal) || compareVal < 0 || compareVal > 200000) {
+        if (prodEditError) {
+          prodEditError.textContent = 'Compare-at MRP must be between ₹0 and ₹2,00,000.';
+          prodEditError.hidden = false;
+        }
+        return;
+      }
+      if (!Number.isFinite(stockVal) || stockVal < 0 || stockVal > 100000) {
+        if (prodEditError) {
+          prodEditError.textContent = 'Stock quantity must be between 0 and 1,00,000.';
+          prodEditError.hidden = false;
+        }
+        return;
+      }
+      if (!Number.isFinite(thresholdVal) || thresholdVal < 0 || thresholdVal > 1000) {
+        if (prodEditError) {
+          prodEditError.textContent = 'Low-stock threshold must be between 0 and 1,000.';
+          prodEditError.hidden = false;
+        }
+        return;
+      }
+
+      var cleanComparisons = [];
+      for (var cIdx = 0; cIdx < draftComparisons.length; cIdx += 1) {
+        var comp = draftComparisons[cIdx];
+        var plat = String(comp.platform || '').trim().slice(0, 40);
+        var cPrice = Math.round(Number(comp.price || 0));
+        if (!plat && !cPrice) continue;
+        if (!plat || !Number.isFinite(cPrice) || cPrice < 1 || cPrice > 200000) {
+          if (prodEditError) {
+            prodEditError.textContent = 'Each marketplace comparison needs a platform name and a valid ₹ price.';
+            prodEditError.hidden = false;
+          }
+          return;
+        }
+        cleanComparisons.push({ platform: plat, price: cPrice });
+      }
+
+      if (productDrawerSaveBtn) {
+        productDrawerSaveBtn.disabled = true;
+        productDrawerSaveBtn.textContent = 'Saving…';
+      }
+
+      try {
+        var fb = await ensureDashboardFirebase();
+        var updated = await fb.updateProduct(prod.sku, {
+          price: priceVal,
+          compareAtPrice: compareVal,
+          stock: stockVal,
+          lowStockThreshold: thresholdVal,
+          cardTag: tagVal,
+          priceComparisons: cleanComparisons
+        });
+        upsertProductRecord(updated);
+        closeProductDrawer();
+        showToast(updated.name + ' updated');
+      } catch (err) {
+        console.error(err);
+        if (prodEditError) {
+          prodEditError.textContent = err && err.message && err.message.charAt(0) !== '{'
+            ? err.message
+            : 'Could not save product changes. Ensure updated Firestore rules are published.';
+          prodEditError.hidden = false;
+        }
+      } finally {
+        if (productDrawerSaveBtn) {
+          productDrawerSaveBtn.disabled = false;
+          productDrawerSaveBtn.textContent = 'Save product';
+        }
+      }
+    });
+  }
+
+  if (productsFilterTabs) {
+    productsFilterTabs.addEventListener('click', function (ev) {
+      var tab = ev.target.closest('[data-product-filter]');
+      if (!tab) return;
+      productFilter = tab.getAttribute('data-product-filter') || 'all';
+      Array.prototype.forEach.call(productsFilterTabs.querySelectorAll('.orders-tab'), function (t) {
+        var active = t === tab;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      renderProductsTable();
+    });
+  }
+
+  if (productsSearchInput) {
+    productsSearchInput.addEventListener('input', function () {
+      productSearchQuery = productsSearchInput.value || '';
+      if (productsSearchClear) productsSearchClear.hidden = !productSearchQuery;
+      renderProductsTable();
+    });
+  }
+
+  if (productsSearchClear) {
+    productsSearchClear.addEventListener('click', function () {
+      productSearchQuery = '';
+      if (productsSearchInput) { productsSearchInput.value = ''; productsSearchInput.focus(); }
+      productsSearchClear.hidden = true;
+      renderProductsTable();
+    });
+  }
+
+  if (productsSortSelect) {
+    productsSortSelect.addEventListener('change', function () {
+      productSortMode = productsSortSelect.value || 'catalog';
+      renderProductsTable();
+    });
+  }
+
+  if (productsResetBtn) {
+    productsResetBtn.addEventListener('click', function () {
+      productFilter = 'all';
+      productSearchQuery = '';
+      if (productsSearchInput) productsSearchInput.value = '';
+      if (productsSearchClear) productsSearchClear.hidden = true;
+      if (productsFilterTabs) {
+        Array.prototype.forEach.call(productsFilterTabs.querySelectorAll('.orders-tab'), function (t) {
+          var isAll = t.getAttribute('data-product-filter') === 'all';
+          t.classList.toggle('is-active', isAll);
+          t.setAttribute('aria-selected', isAll ? 'true' : 'false');
+        });
+      }
+      renderProductsTable();
+    });
+  }
+
+  async function loadAllProducts(force) {
+    var fb = await ensureDashboardFirebase();
+    var user = fb.getUser();
+    if (!isCurrentAdmin(user)) return;
+    if (productsLoading && !force) return;
+
+    productsLoading = true;
+    if (refreshBtn) refreshBtn.disabled = true;
+    if (productsErrorBanner) productsErrorBanner.hidden = true;
+    renderProductsTable();
+
+    try {
+      allProducts = await fb.listAllProducts();
+      allProducts.forEach(function (p) {
+        if (CATALOGUE[p.name]) CATALOGUE[p.name].price = p.price;
+      });
+      populateCatalogueDropdown();
+      updateProductMetricsAndTabs();
+      if (selectedProductSku && productDrawerLayer && !productDrawerLayer.hidden) {
+        var activeProd = allProducts.find(function (p) { return p.sku === selectedProductSku; });
+        if (activeProd) fillProductDrawer(activeProd);
+      }
+    } catch (err) {
+      console.error(err);
+      if (productsErrorText) productsErrorText.textContent = 'Could not load products from Firestore. Ensure updated Firestore rules are published.';
+      if (productsErrorBanner) productsErrorBanner.hidden = false;
+    } finally {
+      productsLoading = false;
+      if (refreshBtn) refreshBtn.disabled = false;
+      renderProductsTable();
+    }
+  }
+
   if (refreshBtn) {
     refreshBtn.addEventListener('click', function () {
-      if (activeView === 'reviews') loadAllReviews(true);
+      if (activeView === 'products') loadAllProducts(true);
+      else if (activeView === 'reviews') loadAllReviews(true);
       else if (activeView === 'favorites') loadAllWishlists(true);
       else loadAllOrders(true);
     });
   }
   if (retryBtn) {
     retryBtn.addEventListener('click', function () { loadAllOrders(true); });
+  }
+  if (productsRetryBtn) {
+    productsRetryBtn.addEventListener('click', function () { loadAllProducts(true); });
   }
   if (reviewsRetryBtn) {
     reviewsRetryBtn.addEventListener('click', function () { loadAllReviews(true); });
@@ -2267,23 +3295,26 @@
 
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
-      if (!drawerLayer.hidden) closeOrderDrawer();
+      if (productDrawerLayer && !productDrawerLayer.hidden) closeProductDrawer();
+      else if (!drawerLayer.hidden) closeOrderDrawer();
       else if (sidebar && sidebar.classList.contains('is-open')) setSidebarOpen(false);
       return;
     }
-    if (event.key === 'Tab' && !drawerLayer.hidden && drawerEl) {
+    var activeDrawerLayer = (productDrawerLayer && !productDrawerLayer.hidden) ? productDrawerLayer : (!drawerLayer.hidden ? drawerLayer : null);
+    var activeDrawerEl = activeDrawerLayer === productDrawerLayer ? productDrawerEl : (activeDrawerLayer === drawerLayer ? drawerEl : null);
+    if (event.key === 'Tab' && activeDrawerLayer && activeDrawerEl) {
       var focusable = Array.prototype.filter.call(
-        drawerEl.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'),
+        activeDrawerEl.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'),
         function (el) { return !el.hidden && el.offsetParent !== null; }
       );
       if (!focusable.length) {
         event.preventDefault();
-        drawerEl.focus();
+        activeDrawerEl.focus();
         return;
       }
       var first = focusable[0];
       var last = focusable[focusable.length - 1];
-      if (event.shiftKey && (document.activeElement === first || document.activeElement === drawerEl)) {
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === activeDrawerEl)) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && document.activeElement === last) {
@@ -2306,11 +3337,14 @@
 
     if (!user) {
       allOrders = [];
+      allProducts = [];
       allReviews = [];
       allFavorites = [];
       lastFetchedUid = null;
       closeOrderDrawer();
+      closeProductDrawer();
       updateMetricsAndCounts();
+      updateProductMetricsAndTabs();
       updateReviewCounts();
       updateFavoritesSummaryAndTabs();
       renderAuthGate('signed-out', null);
@@ -2319,11 +3353,14 @@
 
     if (!isCurrentAdmin(user)) {
       allOrders = [];
+      allProducts = [];
       allReviews = [];
       allFavorites = [];
       lastFetchedUid = null;
       closeOrderDrawer();
+      closeProductDrawer();
       updateMetricsAndCounts();
+      updateProductMetricsAndTabs();
       updateReviewCounts();
       updateFavoritesSummaryAndTabs();
       renderAuthGate('forbidden', user);
@@ -2338,6 +3375,7 @@
     if (lastFetchedUid !== user.uid) {
       lastFetchedUid = user.uid;
       loadAllOrders(true);
+      loadAllProducts(true);
       loadAllReviews(true);
       loadAllWishlists(true);
     }
@@ -2345,6 +3383,15 @@
 
   window.addEventListener('redpoly:firebase-ready', syncSession);
   window.addEventListener('redpoly:auth-changed', syncSession);
+  window.addEventListener('redpoly:catalog-updated', function (ev) {
+    if (ev.detail && ev.detail.map) {
+      Object.keys(CATALOGUE).forEach(function (name) {
+        var r = ev.detail.map[name];
+        if (r && r.price > 0) CATALOGUE[name].price = r.price;
+      });
+      populateCatalogueDropdown();
+    }
+  });
 
   // Boot
   renderAuthGate('loading', null);

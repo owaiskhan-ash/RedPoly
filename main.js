@@ -89,18 +89,100 @@
     'CUTE DINOS TEAL': { price:249, href:'/cute-dinos?colour=teal', image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TRIO': { price:549, href:'/cute-dinos?pack=trio', image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' }
   };
-  function inCatalogue(name, price) { return Object.prototype.hasOwnProperty.call(catalogue, name) && catalogue[name].price === Number(price); }
+  function isCatalogueProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
+  function inCatalogue(name, price) { return isCatalogueProduct(name) && catalogue[name].price === Number(price); }
+  var CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v1';
+  var DEFAULT_CARD_TAGS = {
+    'MECHA ROVER': '',
+    'BUBBLE GUN': 'IN STORE NOW',
+    'STUNT PET': 'NEW IN STORE',
+    'CUTE DINOS GREEN': 'NEW IN STORE',
+    'CUTE DINOS RED': '',
+    'CUTE DINOS TEAL': '',
+    'CUTE DINOS TRIO': '',
+    'MINI COOL CAR': 'NEW IN STORE',
+    'GEL STORM': 'JUST LANDED',
+    'PIXEL SPLASH': 'NEW IN STORE'
+  };
+  var SKU_ORDER = [
+    'mecha-rover', 'bubble-gun', 'stunt-pet',
+    'cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio',
+    'mini-cool-car', 'gel-storm', 'pixel-splash'
+  ];
+  var SKU_TO_NAME = {
+    'mecha-rover': 'MECHA ROVER',
+    'bubble-gun': 'BUBBLE GUN',
+    'stunt-pet': 'STUNT PET',
+    'cute-dinos-green': 'CUTE DINOS GREEN',
+    'cute-dinos-red': 'CUTE DINOS RED',
+    'cute-dinos-teal': 'CUTE DINOS TEAL',
+    'cute-dinos-trio': 'CUTE DINOS TRIO',
+    'mini-cool-car': 'MINI COOL CAR',
+    'gel-storm': 'GEL STORM',
+    'pixel-splash': 'PIXEL SPLASH'
+  };
+  function toCatalogRecord(sku, raw) {
+    var name = SKU_TO_NAME[sku];
+    var cat = catalogue[name];
+    var r = raw && typeof raw === 'object' ? raw : {};
+    var p = Math.round(Number(r.price));
+    var price = Number.isFinite(p) && p >= 1 && p <= 500000 ? p : (cat ? cat.price : 499);
+    var cmp = Math.round(Number(r.compareAtPrice));
+    var compareAtPrice = Number.isFinite(cmp) && cmp >= 0 && cmp <= 500000 ? cmp : 0;
+    var hasStock = r.stock !== undefined && r.stock !== null && Number.isFinite(Number(r.stock));
+    var stock = hasStock ? Math.max(0, Math.min(100000, Math.floor(Number(r.stock)))) : null;
+    var threshRaw = Number(r.lowStockThreshold);
+    var lowStockThreshold = Number.isFinite(threshRaw) ? Math.max(0, Math.min(10000, Math.floor(threshRaw))) : 5;
+    var cardTag = typeof r.cardTag === 'string' ? r.cardTag.trim().slice(0, 32) : (DEFAULT_CARD_TAGS[name] || '');
+    var comps = Array.isArray(r.priceComparisons)
+      ? r.priceComparisons.filter(function (c) {
+          return c && typeof c.platform === 'string' && c.platform.trim() && Number(c.price) >= 1 && Number(c.price) <= 500000;
+        }).slice(0, 5).map(function (c) {
+          return { platform: c.platform.trim().slice(0, 32), price: Math.round(Number(c.price)) };
+        })
+      : [];
+    return {
+      sku: sku,
+      name: name,
+      price: price,
+      compareAtPrice: compareAtPrice,
+      stock: stock,
+      lowStockThreshold: lowStockThreshold,
+      cardTag: cardTag,
+      priceComparisons: comps,
+      href: cat ? cat.href : '/' + sku,
+      image: cat ? cat.image : '',
+      initialized: hasStock
+    };
+  }
+  function buildCatalogMapFromStorageOrDefaults() {
+    var map = {};
+    var cached = {};
+    try {
+      cached = JSON.parse(window.sessionStorage.getItem(CATALOG_CACHE_KEY) || '{}') || {};
+    } catch (e) { cached = {}; }
+    SKU_ORDER.forEach(function (sku) {
+      var rec = toCatalogRecord(sku, cached[sku]);
+      if (catalogue[rec.name]) catalogue[rec.name].price = rec.price;
+      map[sku] = rec;
+      map[rec.name] = rec;
+    });
+    return map;
+  }
+  var initialCatalogSnapshot = buildCatalogMapFromStorageOrDefaults();
+
   var cartStorageKey = 'redpoly-cart-v1';
   var cartItems = [];
   try {
     var storedCart = JSON.parse(window.localStorage.getItem(cartStorageKey) || '[]');
     if (Array.isArray(storedCart)) cartItems = storedCart.filter(function (item) {
       return item && typeof item.id === 'string' && typeof item.name === 'string' &&
-        inCatalogue(item.name, item.price) && Number.isFinite(Number(item.quantity)) && Number(item.quantity) >= 1;
+        isCatalogueProduct(item.name) && Number.isFinite(Number(item.quantity)) && Number(item.quantity) >= 1;
     }).map(function (item) {
-      return { id: item.name.toLowerCase() + '|' + Number(item.price), name: item.name, price: Number(item.price), quantity: Math.floor(Number(item.quantity)) };
+      var livePrice = catalogue[item.name].price;
+      return { id: item.name.toLowerCase() + '|' + livePrice, name: item.name, price: livePrice, quantity: Math.floor(Number(item.quantity)) };
     });
-    if (Array.isArray(storedCart) && cartItems.length !== storedCart.length) window.localStorage.setItem(cartStorageKey, JSON.stringify(cartItems));
+    if (Array.isArray(storedCart)) window.localStorage.setItem(cartStorageKey, JSON.stringify(cartItems));
   } catch (ignoreCartStorage) { cartItems = []; }
 
   var cartToggle = document.createElement('button');
@@ -254,9 +336,10 @@
           var raw = JSON.parse(window.localStorage.getItem(cartStorageKey) || '[]');
           if (!Array.isArray(raw)) return [];
           return raw.filter(function (item) {
-            return item && typeof item.name === 'string' && inCatalogue(item.name, item.price) && Number.isFinite(Number(item.quantity)) && Number(item.quantity) >= 1;
+            return item && typeof item.name === 'string' && isCatalogueProduct(item.name) && Number.isFinite(Number(item.quantity)) && Number(item.quantity) >= 1;
           }).map(function (item) {
-            return { id: item.name.toLowerCase() + '|' + Number(item.price), name: item.name, price: Number(item.price), quantity: clampQty(item.quantity) };
+            var livePrice = catalogue[item.name].price;
+            return { id: item.name.toLowerCase() + '|' + livePrice, name: item.name, price: livePrice, quantity: clampQty(item.quantity) };
           });
         } catch (e) { return []; }
       }
@@ -265,17 +348,77 @@
           var raw = JSON.parse(window.localStorage.getItem(WISH_KEY) || '[]');
           if (!Array.isArray(raw)) return [];
           return raw.filter(function (item) {
-            return item && typeof item.name === 'string' && typeof item.href === 'string' && LIMITS.HREF_PATTERN.test(item.href) && inCatalogue(item.name, item.price);
+            return item && typeof item.name === 'string' && typeof item.href === 'string' && LIMITS.HREF_PATTERN.test(item.href) && isCatalogueProduct(item.name);
           }).map(function (item) {
             return {
               name: item.name,
               href: item.href.slice(0, LIMITS.HREF_MAX),
               image: typeof item.image === 'string' && LIMITS.IMAGE_PATTERN.test(item.image) ? item.image.slice(0, LIMITS.IMAGE_MAX) : catalogue[item.name].image,
-              price: Number(item.price)
+              price: catalogue[item.name].price
             };
           });
         } catch (e) { return []; }
       }
+
+      var fallbackCatalogMap = new Map();
+      var fallbackCatalogLoaded = false;
+      function setFallbackCatalogDocs(docsBySku) {
+        var sessionCache = {};
+        var changed = false;
+        SKU_ORDER.forEach(function (sku) {
+          var rec = toCatalogRecord(sku, docsBySku[sku]);
+          fallbackCatalogMap.set(sku, rec);
+          if (catalogue[rec.name] && catalogue[rec.name].price !== rec.price) {
+            catalogue[rec.name].price = rec.price;
+            changed = true;
+          }
+          sessionCache[sku] = {
+            price: rec.price,
+            compareAtPrice: rec.compareAtPrice,
+            stock: rec.stock,
+            lowStockThreshold: rec.lowStockThreshold,
+            cardTag: rec.cardTag,
+            priceComparisons: rec.priceComparisons,
+            updatedAtMs: Date.now()
+          };
+        });
+        try { window.sessionStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(sessionCache)); } catch (e) {}
+        if (changed) {
+          var syncedCart = readLocalCartForSync();
+          try { window.localStorage.setItem(cartStorageKey, JSON.stringify(syncedCart)); } catch (e) {}
+          dispatch('redpoly:cart-updated', { items: syncedCart });
+        }
+        dispatch('redpoly:catalog-updated', { products: getFallbackCatalogList(), map: getFallbackCatalogMap() });
+      }
+      function getFallbackCatalogList() {
+        return SKU_ORDER.map(function (sku) {
+          return fallbackCatalogMap.get(sku) || toCatalogRecord(sku, null);
+        });
+      }
+      function getFallbackCatalogMap() {
+        var out = {};
+        SKU_ORDER.forEach(function (sku) {
+          var rec = fallbackCatalogMap.get(sku) || toCatalogRecord(sku, null);
+          out[sku] = rec;
+          out[rec.name] = rec;
+        });
+        return out;
+      }
+      SKU_ORDER.forEach(function (sku) {
+        fallbackCatalogMap.set(sku, initialCatalogSnapshot[sku] || toCatalogRecord(sku, null));
+      });
+      try {
+        fsMod.onSnapshot(fsMod.collection(db, 'products'), function (snap) {
+          var docsBySku = {};
+          snap.forEach(function (docSnap) {
+            if (Object.prototype.hasOwnProperty.call(SKU_TO_NAME, docSnap.id)) {
+              docsBySku[docSnap.id] = docSnap.data();
+            }
+          });
+          fallbackCatalogLoaded = true;
+          setFallbackCatalogDocs(docsBySku);
+        }, function () {});
+      } catch (e) {}
 
       var currentUser = null;
       var authReady = false;
@@ -365,7 +508,7 @@
           var remoteMap = new Map();
           existingSnap.forEach(function (docSnap) {
             var d = docSnap.data();
-            if (typeof d.name === 'string' && inCatalogue(d.name, d.price)) {
+            if (typeof d.name === 'string' && isCatalogueProduct(d.name)) {
               remoteMap.set(docSnap.id, true);
             }
           });
@@ -377,7 +520,7 @@
             await fsMod.setDoc(fsMod.doc(db, 'users', uid, 'cart', slug), {
               uid: uid,
               name: item.name,
-              price: item.price,
+              price: catalogue[item.name].price,
               quantity: clampQty(item.quantity),
               updatedAt: fsMod.serverTimestamp()
             });
@@ -389,11 +532,12 @@
           var synced = [];
           snapshot.forEach(function (docSnap) {
             var d = docSnap.data();
-            if (typeof d.name === 'string' && inCatalogue(d.name, d.price)) {
+            if (typeof d.name === 'string' && isCatalogueProduct(d.name)) {
+              var livePrice = catalogue[d.name].price;
               synced.push({
-                id: d.name.toLowerCase() + '|' + Number(d.price),
+                id: d.name.toLowerCase() + '|' + livePrice,
                 name: d.name,
-                price: Number(d.price),
+                price: livePrice,
                 quantity: clampQty(d.quantity)
               });
             }
@@ -422,7 +566,7 @@
               name: item.name,
               href: item.href,
               image: item.image,
-              price: item.price,
+              price: catalogue[item.name].price,
               createdAt: fsMod.serverTimestamp()
             });
           }
@@ -433,12 +577,12 @@
           var synced = [];
           snapshot.forEach(function (docSnap) {
             var d = docSnap.data();
-            if (typeof d.name === 'string' && typeof d.href === 'string' && LIMITS.HREF_PATTERN.test(d.href) && inCatalogue(d.name, d.price)) {
+            if (typeof d.name === 'string' && typeof d.href === 'string' && LIMITS.HREF_PATTERN.test(d.href) && isCatalogueProduct(d.name)) {
               synced.push({
                 name: d.name,
                 href: d.href,
                 image: typeof d.image === 'string' ? d.image : catalogue[d.name].image,
-                price: Number(d.price)
+                price: catalogue[d.name].price
               });
             }
           });
@@ -534,6 +678,7 @@
             },
             profile: currentProfile
           });
+          if (!fallbackCatalogLoaded) await api.loadPublicCatalog();
           await mergeAndSubscribeCart(user.uid);
           await mergeAndSubscribeWishlist(user.uid);
           subscribeOrders(user.uid);
@@ -550,7 +695,27 @@
 
       var api = {
         isReady: function () { return authReady; },
+        isCatalogReady: function () { return fallbackCatalogLoaded; },
         isAdmin: isAdminUser,
+        getCatalog: getFallbackCatalogList,
+        getCatalogMap: getFallbackCatalogMap,
+        getProduct: function (skuOrName) {
+          var m = getFallbackCatalogMap();
+          var key = String(skuOrName || '').trim();
+          return m[key] || m[key.toUpperCase()] || null;
+        },
+        loadPublicCatalog: async function () {
+          try {
+            var snap = await fsMod.getDocs(fsMod.collection(db, 'products'));
+            var docsBySku = {};
+            snap.forEach(function (docSnap) {
+              if (Object.prototype.hasOwnProperty.call(SKU_TO_NAME, docSnap.id)) docsBySku[docSnap.id] = docSnap.data();
+            });
+            fallbackCatalogLoaded = true;
+            setFallbackCatalogDocs(docsBySku);
+          } catch (e) {}
+          return getFallbackCatalogList();
+        },
         getUser: function () {
           return currentUser ? {
             uid: currentUser.uid,
@@ -574,7 +739,9 @@
         },
         signOut: async function () { await authMod.signOut(auth); },
         syncCartItem: async function (item) {
-          if (!currentUser || !currentUser.emailVerified || !inCatalogue(item.name, item.price)) return;
+          if (!currentUser || !currentUser.emailVerified || !isCatalogueProduct(item.name)) return;
+          if (!fallbackCatalogLoaded) await api.loadPublicCatalog();
+          var livePrice = catalogue[item.name].price;
           var slug = itemSlug(item.name);
           if (!LIMITS.ID_PATTERN.test(slug)) return;
           var path = 'users/' + currentUser.uid + '/cart/' + slug;
@@ -582,9 +749,9 @@
             var ref = fsMod.doc(db, 'users', currentUser.uid, 'cart', slug);
             var existing = await fsMod.getDoc(ref);
             if (existing.exists()) {
-              await fsMod.updateDoc(ref, { quantity: clampQty(item.quantity), updatedAt: fsMod.serverTimestamp() });
+              await fsMod.updateDoc(ref, { price: livePrice, quantity: clampQty(item.quantity), updatedAt: fsMod.serverTimestamp() });
             } else {
-              await fsMod.setDoc(ref, { uid: currentUser.uid, name: item.name, price: item.price, quantity: clampQty(item.quantity), updatedAt: fsMod.serverTimestamp() });
+              await fsMod.setDoc(ref, { uid: currentUser.uid, name: item.name, price: livePrice, quantity: clampQty(item.quantity), updatedAt: fsMod.serverTimestamp() });
             }
           } catch (error) { handleFirestoreError(error, 'write', path); }
         },
@@ -597,7 +764,9 @@
           catch (error) { handleFirestoreError(error, 'delete', path); }
         },
         saveWishlistItem: async function (item) {
-          if (!currentUser || !currentUser.emailVerified || !inCatalogue(item.name, item.price) || !LIMITS.HREF_PATTERN.test(item.href)) return;
+          if (!currentUser || !currentUser.emailVerified || !isCatalogueProduct(item.name) || !LIMITS.HREF_PATTERN.test(item.href)) return;
+          if (!fallbackCatalogLoaded) await api.loadPublicCatalog();
+          var livePrice = catalogue[item.name].price;
           var slug = itemSlug(item.name);
           if (!LIMITS.ID_PATTERN.test(slug)) return;
           var path = 'users/' + currentUser.uid + '/wishlist/' + slug;
@@ -607,7 +776,7 @@
               name: item.name,
               href: item.href.slice(0, LIMITS.HREF_MAX),
               image: typeof item.image === 'string' && LIMITS.IMAGE_PATTERN.test(item.image) ? item.image.slice(0, LIMITS.IMAGE_MAX) : catalogue[item.name].image,
-              price: item.price,
+              price: livePrice,
               createdAt: fsMod.serverTimestamp()
             });
           } catch (error) { handleFirestoreError(error, 'write', path); }
@@ -650,10 +819,20 @@
           var uid = currentUser.uid;
           var orderId = String(input.reference || '').toLowerCase().replace(/[^a-z0-9\-]/g, '');
           if (!LIMITS.ID_PATTERN.test(orderId)) throw new Error('Invalid order reference');
-          var validItems = (input.items || []).filter(function (item) { return inCatalogue(item.name, item.price); });
+          var mergedBySlug = new Map();
+          (input.items || []).forEach(function (item) {
+            if (!item || typeof item.name !== 'string' || !isCatalogueProduct(item.name)) return;
+            var slug = itemSlug(item.name);
+            if (!Object.prototype.hasOwnProperty.call(SKU_TO_NAME, slug)) return;
+            var prev = mergedBySlug.get(slug);
+            var q = clampQty(item.quantity);
+            if (prev) prev.quantity = clampQty(prev.quantity + q);
+            else mergedBySlug.set(slug, { slug: slug, name: item.name, price: Number(item.price), quantity: q });
+          });
+          var validItems = Array.from(mergedBySlug.values());
           if (!validItems.length) throw new Error('No valid catalogue items in order');
           var orderPath = 'users/' + uid + '/orders/' + orderId;
-          var batch = fsMod.writeBatch(db);
+          var orderRef = fsMod.doc(db, 'users', uid, 'orders', orderId);
           var customerName = String(input.customerName || '').trim().slice(0, LIMITS.FULL_NAME_MAX);
           var email = String(input.email || '').trim().slice(0, LIMITS.EMAIL_MAX);
           var phone = String(input.phone || '').trim();
@@ -661,28 +840,57 @@
           var pin = String(input.pin || '').trim();
           var city = String(input.city || '').trim().slice(0, LIMITS.CITY_MAX);
           var state = String(input.state || '').trim().slice(0, LIMITS.STATE_MAX);
-          var itemCount = validItems.reduce(function (sum, item) { return sum + clampQty(item.quantity); }, 0);
-          batch.set(fsMod.doc(db, 'users', uid, 'orders', orderId), {
-            uid: uid, reference: input.reference, customerName: customerName, email: email, phone: phone,
-            address: address, pin: pin, city: city, state: state,
-            shippingMethod: input.shippingMethod, shippingCost: Number(input.shippingCost),
-            freeShipping: Boolean(input.freeShipping), freeGift: Boolean(input.freeGift),
-            subtotal: Number(input.subtotal), gstRate: Number(input.gstRate), gst: Number(input.gst),
-            total: Number(input.total), itemCount: itemCount, status: 'placed', createdAt: fsMod.serverTimestamp()
-          });
-          validItems.forEach(function (item) {
-            var slug = itemSlug(item.name);
-            batch.set(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug), {
-              uid: uid, orderId: orderId, name: item.name, price: Number(item.price), quantity: clampQty(item.quantity)
+          var itemCount = validItems.reduce(function (sum, item) { return sum + item.quantity; }, 0);
+          try {
+            await fsMod.runTransaction(db, async function (tx) {
+              var stockPlans = [];
+              for (var i = 0; i < validItems.length; i += 1) {
+                var item = validItems[i];
+                var prodRef = fsMod.doc(db, 'products', item.slug);
+                var prodSnap = await tx.get(prodRef);
+                if (prodSnap.exists()) {
+                  var d = prodSnap.data();
+                  var livePrice = Math.round(Number(d.price));
+                  if (Number.isFinite(livePrice) && livePrice !== Number(item.price)) {
+                    if (catalogue[item.name]) catalogue[item.name].price = livePrice;
+                    throw new Error('Price for ' + item.name + ' was updated to ₹' + livePrice.toLocaleString('en-IN') + '. Please review your total and try again.');
+                  }
+                  var liveStock = Math.max(0, Math.floor(Number(d.stock != null ? d.stock : 0)));
+                  if (liveStock <= 0) throw new Error(item.name + ' is currently out of stock.');
+                  if (liveStock < item.quantity) throw new Error('Only ' + liveStock + ' left in stock for ' + item.name + '. Please adjust quantity.');
+                  stockPlans.push({ item: item, prodRef: prodRef, exists: true, nextStock: liveStock - item.quantity });
+                } else {
+                  if (!inCatalogue(item.name, item.price)) throw new Error('Invalid price for ' + item.name + '.');
+                  stockPlans.push({ item: item, prodRef: prodRef, exists: false, nextStock: 0 });
+                }
+              }
+              tx.set(orderRef, {
+                uid: uid, reference: input.reference, customerName: customerName, email: email, phone: phone,
+                address: address, pin: pin, city: city, state: state,
+                shippingMethod: input.shippingMethod, shippingCost: Number(input.shippingCost),
+                freeShipping: Boolean(input.freeShipping), freeGift: Boolean(input.freeGift),
+                subtotal: Number(input.subtotal), gstRate: Number(input.gstRate), gst: Number(input.gst),
+                total: Number(input.total), itemCount: itemCount, status: 'placed', createdAt: fsMod.serverTimestamp()
+              });
+              stockPlans.forEach(function (plan) {
+                tx.set(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', plan.item.slug), {
+                  uid: uid, orderId: orderId, name: plan.item.name, price: Number(plan.item.price), quantity: plan.item.quantity
+                });
+                tx.delete(fsMod.doc(db, 'users', uid, 'cart', plan.item.slug));
+                if (plan.exists) {
+                  tx.update(plan.prodRef, { stock: plan.nextStock, updatedAt: fsMod.serverTimestamp() });
+                }
+              });
+              if (input.saveProfile) {
+                tx.set(fsMod.doc(db, 'users', uid, 'private', 'profile'), {
+                  uid: uid, email: email, fullName: customerName, phone: phone, address: address, pinCode: pin, city: city, state: state, updatedAt: fsMod.serverTimestamp()
+                }, { merge: true });
+              }
             });
-            batch.delete(fsMod.doc(db, 'users', uid, 'cart', slug));
-          });
-          if (input.saveProfile) {
-            batch.set(fsMod.doc(db, 'users', uid, 'private', 'profile'), {
-              uid: uid, email: email, fullName: customerName, phone: phone, address: address, pinCode: pin, city: city, state: state, updatedAt: fsMod.serverTimestamp()
-            }, { merge: true });
+          } catch (error) {
+            if (error instanceof Error && !error.code) throw error;
+            handleFirestoreError(error, 'write', orderPath);
           }
-          try { await batch.commit(); } catch (error) { handleFirestoreError(error, 'write', orderPath); }
         },
         listAllOrders: async function () {
           if (!isAdminUser()) throw new Error('Admin access required to view all store orders.');
@@ -747,11 +955,57 @@
           if (!LIMITS.ID_PATTERN.test(uid) || !LIMITS.ID_PATTERN.test(orderId)) throw new Error('Invalid order identifier.');
           if (VALID_ORDER_STATUSES.indexOf(status) === -1) throw new Error('Invalid order status.');
           var orderPath = 'users/' + uid + '/orders/' + orderId;
+          var orderRef = fsMod.doc(db, 'users', uid, 'orders', orderId);
           try {
-            var payload = { status: status };
-            if (isDeliveredStatus(status)) payload.deliveredAt = fsMod.serverTimestamp();
-            await fsMod.updateDoc(fsMod.doc(db, 'users', uid, 'orders', orderId), payload);
+            var itemsSnap = await fsMod.getDocs(fsMod.collection(orderRef, 'items'));
+            var orderItems = [];
+            itemsSnap.forEach(function (docSnap) {
+              var d = docSnap.data();
+              if (typeof d.name === 'string') {
+                var slug = itemSlug(d.name);
+                if (Object.prototype.hasOwnProperty.call(SKU_TO_NAME, slug)) {
+                  orderItems.push({ slug: slug, name: d.name, quantity: clampQty(d.quantity) });
+                }
+              }
+            });
+            await fsMod.runTransaction(db, async function (tx) {
+              var snap = await tx.get(orderRef);
+              if (!snap.exists()) throw new Error('Order does not exist.');
+              var prevStatus = normalizeOrderStatus(snap.data().status);
+              var wasCancelled = prevStatus === 'cancelled';
+              var willBeCancelled = status === 'cancelled';
+              var productOps = [];
+              if (!wasCancelled && willBeCancelled) {
+                for (var i = 0; i < orderItems.length; i += 1) {
+                  var pRef = fsMod.doc(db, 'products', orderItems[i].slug);
+                  var pSnap = await tx.get(pRef);
+                  if (pSnap.exists()) {
+                    var cur = Math.max(0, Math.floor(Number(pSnap.data().stock != null ? pSnap.data().stock : 0)));
+                    productOps.push({ ref: pRef, nextStock: cur + orderItems[i].quantity });
+                  }
+                }
+              } else if (wasCancelled && !willBeCancelled) {
+                for (var j = 0; j < orderItems.length; j += 1) {
+                  var pRef2 = fsMod.doc(db, 'products', orderItems[j].slug);
+                  var pSnap2 = await tx.get(pRef2);
+                  if (pSnap2.exists()) {
+                    var cur2 = Math.max(0, Math.floor(Number(pSnap2.data().stock != null ? pSnap2.data().stock : 0)));
+                    if (cur2 < orderItems[j].quantity) {
+                      throw new Error('Cannot restore order: only ' + cur2 + ' left in stock for ' + orderItems[j].name + '.');
+                    }
+                    productOps.push({ ref: pRef2, nextStock: cur2 - orderItems[j].quantity });
+                  }
+                }
+              }
+              var payload = { status: status };
+              if (isDeliveredStatus(status)) payload.deliveredAt = fsMod.serverTimestamp();
+              tx.update(orderRef, payload);
+              productOps.forEach(function (op) {
+                tx.update(op.ref, { stock: op.nextStock, updatedAt: fsMod.serverTimestamp() });
+              });
+            });
           } catch (error) {
+            if (error instanceof Error && error.message && error.message.charAt(0) !== '{') throw error;
             handleFirestoreError(error, 'update', orderPath);
           }
         },
@@ -761,94 +1015,129 @@
           var orderPath = 'users/' + uid + '/orders/' + orderId;
           var orderRef = fsMod.doc(db, 'users', uid, 'orders', orderId);
           try {
-            var existingSnap = await fsMod.getDoc(orderRef);
-            if (!existingSnap.exists()) throw new Error('Order does not exist.');
-            var existingData = existingSnap.data();
-            var customerName = String(patch.customerName !== undefined ? patch.customerName : (existingData.customerName || '')).trim().slice(0, LIMITS.FULL_NAME_MAX);
-            var email = String(patch.email !== undefined ? patch.email : (existingData.email || '')).trim().slice(0, LIMITS.EMAIL_MAX);
-            var phone = String(patch.phone !== undefined ? patch.phone : (existingData.phone || '')).trim();
-            var address = String(patch.address !== undefined ? patch.address : (existingData.address || '')).trim().slice(0, LIMITS.ADDRESS_MAX);
-            var pin = String(patch.pin !== undefined ? patch.pin : (existingData.pin || '')).trim();
-            var city = String(patch.city !== undefined ? patch.city : (existingData.city || '')).trim().slice(0, LIMITS.CITY_MAX);
-            var state = String(patch.state !== undefined ? patch.state : (existingData.state || '')).trim().slice(0, LIMITS.STATE_MAX);
-            if (!customerName) throw new Error('Customer name is required.');
-            if (!email || email.length < 3) throw new Error('Valid email is required.');
-            if (!LIMITS.PHONE_PATTERN.test(phone)) throw new Error('Enter a valid 10-digit Indian mobile number.');
-            if (!address) throw new Error('Street address is required.');
-            if (!LIMITS.PIN_PATTERN.test(pin)) throw new Error('Enter a valid 6-digit Indian PIN code.');
-            if (!city || !state) throw new Error('City and state are required.');
-            var shippingMethod = (patch.shippingMethod || existingData.shippingMethod) === 'express' ? 'express' : 'standard';
-            var nextStatus = patch.status !== undefined ? normalizeOrderStatus(patch.status) : normalizeOrderStatus(existingData.status);
-            var trackingCode = String(patch.trackingCode !== undefined ? patch.trackingCode : (existingData.trackingCode || '')).trim().slice(0, 64);
-            var trackingCarrier = String(patch.trackingCarrier !== undefined ? patch.trackingCarrier : (existingData.trackingCarrier || '')).trim().slice(0, 64);
-
             var existingItemsSnap = await fsMod.getDocs(fsMod.collection(orderRef, 'items'));
             var existingItemsMap = new Map();
             existingItemsSnap.forEach(function (docSnap) {
               var d = docSnap.data();
               if (typeof d.name === 'string') existingItemsMap.set(docSnap.id, { name: d.name, price: Number(d.price), quantity: clampQty(d.quantity) });
             });
-            var resolvedItems = patch.items !== undefined
-              ? patch.items.filter(function (i) { return inCatalogue(i.name, i.price); }).map(function (i) { return { name: i.name, price: catalogue[i.name].price, quantity: clampQty(i.quantity) }; })
-              : Array.from(existingItemsMap.values());
-            if (!resolvedItems.length) throw new Error('Order must contain at least one valid product.');
 
-            var mergedBySlug = new Map();
-            resolvedItems.forEach(function (item) {
-              var slug = itemSlug(item.name);
-              if (!LIMITS.ID_PATTERN.test(slug)) return;
-              var prev = mergedBySlug.get(slug);
-              if (prev) prev.quantity = clampQty(prev.quantity + item.quantity);
-              else mergedBySlug.set(slug, Object.assign({}, item));
-            });
+            var result = await fsMod.runTransaction(db, async function (tx) {
+              var existingSnap = await tx.get(orderRef);
+              if (!existingSnap.exists()) throw new Error('Order does not exist.');
+              var existingData = existingSnap.data();
 
-            var finalItems = Array.from(mergedBySlug.values());
-            var subtotal = finalItems.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
-            var itemCount = finalItems.reduce(function (s, i) { return s + i.quantity; }, 0);
-            var freeShipping = shippingMethod === 'express' ? subtotal >= FREE_EXPRESS_FROM : subtotal >= FREE_STANDARD_FROM;
-            var freeGift = subtotal >= FREE_GIFT_FROM;
-            var shippingCost = freeShipping ? 0 : (shippingMethod === 'express' ? 120 : 30);
-            var gst = Math.round((subtotal * GST_RATE) / (100 + GST_RATE));
-            var total = subtotal + shippingCost;
+              var customerName = String(patch.customerName !== undefined ? patch.customerName : (existingData.customerName || '')).trim().slice(0, LIMITS.FULL_NAME_MAX);
+              var email = String(patch.email !== undefined ? patch.email : (existingData.email || '')).trim().slice(0, LIMITS.EMAIL_MAX);
+              var phone = String(patch.phone !== undefined ? patch.phone : (existingData.phone || '')).trim();
+              var address = String(patch.address !== undefined ? patch.address : (existingData.address || '')).trim().slice(0, LIMITS.ADDRESS_MAX);
+              var pin = String(patch.pin !== undefined ? patch.pin : (existingData.pin || '')).trim();
+              var city = String(patch.city !== undefined ? patch.city : (existingData.city || '')).trim().slice(0, LIMITS.CITY_MAX);
+              var state = String(patch.state !== undefined ? patch.state : (existingData.state || '')).trim().slice(0, LIMITS.STATE_MAX);
+              if (!customerName) throw new Error('Customer name is required.');
+              if (!email || email.length < 3) throw new Error('Valid email is required.');
+              if (!LIMITS.PHONE_PATTERN.test(phone)) throw new Error('Enter a valid 10-digit Indian mobile number.');
+              if (!address) throw new Error('Street address is required.');
+              if (!LIMITS.PIN_PATTERN.test(pin)) throw new Error('Enter a valid 6-digit Indian PIN code.');
+              if (!city || !state) throw new Error('City and state are required.');
+              var shippingMethod = (patch.shippingMethod || existingData.shippingMethod) === 'express' ? 'express' : 'standard';
+              var nextStatus = patch.status !== undefined ? normalizeOrderStatus(patch.status) : normalizeOrderStatus(existingData.status);
+              var trackingCode = String(patch.trackingCode !== undefined ? patch.trackingCode : (existingData.trackingCode || '')).trim().slice(0, 64);
+              var trackingCarrier = String(patch.trackingCarrier !== undefined ? patch.trackingCarrier : (existingData.trackingCarrier || '')).trim().slice(0, 64);
 
-            var orderUpdate = {
-              customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
-              shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
-              subtotal: subtotal, gst: gst, total: total, itemCount: itemCount, status: nextStatus,
-              trackingCode: trackingCode, trackingCarrier: trackingCarrier
-            };
-            var existingDeliveredTs = existingData.deliveredAt;
-            var alreadyDeliveredAtMs = existingDeliveredTs && typeof existingDeliveredTs.toMillis === 'function' ? existingDeliveredTs.toMillis() : 0;
-            var prevStatus = normalizeOrderStatus(existingData.status);
-            if (isDeliveredStatus(nextStatus) && (!isDeliveredStatus(prevStatus) || !alreadyDeliveredAtMs)) {
-              orderUpdate.deliveredAt = fsMod.serverTimestamp();
-            }
+              var resolvedItems = patch.items !== undefined
+                ? patch.items.filter(function (i) { return isCatalogueProduct(i.name); }).map(function (i) { return { name: i.name, price: Number(i.price) || catalogue[i.name].price, quantity: clampQty(i.quantity) }; })
+                : Array.from(existingItemsMap.values());
+              if (!resolvedItems.length) throw new Error('Order must contain at least one valid product.');
 
-            var batch = fsMod.writeBatch(db);
-            if (patch.items !== undefined) {
-              existingItemsMap.forEach(function (_v, slug) {
-                if (!mergedBySlug.has(slug)) batch.delete(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug));
+              var mergedBySlug = new Map();
+              resolvedItems.forEach(function (item) {
+                var slug = itemSlug(item.name);
+                if (!LIMITS.ID_PATTERN.test(slug)) return;
+                var prev = mergedBySlug.get(slug);
+                if (prev) prev.quantity = clampQty(prev.quantity + item.quantity);
+                else mergedBySlug.set(slug, Object.assign({}, item));
               });
-              mergedBySlug.forEach(function (item, slug) {
-                batch.set(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug), {
-                  uid: uid, orderId: orderId, name: item.name, price: item.price, quantity: item.quantity
+
+              var finalItems = Array.from(mergedBySlug.values());
+              var prevStatus = normalizeOrderStatus(existingData.status);
+              var wasCancelled = prevStatus === 'cancelled';
+              var willBeCancelled = nextStatus === 'cancelled';
+
+              var allSlugs = new Set();
+              existingItemsMap.forEach(function (_v, slug) { allSlugs.add(slug); });
+              mergedBySlug.forEach(function (_v, slug) { allSlugs.add(slug); });
+
+              var stockPlans = [];
+              var slugArr = Array.from(allSlugs);
+              for (var sIdx = 0; sIdx < slugArr.length; sIdx += 1) {
+                var sSlug = slugArr[sIdx];
+                if (!Object.prototype.hasOwnProperty.call(SKU_TO_NAME, sSlug)) continue;
+                var prevQty = wasCancelled ? 0 : (existingItemsMap.get(sSlug) ? existingItemsMap.get(sSlug).quantity : 0);
+                var nextQty = willBeCancelled ? 0 : (mergedBySlug.get(sSlug) ? mergedBySlug.get(sSlug).quantity : 0);
+                var delta = nextQty - prevQty;
+                if (delta !== 0) {
+                  var pRef = fsMod.doc(db, 'products', sSlug);
+                  var pSnap = await tx.get(pRef);
+                  if (pSnap.exists()) {
+                    var curStock = Math.max(0, Math.floor(Number(pSnap.data().stock != null ? pSnap.data().stock : 0)));
+                    var updatedStock = curStock - delta;
+                    if (updatedStock < 0) {
+                      throw new Error('Only ' + curStock + ' left in stock for ' + SKU_TO_NAME[sSlug] + '.');
+                    }
+                    stockPlans.push({ ref: pRef, nextStock: updatedStock });
+                  }
+                }
+              }
+
+              var subtotal = finalItems.reduce(function (s, i) { return s + i.price * i.quantity; }, 0);
+              var itemCount = finalItems.reduce(function (s, i) { return s + i.quantity; }, 0);
+              var freeShipping = shippingMethod === 'express' ? subtotal >= FREE_EXPRESS_FROM : subtotal >= FREE_STANDARD_FROM;
+              var freeGift = subtotal >= FREE_GIFT_FROM;
+              var shippingCost = freeShipping ? 0 : (shippingMethod === 'express' ? 120 : 30);
+              var gst = Math.round((subtotal * GST_RATE) / (100 + GST_RATE));
+              var total = subtotal + shippingCost;
+
+              var orderUpdate = {
+                customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
+                shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
+                subtotal: subtotal, gst: gst, total: total, itemCount: itemCount, status: nextStatus,
+                trackingCode: trackingCode, trackingCarrier: trackingCarrier
+              };
+              var existingDeliveredTs = existingData.deliveredAt;
+              var alreadyDeliveredAtMs = existingDeliveredTs && typeof existingDeliveredTs.toMillis === 'function' ? existingDeliveredTs.toMillis() : 0;
+              if (isDeliveredStatus(nextStatus) && (!isDeliveredStatus(prevStatus) || !alreadyDeliveredAtMs)) {
+                orderUpdate.deliveredAt = fsMod.serverTimestamp();
+              }
+
+              if (patch.items !== undefined) {
+                existingItemsMap.forEach(function (_v, slug) {
+                  if (!mergedBySlug.has(slug)) tx.delete(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug));
                 });
+                mergedBySlug.forEach(function (item, slug) {
+                  tx.set(fsMod.doc(db, 'users', uid, 'orders', orderId, 'items', slug), {
+                    uid: uid, orderId: orderId, name: item.name, price: item.price, quantity: item.quantity
+                  });
+                });
+              }
+              tx.update(orderRef, orderUpdate);
+              stockPlans.forEach(function (sp) {
+                tx.update(sp.ref, { stock: sp.nextStock, updatedAt: fsMod.serverTimestamp() });
               });
-            }
-            batch.update(orderRef, orderUpdate);
-            await batch.commit();
 
-            var createdTs = existingData.createdAt;
-            return {
-              id: orderId, uid: uid, reference: String(existingData.reference || ''),
-              customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
-              shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
-              subtotal: subtotal, gstRate: Number(existingData.gstRate || GST_RATE), gst: gst, total: total, itemCount: itemCount,
-              status: nextStatus, trackingCode: trackingCode, trackingCarrier: trackingCarrier,
-              deliveredAtMs: isDeliveredStatus(nextStatus) ? (alreadyDeliveredAtMs || Date.now()) : alreadyDeliveredAtMs,
-              createdAtMs: createdTs && typeof createdTs.toMillis === 'function' ? createdTs.toMillis() : 0,
-              items: finalItems
-            };
+              var createdTs = existingData.createdAt;
+              return {
+                id: orderId, uid: uid, reference: String(existingData.reference || ''),
+                customerName: customerName, email: email, phone: phone, address: address, pin: pin, city: city, state: state,
+                shippingMethod: shippingMethod, shippingCost: shippingCost, freeShipping: freeShipping, freeGift: freeGift,
+                subtotal: subtotal, gstRate: Number(existingData.gstRate || GST_RATE), gst: gst, total: total, itemCount: itemCount,
+                status: nextStatus, trackingCode: trackingCode, trackingCarrier: trackingCarrier,
+                deliveredAtMs: isDeliveredStatus(nextStatus) ? (alreadyDeliveredAtMs || Date.now()) : alreadyDeliveredAtMs,
+                createdAtMs: createdTs && typeof createdTs.toMillis === 'function' ? createdTs.toMillis() : 0,
+                items: finalItems
+              };
+            });
+            return result;
           } catch (error) {
             if (error instanceof Error && error.message && error.message.charAt(0) !== '{') throw error;
             handleFirestoreError(error, 'update', orderPath);
@@ -1282,7 +1571,30 @@
     var giftRewardTrack = cartLayer.querySelector('#gift-reward-track');
     var cartReturnFocus = null;
     var lastRemovedItem = null;
-    var cartSuggestions = Object.keys(catalogue).map(function (name) { return { name:name, price:catalogue[name].price, href:catalogue[name].href }; });
+    var liveCatalogState = initialCatalogSnapshot;
+    function getLiveCatalogMap() {
+      var fb = window.RedpolyFirebase;
+      if (fb && typeof fb.getCatalogMap === 'function') {
+        return fb.getCatalogMap();
+      }
+      return liveCatalogState;
+    }
+    function getLiveRecord(skuOrName) {
+      var map = getLiveCatalogMap();
+      var key = String(skuOrName || '').trim();
+      return map[key] || map[key.toUpperCase()] || null;
+    }
+    function getCartSuggestions() {
+      return Object.keys(catalogue).map(function (name) {
+        var rec = getLiveRecord(name);
+        return {
+          name: name,
+          price: rec ? rec.price : catalogue[name].price,
+          href: catalogue[name].href,
+          outOfStock: Boolean(rec && rec.initialized && rec.stock === 0)
+        };
+      });
+    }
     function money(amount) { return '₹' + Number(amount).toLocaleString('en-IN'); }
     function persistCart() {
       try { window.localStorage.setItem(cartStorageKey, JSON.stringify(cartItems)); } catch (ignoreSaveError) { /* Cart remains usable for this page view. */ }
@@ -1313,7 +1625,15 @@
       cartEmptyNode.hidden = cartItems.length > 0;
       cartCheckout.disabled = cartItems.length === 0;
       cartSubtotalNode.textContent = money(subtotal);
+      var anyStockBlocked = false;
       cartItems.forEach(function (item) {
+        var rec = getLiveRecord(item.name);
+        var stockManaged = Boolean(rec && rec.initialized);
+        var availStock = stockManaged ? rec.stock : null;
+        var isOut = stockManaged && availStock === 0;
+        var exceedsStock = stockManaged && item.quantity > availStock;
+        if (isOut || exceedsStock) anyStockBlocked = true;
+
         var row = document.createElement('article'); row.className = 'cart-item';
         var image = document.createElement('img'); image.className = 'cart-item__image'; image.loading = 'lazy';
         image.src = catalogue[item.name] ? catalogue[item.name].image : '';
@@ -1322,18 +1642,41 @@
         var name = document.createElement('h3'); name.textContent = item.name;
         var lineTotal = document.createElement('p'); lineTotal.textContent = money(item.price) + ' each · ' + money(item.price * item.quantity) + ' line total';
         details.appendChild(name); details.appendChild(lineTotal);
+        if (isOut) {
+          var outNote = document.createElement('p');
+          outNote.className = 'cart-item__stock cart-item__stock--out';
+          outNote.textContent = 'OUT OF STOCK — remove to check out';
+          details.appendChild(outNote);
+        } else if (exceedsStock) {
+          var overNote = document.createElement('p');
+          overNote.className = 'cart-item__stock cart-item__stock--out';
+          overNote.textContent = 'ONLY ' + availStock + ' LEFT IN STOCK — reduce quantity';
+          details.appendChild(overNote);
+        } else if (stockManaged && availStock <= rec.lowStockThreshold) {
+          var lowNote = document.createElement('p');
+          lowNote.className = 'cart-item__stock cart-item__stock--low';
+          lowNote.textContent = 'ONLY ' + availStock + ' LEFT IN STOCK!';
+          details.appendChild(lowNote);
+        }
         var controls = document.createElement('div'); controls.className = 'cart-item__controls';
         [['decrease','−','Decrease quantity of ' + item.name],['increase','+','Increase quantity of ' + item.name]].forEach(function (control) {
-          var button = document.createElement('button'); button.type='button'; button.className='cart-quantity-button'; button.setAttribute('data-cart-action',control[0]); button.setAttribute('data-cart-id',item.id); button.setAttribute('aria-label',control[2]); button.textContent=control[1]; controls.appendChild(button);
+          var button = document.createElement('button'); button.type='button'; button.className='cart-quantity-button'; button.setAttribute('data-cart-action',control[0]); button.setAttribute('data-cart-id',item.id); button.setAttribute('aria-label',control[2]); button.textContent=control[1];
+          if (control[0] === 'increase' && stockManaged && item.quantity >= availStock) {
+            button.disabled = true;
+          }
+          controls.appendChild(button);
           if (control[0] === 'decrease') { var amount = document.createElement('span'); amount.className='cart-item__quantity'; amount.textContent=item.quantity; controls.insertBefore(amount, controls.lastChild); }
         });
         var remove = document.createElement('button'); remove.type='button'; remove.className='cart-item__remove'; remove.setAttribute('data-cart-action','remove'); remove.setAttribute('data-cart-id',item.id); remove.textContent='REMOVE'; controls.appendChild(remove);
         row.appendChild(image); row.appendChild(details); row.appendChild(controls); cartItemsNode.appendChild(row);
       });
+      if (anyStockBlocked) {
+        cartCheckout.disabled = true;
+      }
       cartUndo.hidden = !lastRemovedItem;
       cartUndo.textContent = lastRemovedItem ? 'UNDO REMOVAL · ' + lastRemovedItem.item.name : 'UNDO REMOVAL';
-      var availableSuggestions = cartSuggestions.filter(function (suggestion) {
-        return !cartItems.some(function (item) { return item.name === suggestion.name; });
+      var availableSuggestions = getCartSuggestions().filter(function (suggestion) {
+        return !suggestion.outOfStock && !cartItems.some(function (item) { return item.name === suggestion.name; });
       });
       if (availableSuggestions.length) {
         var suggestionPanel = document.createElement('section'); suggestionPanel.className = 'cart-recommendations';
@@ -1366,8 +1709,22 @@
     }
     function addCartItem(button, feedbackButton) {
       var name = button.getAttribute('data-name') || '';
-      var price = Number(button.getAttribute('data-price')) || 0;
-      if (!inCatalogue(name, price)) return;
+      if (!isCatalogueProduct(name)) return;
+      var rec = getLiveRecord(name);
+      var price = rec ? rec.price : (Number(button.getAttribute('data-price')) || catalogue[name].price);
+      if (rec && rec.initialized) {
+        if (rec.stock <= 0) {
+          showToast(name + ' is out of stock');
+          return;
+        }
+        var currentInCart = cartItems.reduce(function (sum, entry) {
+          return entry.name === name ? sum + entry.quantity : sum;
+        }, 0);
+        if (currentInCart + 1 > rec.stock) {
+          showToast('Only ' + rec.stock + ' left in stock for ' + name);
+          return;
+        }
+      }
       var id = name.toLowerCase() + '|' + price;
       var existing = cartItems.find(function (item) { return item.id === id; });
       if (existing) existing.quantity += 1;
@@ -1392,6 +1749,11 @@
     cartToggle.addEventListener('click', openCart);
     cartUndo.addEventListener('click', function () {
       if (!lastRemovedItem) return;
+      var rec = getLiveRecord(lastRemovedItem.item.name);
+      if (rec && rec.initialized && rec.stock <= 0) {
+        showToast(lastRemovedItem.item.name + ' is out of stock');
+        return;
+      }
       var existing = cartItems.find(function (entry) { return entry.id === lastRemovedItem.item.id; });
       if (existing) existing.quantity += lastRemovedItem.item.quantity;
       else {
@@ -1410,6 +1772,11 @@
       if (!item) return;
       var action = control.getAttribute('data-cart-action');
       if (action === 'increase') {
+        var rec = getLiveRecord(item.name);
+        if (rec && rec.initialized && item.quantity + 1 > rec.stock) {
+          showToast('Only ' + rec.stock + ' left in stock for ' + item.name);
+          return;
+        }
         item.quantity += 1;
         if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(item).catch(function (err) { console.error(err); });
       } else if (action === 'decrease') {
@@ -1444,7 +1811,7 @@
       if (event.key !== cartStorageKey) return;
       try {
         var synced = JSON.parse(event.newValue || '[]');
-        cartItems = Array.isArray(synced) ? synced.filter(function (item) { return item && typeof item.name === 'string' && inCatalogue(item.name, item.price) && Number(item.quantity) >= 1; }).map(function (item) { return { id:item.name.toLowerCase() + '|' + Number(item.price), name:item.name, price:Number(item.price), quantity:Math.floor(Number(item.quantity)) }; }) : [];
+        cartItems = Array.isArray(synced) ? synced.filter(function (item) { return item && typeof item.name === 'string' && isCatalogueProduct(item.name) && Number(item.quantity) >= 1; }).map(function (item) { var livePrice = catalogue[item.name] ? catalogue[item.name].price : Number(item.price); return { id:item.name.toLowerCase() + '|' + livePrice, name:item.name, price:livePrice, quantity:Math.floor(Number(item.quantity)) }; }) : [];
       } catch (ignoreStorageEvent) { cartItems = []; }
       renderCart();
     });
@@ -1470,13 +1837,17 @@
 
     // Mobile sticky buy bar for product detail pages (not the multi-product homepage).
     var heroBuy = document.querySelector('.char-buy-row .add-btn');
+    var stickyPriceNode = null;
+    var stickyButtonRef = null;
     if (heroBuy) {
       var stickyBar = document.createElement('div'); stickyBar.className='mobile-buy-bar';
       var stickyPrice = document.createElement('div'); stickyPrice.className='mobile-buy-bar__price';
       stickyPrice.innerHTML='<small>YOUR PICK</small><strong></strong>';
       var priceNode = document.querySelector('.char-buy-row .char-price strong');
       if (priceNode) stickyPrice.querySelector('strong').textContent=priceNode.textContent;
+      stickyPriceNode = stickyPrice.querySelector('strong');
       var stickyButton = heroBuy.cloneNode(false); stickyButton.innerHTML='ADD TO CART';
+      stickyButtonRef = stickyButton;
       stickyButton.classList.remove('add-btn');
       stickyButton.classList.add('mobile-buy-bar__button');
       stickyButton.type = 'button';
@@ -1670,9 +2041,9 @@
     }
     function isWished(name) { return wishItems.some(function (item) { return item.name === name; }); }
 
-    if (!document.querySelector('.add-btn')) return;   // help/checkout style pages: no saved-items controls
     var wishButtons = [];
     function syncWishButton(button) {
+      if (!button || !button.wishData) return;
       var saved = isWished(button.wishData.name);
       button.classList.toggle('is-favorite', saved);
       button.setAttribute('aria-pressed', saved ? 'true' : 'false');
@@ -1703,32 +2074,350 @@
     }
     function localPath(url) { try { var parsed = new URL(url, window.location.href); return parsed.pathname + parsed.search; } catch (ignoreUrl) { return ''; } }
     var heartMarkup = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-9-9c-1.2-2.7.5-6 3.5-6C9 5 11 7 12 8.5 13 7 15 5 17.5 5c3 0 4.7 3.3 3.5 6-2 4.5-9 9-9 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
-    // Shelf cards: every product gets a heart, including the accessories.
-    document.querySelectorAll('.p-card').forEach(function (card) {
-      var buy = card.querySelector('.add-btn[data-name][data-price]');
-      var link = card.querySelector('.p-card__product-link') || card.querySelector('.p-card__image-link');
-      var imageBox = card.querySelector('.p-card__img');
-      var image = card.querySelector('.p-card__image-link img');
-      if (!buy || !link || !imageBox) return;
-      var heart = card.querySelector('.heart');
-      if (!heart) {
-        heart = document.createElement('button'); heart.type = 'button'; heart.className = 'heart'; heart.innerHTML = heartMarkup;
-        imageBox.appendChild(heart);
+    var pageBuyRow = null;
+    var pageBuy = null;
+    var pageSaveButton = null;
+    if (document.querySelector('.add-btn')) {
+      // Shelf cards: every product gets a heart, including the accessories.
+      document.querySelectorAll('.p-card').forEach(function (card) {
+        var buy = card.querySelector('.add-btn[data-name][data-price]');
+        var link = card.querySelector('.p-card__product-link') || card.querySelector('.p-card__image-link');
+        var imageBox = card.querySelector('.p-card__img');
+        var image = card.querySelector('.p-card__image-link img');
+        if (!buy || !link || !imageBox) return;
+        var heart = card.querySelector('.heart');
+        if (!heart) {
+          heart = document.createElement('button'); heart.type = 'button'; heart.className = 'heart'; heart.innerHTML = heartMarkup;
+          imageBox.appendChild(heart);
+        }
+        var name = buy.getAttribute('data-name');
+        heart.setAttribute('aria-label', 'Save ' + name + ' for later');
+        registerWishButton(heart, { name:name, href:localPath(link.getAttribute('href')), image:image ? localPath(image.getAttribute('src')) : '', price:Number(buy.getAttribute('data-price')) });
+      });
+      // Product pages: a save button under the buy row.
+      pageBuyRow = document.querySelector('.char-buy-row');
+      pageBuy = pageBuyRow ? pageBuyRow.querySelector('.add-btn[data-name][data-price]') : null;
+      if (pageBuy) {
+        var pageImage = document.querySelector('.char-stage__figure') || document.querySelector('.accessory-product-image');
+        var saveButton = document.createElement('button'); saveButton.type = 'button'; saveButton.className = 'char-save';
+        saveButton.innerHTML = heartMarkup + '<span class="char-save__label">SAVE FOR LATER</span>';
+        pageBuyRow.insertAdjacentElement('afterend', saveButton);
+        registerWishButton(saveButton, { name:pageBuy.getAttribute('data-name'), href:window.location.pathname.replace(/\.html$/, ''), image:pageImage ? localPath(pageImage.getAttribute('src')) : '', price:Number(pageBuy.getAttribute('data-price')) });
+        pageSaveButton = saveButton;
       }
-      var name = buy.getAttribute('data-name');
-      heart.setAttribute('aria-label', 'Save ' + name + ' for later');
-      registerWishButton(heart, { name:name, href:localPath(link.getAttribute('href')), image:image ? localPath(image.getAttribute('src')) : '', price:Number(buy.getAttribute('data-price')) });
-    });
-    // Product pages: a save button under the buy row.
-    var pageBuyRow = document.querySelector('.char-buy-row');
-    var pageBuy = pageBuyRow ? pageBuyRow.querySelector('.add-btn[data-name][data-price]') : null;
-    if (pageBuy) {
-      var pageImage = document.querySelector('.char-stage__figure') || document.querySelector('.accessory-product-image');
-      var saveButton = document.createElement('button'); saveButton.type = 'button'; saveButton.className = 'char-save';
-      saveButton.innerHTML = heartMarkup + '<span class="char-save__label">SAVE FOR LATER</span>';
-      pageBuyRow.insertAdjacentElement('afterend', saveButton);
-      registerWishButton(saveButton, { name:pageBuy.getAttribute('data-name'), href:window.location.pathname.replace(/\.html$/, ''), image:pageImage ? localPath(pageImage.getAttribute('src')) : '', price:Number(pageBuy.getAttribute('data-price')) });
     }
+
+    function applyButtonStockState(btn, rec, defaultLabel, outLabel) {
+      if (!btn) return;
+      var out = Boolean(rec && rec.initialized && rec.stock === 0);
+      if (rec) btn.setAttribute('data-price', String(rec.price));
+      if (!Object.prototype.hasOwnProperty.call(btn.dataset, 'baseLabel')) {
+        btn.dataset.baseLabel = defaultLabel || btn.textContent.trim();
+      }
+      if (out) {
+        clearTimeout(btn._addedTimer);
+        delete btn.dataset.originalHtml;
+        btn.classList.remove('added');
+        btn.classList.add('is-out-of-stock');
+        btn.disabled = true;
+        btn.setAttribute('aria-disabled', 'true');
+        btn.textContent = outLabel || 'OUT OF STOCK';
+      } else {
+        btn.classList.remove('is-out-of-stock');
+        btn.disabled = false;
+        btn.removeAttribute('aria-disabled');
+        if (!btn.classList.contains('added')) {
+          btn.textContent = btn.dataset.baseLabel;
+        }
+      }
+    }
+
+    function formatStockText(rec) {
+      if (!rec || !rec.initialized) return '';
+      if (rec.stock === 0) return 'OUT OF STOCK';
+      if (rec.stock <= rec.lowStockThreshold) return 'ONLY ' + rec.stock + ' LEFT!';
+      return '';
+    }
+
+    function renderComparisonTags(container, rec) {
+      if (!container) return;
+      container.textContent = '';
+      var items = rec && Array.isArray(rec.priceComparisons) ? rec.priceComparisons.filter(function (c) {
+        return c && c.platform && Number(c.price) > 0;
+      }) : [];
+      if (!items.length) {
+        container.hidden = true;
+        return;
+      }
+      container.hidden = false;
+      items.forEach(function (comp) {
+        var tag = document.createElement('span');
+        tag.className = 'char-market-compare__tag';
+        tag.textContent = money(comp.price) + ' on ' + comp.platform;
+        container.appendChild(tag);
+      });
+    }
+
+    function syncStorefrontFromCatalog(nextMap) {
+      if (nextMap && typeof nextMap === 'object') {
+        liveCatalogState = nextMap;
+        Object.keys(catalogue).forEach(function (name) {
+          var live = getLiveRecord(name);
+          if (live && Number.isFinite(live.price) && live.price > 0) {
+            catalogue[name].price = live.price;
+          }
+        });
+      }
+
+      // Sync cart items & local wishlist prices if any price changed live
+      var cartChanged = false;
+      cartItems = cartItems.map(function (entry) {
+        var live = getLiveRecord(entry.name);
+        if (live && live.price > 0 && live.price !== entry.price) {
+          cartChanged = true;
+          return {
+            id: entry.name.toLowerCase() + '|' + live.price,
+            name: entry.name,
+            price: live.price,
+            quantity: entry.quantity
+          };
+        }
+        return entry;
+      });
+      if (cartChanged) {
+        persistCart();
+      }
+      renderCart();
+
+      var wishChanged = false;
+      wishItems = wishItems.map(function (entry) {
+        var live = getLiveRecord(entry.name);
+        if (live && live.price > 0 && live.price !== entry.price) {
+          wishChanged = true;
+          return Object.assign({}, entry, { price: live.price });
+        }
+        return entry;
+      });
+      if (wishChanged) {
+        persistWish();
+      }
+
+      // 1) Homepage Hero spotlight (.hero-product -> BUBBLE GUN)
+      var heroProduct = document.querySelector('.hero-product');
+      if (heroProduct) {
+        var heroRec = getLiveRecord('BUBBLE GUN');
+        var heroPriceBold = heroProduct.querySelector('.hero-product__price b');
+        if (heroPriceBold && heroRec) {
+          heroPriceBold.textContent = money(heroRec.price);
+        }
+        var heroStockEl = heroProduct.querySelector('.hero-product__stock');
+        var heroStockMsg = formatStockText(heroRec);
+        if (heroStockMsg) {
+          if (!heroStockEl) {
+            heroStockEl = document.createElement('span');
+            heroStockEl.className = 'hero-product__stock';
+            var priceRow = heroProduct.querySelector('.hero-product__price');
+            if (priceRow) priceRow.appendChild(heroStockEl);
+          }
+          heroStockEl.textContent = heroStockMsg;
+          heroStockEl.classList.toggle('is-out', Boolean(heroRec && heroRec.stock === 0));
+          heroStockEl.hidden = false;
+        } else if (heroStockEl) {
+          heroStockEl.hidden = true;
+        }
+      }
+
+      // 2) Homepage shop cards (.shop-card)
+      document.querySelectorAll('.shop-card').forEach(function (card) {
+        var addBtn = card.querySelector('.shop-card__add[data-name], .add-btn[data-name]');
+        if (!addBtn) return;
+        var skuName = addBtn.getAttribute('data-name') || '';
+        var rec = getLiveRecord(skuName);
+        if (!rec) return;
+
+        // B6 Corner sticker (.shop-card__tag)
+        var mediaBox = card.querySelector('.shop-card__media');
+        var tagEl = card.querySelector('.shop-card__tag');
+        var tagText = String(rec.cardTag || '').trim();
+        if (tagText) {
+          if (!tagEl && mediaBox) {
+            tagEl = document.createElement('span');
+            tagEl.className = 'shop-card__tag';
+            mediaBox.appendChild(tagEl);
+          }
+          if (tagEl) {
+            tagEl.textContent = tagText;
+            tagEl.hidden = false;
+          }
+        } else if (tagEl) {
+          tagEl.hidden = true;
+        }
+
+        // Price + compareAtPrice strike-through
+        var priceWrap = card.querySelector('.shop-card__price');
+        var priceStrong = priceWrap ? priceWrap.querySelector('strong') : null;
+        if (priceStrong) {
+          priceStrong.textContent = money(rec.price);
+        }
+        if (priceWrap) {
+          var mrpEl = priceWrap.querySelector('.shop-card__mrp');
+          if (rec.compareAtPrice > rec.price) {
+            if (!mrpEl) {
+              mrpEl = document.createElement('s');
+              mrpEl.className = 'shop-card__mrp';
+              priceWrap.insertBefore(mrpEl, priceStrong ? priceStrong.nextSibling : null);
+            }
+            mrpEl.textContent = money(rec.compareAtPrice);
+            mrpEl.hidden = false;
+          } else if (mrpEl) {
+            mrpEl.hidden = true;
+          }
+        }
+
+        // Cute Dinos card aside ("₹549 for all three") tracks CUTE DINOS TRIO
+        if (skuName === 'CUTE DINOS GREEN') {
+          var trioRec = getLiveRecord('CUTE DINOS TRIO');
+          var asideEl = card.querySelector('.shop-card__aside');
+          if (asideEl && trioRec) {
+            asideEl.textContent = money(trioRec.price) + ' for all three';
+          }
+        }
+
+        // B4 Stock pill on shop card
+        var stockText = formatStockText(rec);
+        var cardStock = card.querySelector('.shop-card__stock');
+        if (stockText) {
+          if (!cardStock && mediaBox) {
+            cardStock = document.createElement('span');
+            cardStock.className = 'shop-card__stock';
+            mediaBox.appendChild(cardStock);
+          }
+          if (cardStock) {
+            cardStock.textContent = stockText;
+            cardStock.classList.toggle('is-out', rec.stock === 0);
+            cardStock.hidden = false;
+          }
+        } else if (cardStock) {
+          cardStock.hidden = true;
+        }
+
+        card.classList.toggle('is-out-of-stock', Boolean(rec.initialized && rec.stock === 0));
+        applyButtonStockState(addBtn, rec, '+ ADD', 'OUT OF STOCK');
+      });
+
+      // 3) Cute Dinos variant inputs (if on /cute-dinos)
+      var dinoPicker = document.getElementById('dino-picker');
+      if (dinoPicker) {
+        dinoPicker.querySelectorAll('input[name="dino-colour"]').forEach(function (input) {
+          var r = getLiveRecord(input.getAttribute('data-name'));
+          if (r) input.setAttribute('data-price', String(r.price));
+        });
+        var singleRef = getLiveRecord('CUTE DINOS GREEN');
+        var trioRef = getLiveRecord('CUTE DINOS TRIO');
+        dinoPicker.querySelectorAll('input[name="dino-pack"]').forEach(function (input) {
+          if (input.value === 'trio' && trioRef) {
+            input.setAttribute('data-price', String(trioRef.price));
+            var packSub = input.closest('label') ? input.closest('label').querySelector('.dino-pack__sub') : null;
+            if (packSub && singleRef && singleRef.price * 3 > trioRef.price) {
+              packSub.textContent = 'Save ' + money(singleRef.price * 3 - trioRef.price);
+            } else if (packSub) {
+              packSub.textContent = 'All 3 dinosaurs';
+            }
+          } else if (input.value === 'single' && singleRef) {
+            input.setAttribute('data-price', String(singleRef.price));
+          }
+        });
+      }
+
+      // 4) Product page buy row, MRP, stock pill, non-linked market comparison tags, final CTA & sticky bar
+      if (pageBuy) {
+        var activeSku = pageBuy.getAttribute('data-name') || '';
+        var activeRec = getLiveRecord(activeSku);
+        if (activeRec) {
+          var pagePriceStrong = document.querySelector('.char-buy-row .char-price strong');
+          if (pagePriceStrong) {
+            pagePriceStrong.textContent = money(activeRec.price);
+          }
+          var charPriceBox = document.querySelector('.char-buy-row .char-price');
+          if (charPriceBox) {
+            var taxEl = charPriceBox.querySelector('.char-price__tax');
+            var pageMrp = charPriceBox.querySelector('.char-price__mrp');
+            if (activeRec.compareAtPrice > activeRec.price) {
+              if (!pageMrp) {
+                pageMrp = document.createElement('s');
+                pageMrp.className = 'char-price__mrp';
+                charPriceBox.insertBefore(pageMrp, taxEl || null);
+              }
+              pageMrp.textContent = money(activeRec.compareAtPrice);
+              pageMrp.hidden = false;
+            } else if (pageMrp) {
+              pageMrp.hidden = true;
+            }
+          }
+
+          var pageStockMsg = formatStockText(activeRec);
+          var pageStockEl = document.querySelector('.char-stock-pill');
+          if (pageStockMsg) {
+            if (!pageStockEl) {
+              pageStockEl = document.createElement('p');
+              pageStockEl.className = 'char-stock-pill';
+              pageStockEl.setAttribute('role', 'status');
+              pageBuyRow.insertAdjacentElement('afterend', pageStockEl);
+            }
+            pageStockEl.textContent = activeRec.stock === 0 ? 'CURRENTLY OUT OF STOCK' : 'ONLY ' + activeRec.stock + ' LEFT IN STOCK!';
+            pageStockEl.classList.toggle('is-out', activeRec.stock === 0);
+            pageStockEl.hidden = false;
+          } else if (pageStockEl) {
+            pageStockEl.hidden = true;
+          }
+
+          var compareWrap = document.querySelector('.char-market-compare');
+          if (!compareWrap) {
+            compareWrap = document.createElement('div');
+            compareWrap.className = 'char-market-compare';
+            compareWrap.setAttribute('aria-label', 'Marketplace price comparison');
+            var anchor = pageStockEl && !pageStockEl.hidden ? pageStockEl : pageBuyRow;
+            anchor.insertAdjacentElement('afterend', compareWrap);
+          }
+          renderComparisonTags(compareWrap, activeRec);
+
+          applyButtonStockState(pageBuy, activeRec, 'ADD TO CART', 'OUT OF STOCK');
+          var finalBuy = document.querySelector('.char-buy--final');
+          if (finalBuy) {
+            finalBuy.setAttribute('data-name', activeSku);
+            applyButtonStockState(finalBuy, activeRec, 'ADD TO CART — ' + money(activeRec.price), 'OUT OF STOCK');
+            if (!finalBuy.disabled && !finalBuy.classList.contains('added')) {
+              finalBuy.textContent = 'ADD TO CART — ' + money(activeRec.price);
+            }
+            finalBuy.dataset.baseLabel = 'ADD TO CART — ' + money(activeRec.price);
+          }
+          if (stickyPriceNode) {
+            stickyPriceNode.textContent = money(activeRec.price);
+          }
+          if (stickyButtonRef) {
+            stickyButtonRef.setAttribute('data-name', activeSku);
+            applyButtonStockState(stickyButtonRef, activeRec, 'ADD TO CART', 'OUT OF STOCK');
+          }
+          if (pageSaveButton && pageSaveButton.wishData) {
+            pageSaveButton.wishData.name = activeSku;
+            pageSaveButton.wishData.price = activeRec.price;
+            syncWishButton(pageSaveButton);
+          }
+        }
+      }
+    }
+
+    window.addEventListener('redpoly:catalog-updated', function (event) {
+      syncStorefrontFromCatalog(event.detail && event.detail.map ? event.detail.map : null);
+      if (document.getElementById('dino-picker')) {
+        window.dispatchEvent(new CustomEvent('redpoly:cute-dinos-catalog-sync'));
+      }
+      renderWish();
+    });
+    window.addEventListener('redpoly:product-variant-changed', function () {
+      syncStorefrontFromCatalog(getLiveCatalogMap());
+      renderWish();
+    });
     window.addEventListener('storage', function (event) {
       if (event.key !== wishKey) return;
       wishItems = parseWish(event.newValue); renderWish();
@@ -1738,6 +2427,7 @@
       wishItems = event.detail.items.slice();
       renderWish();
     });
+    syncStorefrontFromCatalog(getLiveCatalogMap());
     renderWish();
   }
   initShopChrome();

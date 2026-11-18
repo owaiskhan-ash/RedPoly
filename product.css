@@ -722,3 +722,13 @@ body.creature-page--mecha .char-file__photo{position:absolute;inset:0;z-index:0;
   .product-reviews__composer{padding:16px}
 }
 
+/* Live MRP strike-through, stock badges, and transparent marketplace comparisons (C7) */
+.char-price__mrp{font:700 15px/1 'Archivo',sans-serif;color:var(--character-muted);text-decoration:line-through;text-decoration-thickness:1.5px;margin-top:2px}
+.char-price__mrp[hidden],.char-stock-pill[hidden],.char-market-compare[hidden]{display:none!important}
+.char-stock-pill{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:6px 11px;border:1.5px solid rgba(255,210,63,.55);background:rgba(0,0,0,.28);color:#ffe27a;font:900 10px/1.1 'Archivo',sans-serif;letter-spacing:1.1px;text-transform:uppercase}
+.char-stock-pill.is-out{border-color:rgba(255,154,132,.7);background:rgba(165,43,24,.35);color:#ffd5cc}
+.char-market-compare{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.char-market-compare__tag{display:inline-flex;align-items:center;padding:5px 9px;border:1px solid var(--character-muted-border);border-radius:3px;background:transparent;color:var(--character-muted-strong);font:800 10px/1.2 'Archivo',sans-serif;letter-spacing:.6px}
+.char-buy:disabled,.char-buy.is-out-of-stock{background:#cfc7b9!important;color:#4f493f!important;border-color:#7a7266!important;box-shadow:none!important;cursor:not-allowed;transform:none!important;animation:none!important}
+
+

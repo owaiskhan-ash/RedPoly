@@ -203,3 +203,12 @@
   .account-cart-row__price{margin-left:auto}
 }
 @media(prefers-reduced-motion:reduce){.account-btn,.fav-card,.account-tabs button,.order-milestone__fill{transition:none}.account-btn:hover,.fav-card:hover{transform:none}}
+.fav-card__stock,.account-cart-row__stock{margin:0;font-size:10px!important;font-weight:900!important;letter-spacing:.7px;text-transform:uppercase}
+.fav-card__stock.is-low,.account-cart-row__stock.is-low{color:#b45309}
+.account-cart-row__stock.is-low{color:#ffd22e}
+.fav-card__stock.is-out,.account-cart-row__stock.is-out{color:#a52b18}
+.account-cart-row__stock.is-out{color:#ff8a73}
+.fav-card__add:disabled{background:#ddd5c7;color:#5d5548;border-color:#9e9585;box-shadow:none;cursor:not-allowed}
+.account-stepper button:disabled{opacity:.35;cursor:not-allowed}
+.account-btn--disabled{opacity:.75;background:#ff9a69;color:#111}
+

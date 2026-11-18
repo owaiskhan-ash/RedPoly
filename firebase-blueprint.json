@@ -407,9 +407,99 @@
         "verifiedPurchase",
         "createdAt"
       ]
+    },
+    "ProductCatalog": {
+      "title": "ProductCatalog",
+      "description": "Live inventory, pricing, storefront card sticker tag, and market comparison tags for each REDPOLY SKU.",
+      "type": "object",
+      "properties": {
+        "sku": {
+          "type": "string",
+          "enum": [
+            "bubble-gun",
+            "stunt-pet",
+            "mini-cool-car",
+            "gel-storm",
+            "mecha-rover",
+            "pixel-splash",
+            "cute-dinos-green",
+            "cute-dinos-red",
+            "cute-dinos-teal",
+            "cute-dinos-trio"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "price": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 500000
+        },
+        "compareAtPrice": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500000
+        },
+        "stock": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "lowStockThreshold": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "cardTag": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "priceComparisons": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "properties": {
+              "platform": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32
+              },
+              "price": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 500000
+              }
+            },
+            "required": ["platform", "price"]
+          }
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "sku",
+        "name",
+        "price",
+        "compareAtPrice",
+        "stock",
+        "lowStockThreshold",
+        "cardTag",
+        "priceComparisons",
+        "updatedAt"
+      ]
     }
   },
   "firestore": {
+    "/products/{skuSlug}": {
+      "schema": { "$ref": "#/entities/ProductCatalog" },
+      "description": "Public SKU catalog inventory, live pricing, card tags, and market comparison pills (admin-managed; atomic buyer stock decrement on checkout)."
+    },
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserAccount" },
       "description": "Non-PII customer account root document."
