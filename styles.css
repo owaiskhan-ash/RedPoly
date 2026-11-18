@@ -445,7 +445,7 @@ html.motion-ready .btn-lime:hover{filter:drop-shadow(5px 5px 0 rgba(200,255,0,.2
 html.redpoly-splash-seen .brand-splash{display:none}
 .brand-splash::before,.brand-splash::after{content:"";position:absolute;inset:50% auto auto 50%;width:min(88vw,760px);aspect-ratio:1;border:1px solid rgba(200,255,0,.12);border-radius:50%;transform:translate(-50%,-50%) scale(.72);box-shadow:0 0 0 26px rgba(200,255,0,.025),0 0 0 58px rgba(255,107,26,.025);animation:brand-splash-ring 2.3s ease-out both}
 .brand-splash::after{width:min(68vw,570px);border-color:rgba(30,220,207,.16);animation-delay:.18s}
-.brand-splash__content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;width:min(90vw,560px);padding:28px 34px 25px;border:1px solid rgba(244,240,230,.14);background:linear-gradient(145deg,rgba(31,30,39,.86),rgba(11,12,15,.84));box-shadow:0 28px 90px rgba(0,0,0,.55),0 0 65px rgba(200,255,0,.09);animation:brand-splash-enter .72s cubic-bezier(.18,.82,.22,1) both}
+.brand-splash__content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;width:min(90vw,560px);padding:24px 16px;animation:brand-splash-enter .72s cubic-bezier(.18,.82,.22,1) both}
 .brand-splash__kicker{color:var(--lime);font-size:9px;font-weight:900;letter-spacing:3px;text-align:center}
 .brand-splash__logo{width:min(100%,440px);height:auto;margin:15px 0 10px;filter:drop-shadow(0 0 22px rgba(200,255,0,.19))}
 .brand-splash__tagline{display:flex;align-items:center;gap:10px;color:#f4f0e6;font-size:9px;font-weight:900;letter-spacing:2px}
