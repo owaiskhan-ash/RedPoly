@@ -13,11 +13,10 @@ There is **one** header on the site, and every page carries exactly the same mar
       <a href="/stories">COMIC</a>
       <a href="/account">ACCOUNT</a>
       <a href="/help">HELP</a>
-      <a href="/help#shipping">POLICIES</a>
     </nav>
     <button class="site-header__menu" id="site-menu-toggle" …>…</button>
   </div>
-  <nav class="site-menu wrap" id="site-menu" aria-label="Menu">…same five links…</nav>
+  <nav class="site-menu wrap" id="site-menu" aria-label="Menu">…same four links…</nav>
 </header>
 ```
 

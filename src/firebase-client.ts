@@ -206,6 +206,7 @@ export interface ProductCatalogRecord {
   name: string;
   price: number;
   compareAtPrice: number;
+  costPrice: number | null;
   stock: number | null;
   lowStockThreshold: number;
   cardTag: string;
@@ -219,10 +220,40 @@ export interface ProductCatalogRecord {
 export interface UpdateProductInput {
   price?: number;
   compareAtPrice?: number;
+  costPrice?: number | null;
   stock?: number;
   lowStockThreshold?: number;
   cardTag?: string;
   priceComparisons?: PriceComparison[];
+}
+
+export interface CustomerAccountRecord {
+  uid: string;
+  displayName: string;
+  fullName: string;
+  email: string;
+  photoURL: string;
+  phone: string;
+  address: string;
+  pinCode: string;
+  city: string;
+  state: string;
+  createdAtMs: number;
+  updatedAtMs: number;
+}
+
+export interface CrewSubscriberRecord {
+  id: string;
+  email: string;
+  source: string;
+  uid: string;
+  displayName: string;
+  createdAtMs: number;
+}
+
+export interface CustomersOverview {
+  accounts: CustomerAccountRecord[];
+  crewSubscribers: CrewSubscriberRecord[];
 }
 
 export interface UpdateOrderDetailsInput {
@@ -440,6 +471,7 @@ function buildDefaultProductRecord(sku: SkuSlug): ProductCatalogRecord {
     name: seed.name,
     price: seed.price,
     compareAtPrice: 0,
+    costPrice: null,
     stock: null,
     lowStockThreshold: 5,
     cardTag: seed.cardTag,
@@ -472,6 +504,13 @@ function sanitizeComparisons(raw: unknown): PriceComparison[] {
   return clean;
 }
 
+function normalizeCostPrice(raw: unknown): number | null {
+  if (raw === null || raw === undefined || raw === '') return null;
+  const num = Number(raw);
+  if (!Number.isFinite(num) || num < 0 || num > 500000) return null;
+  return Math.round(num * 100) / 100;
+}
+
 function toProductCatalogRecord(sku: SkuSlug, data: Record<string, unknown>): ProductCatalogRecord {
   const seed = DEFAULT_PRODUCTS_META[sku];
   const cat = CATALOGUE[seed.name];
@@ -483,6 +522,7 @@ function toProductCatalogRecord(sku: SkuSlug, data: Record<string, unknown>): Pr
     Number.isFinite(rawCompare) && rawCompare >= 0 && rawCompare <= 500000
       ? Math.round(rawCompare)
       : 0;
+  const costPrice = normalizeCostPrice(data.costPrice);
   const hasStockField = data.stock !== undefined && data.stock !== null && Number.isFinite(Number(data.stock));
   const stock = hasStockField ? Math.max(0, Math.min(100000, Math.floor(Number(data.stock)))) : null;
   const rawThresh = Number(data.lowStockThreshold);
@@ -504,6 +544,7 @@ function toProductCatalogRecord(sku: SkuSlug, data: Record<string, unknown>): Pr
     name: seed.name,
     price,
     compareAtPrice,
+    costPrice,
     stock,
     lowStockThreshold,
     cardTag,
@@ -2227,17 +2268,124 @@ export async function deleteReview(productSlug: string, reviewId: string): Promi
   }
 }
 
+export async function joinCrew(
+  email: string,
+  source: 'homepage-crew' | 'storefront' = 'homepage-crew'
+): Promise<{ email: string }> {
+  const cleanEmail = String(email || '').trim().toLowerCase().slice(0, LIMITS.EMAIL_MAX);
+  if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+    throw new Error('Please enter a valid email address.');
+  }
+  const cleanSource = source === 'storefront' ? 'storefront' : 'homepage-crew';
+  const rand = Math.random().toString(36).slice(2, 8);
+  const subscriberId = `crew_${Date.now().toString(36)}_${rand}`;
+  const path = `crewSubscribers/${subscriberId}`;
+  const payload: Record<string, unknown> = {
+    email: cleanEmail,
+    source: cleanSource,
+    createdAt: serverTimestamp(),
+  };
+  if (currentUser && LIMITS.ID_PATTERN.test(currentUser.uid)) {
+    payload.uid = currentUser.uid;
+    const cleanName = (currentUser.displayName || '').trim().slice(0, LIMITS.DISPLAY_NAME_MAX);
+    if (cleanName) payload.displayName = cleanName;
+  }
+  try {
+    await setDoc(doc(db, 'crewSubscribers', subscriberId), payload);
+    return { email: cleanEmail };
+  } catch (error) {
+    handleFirestoreError(error, OperationType.CREATE, path);
+  }
+}
+
+export async function listAllCustomers(): Promise<CustomersOverview> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to view store customers.');
+  }
+  try {
+    const [usersSnap, crewSnap] = await Promise.all([
+      getDocs(collection(db, 'users')),
+      getDocs(collection(db, 'crewSubscribers')),
+    ]);
+
+    const accounts: CustomerAccountRecord[] = await Promise.all(
+      usersSnap.docs.map(async (userDoc) => {
+        const uData = userDoc.data();
+        const uid = String(uData.uid || userDoc.id);
+        const profileSnap = await getDoc(doc(db, 'users', uid, 'private', 'profile')).catch(() => null);
+        const pData = profileSnap && profileSnap.exists() ? profileSnap.data() : {};
+        const createdTs = uData.createdAt as Timestamp | undefined;
+        const updatedTs = (pData.updatedAt || uData.updatedAt) as Timestamp | undefined;
+        const displayName = String(uData.displayName || pData.fullName || 'REDPOLY Member');
+        return {
+          uid,
+          displayName,
+          fullName: String(pData.fullName || displayName),
+          email: String(pData.email || ''),
+          photoURL: sanitizeUrl(typeof uData.photoURL === 'string' ? uData.photoURL : ''),
+          phone: String(pData.phone || ''),
+          address: String(pData.address || ''),
+          pinCode: String(pData.pinCode || ''),
+          city: String(pData.city || ''),
+          state: String(pData.state || ''),
+          createdAtMs: createdTs && typeof createdTs.toMillis === 'function' ? createdTs.toMillis() : 0,
+          updatedAtMs: updatedTs && typeof updatedTs.toMillis === 'function' ? updatedTs.toMillis() : 0,
+        };
+      })
+    );
+
+    const crewSubscribers: CrewSubscriberRecord[] = [];
+    crewSnap.forEach((docSnap) => {
+      const d = docSnap.data();
+      const email = String(d.email || '').trim().toLowerCase();
+      if (!email) return;
+      const ts = d.createdAt as Timestamp | undefined;
+      crewSubscribers.push({
+        id: docSnap.id,
+        email,
+        source: String(d.source || 'homepage-crew'),
+        uid: String(d.uid || ''),
+        displayName: String(d.displayName || ''),
+        createdAtMs: ts && typeof ts.toMillis === 'function' ? ts.toMillis() : 0,
+      });
+    });
+
+    accounts.sort((a, b) => (b.createdAtMs || b.updatedAtMs) - (a.createdAtMs || a.updatedAtMs));
+    crewSubscribers.sort((a, b) => b.createdAtMs - a.createdAtMs);
+    return { accounts, crewSubscribers };
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, 'users');
+  }
+}
+
 export async function listAllProducts(): Promise<ProductCatalogRecord[]> {
   if (!isAdminUser()) {
     throw new Error('Admin access required to manage product inventory.');
   }
   const productsPath = 'products';
   try {
-    const snap = await getDocs(collection(db, 'products'));
+    const [snap, costsSnap] = await Promise.all([
+      getDocs(collection(db, 'products')),
+      getDocs(collection(db, 'productCosts')).catch(() => null),
+    ]);
+    const costMap = new Map<SkuSlug, number>();
+    if (costsSnap) {
+      costsSnap.forEach((costDoc) => {
+        if (isValidSkuSlug(costDoc.id)) {
+          const val = normalizeCostPrice(costDoc.data().costPrice);
+          if (val !== null) costMap.set(costDoc.id, val);
+        }
+      });
+    }
+
     const docsMap = new Map<SkuSlug, Record<string, unknown>>();
     snap.forEach((docSnap) => {
       if (isValidSkuSlug(docSnap.id)) {
-        docsMap.set(docSnap.id, docSnap.data());
+        const costVal = costMap.get(docSnap.id);
+        docsMap.set(docSnap.id, {
+          ...docSnap.data(),
+          ...(costVal !== undefined ? { costPrice: costVal } : {}),
+        });
       }
     });
 
@@ -2260,7 +2408,12 @@ export async function listAllProducts(): Promise<ProductCatalogRecord[]> {
           ...seedDoc,
           updatedAt: serverTimestamp(),
         });
-        docsMap.set(sku, { ...seedDoc, updatedAtMs: Date.now() });
+        const costVal = costMap.get(sku);
+        docsMap.set(sku, {
+          ...seedDoc,
+          ...(costVal !== undefined ? { costPrice: costVal } : {}),
+          updatedAtMs: Date.now(),
+        });
       }
       await batch.commit();
     }
@@ -2286,11 +2439,26 @@ export async function updateProduct(
 
   const productPath = `products/${skuSlug}`;
   const prodRef = doc(db, 'products', skuSlug);
+  const costRef = doc(db, 'productCosts', skuSlug);
   const seed = DEFAULT_PRODUCTS_META[skuSlug];
+
+  let nextCostPrice: number | null = liveCatalogMap.get(skuSlug)?.costPrice ?? null;
+  const shouldSaveCost = patch.costPrice !== undefined && patch.costPrice !== null;
+  if (shouldSaveCost) {
+    const parsedCost = Number(patch.costPrice);
+    if (!Number.isFinite(parsedCost) || parsedCost < 0 || parsedCost > 500000) {
+      throw new Error('Cost price must be between ₹0 and ₹5,00,000.');
+    }
+    nextCostPrice = Math.round(parsedCost * 100) / 100;
+  }
 
   try {
     const updatedRecord = await runTransaction(db, async (tx) => {
       const snap = await tx.get(prodRef);
+      const costSnap = shouldSaveCost ? null : await tx.get(costRef).catch(() => null);
+      if (!shouldSaveCost && costSnap && costSnap.exists()) {
+        nextCostPrice = normalizeCostPrice(costSnap.data().costPrice);
+      }
       const existing = snap.exists() ? (snap.data() as Record<string, unknown>) : {};
 
       const price =
@@ -2347,9 +2515,17 @@ export async function updateProduct(
         updatedAt: serverTimestamp(),
       };
       tx.set(prodRef, writePayload);
+      if (shouldSaveCost && nextCostPrice !== null) {
+        tx.set(costRef, {
+          sku: skuSlug,
+          costPrice: nextCostPrice,
+          updatedAt: serverTimestamp(),
+        });
+      }
 
       return toProductCatalogRecord(skuSlug, {
         ...writePayload,
+        costPrice: nextCostPrice,
         updatedAtMs: Date.now(),
       });
     });
@@ -2391,6 +2567,7 @@ export async function adjustProductStock(
   const productPath = `products/${skuSlug}`;
   const prodRef = doc(db, 'products', skuSlug);
   const seed = DEFAULT_PRODUCTS_META[skuSlug];
+  const prevCostPrice = liveCatalogMap.get(skuSlug)?.costPrice ?? null;
 
   try {
     const updatedRecord = await runTransaction(db, async (tx) => {
@@ -2423,6 +2600,7 @@ export async function adjustProductStock(
 
       return toProductCatalogRecord(skuSlug, {
         ...writePayload,
+        costPrice: prevCostPrice,
         updatedAtMs: Date.now(),
       });
     });
@@ -2464,6 +2642,7 @@ const api = {
   loadPublicCatalog,
   signInWithGoogle,
   signOut: signOutUser,
+  joinCrew,
   syncCartItem,
   removeCartItem,
   saveWishlistItem,
@@ -2479,6 +2658,7 @@ const api = {
   listAllReviews,
   moderateReview,
   deleteReview,
+  listAllCustomers,
   listAllProducts,
   updateProduct,
   adjustProductStock,

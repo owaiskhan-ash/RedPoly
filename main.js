@@ -758,6 +758,31 @@
           }
         },
         signOut: async function () { await authMod.signOut(auth); },
+        joinCrew: async function (email, source) {
+          var cleanEmail = String(email || '').trim().toLowerCase().slice(0, LIMITS.EMAIL_MAX);
+          if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+            throw new Error('Please enter a valid email address.');
+          }
+          var cleanSource = source === 'storefront' ? 'storefront' : 'homepage-crew';
+          var subId = 'crew_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+          var path = 'crewSubscribers/' + subId;
+          var payload = {
+            email: cleanEmail,
+            source: cleanSource,
+            createdAt: fsMod.serverTimestamp()
+          };
+          if (currentUser && LIMITS.ID_PATTERN.test(currentUser.uid)) {
+            payload.uid = currentUser.uid;
+            var cleanName = String(currentUser.displayName || '').trim().slice(0, 120);
+            if (cleanName) payload.displayName = cleanName;
+          }
+          try {
+            await fsMod.setDoc(fsMod.doc(db, 'crewSubscribers', subId), payload);
+            return { email: cleanEmail };
+          } catch (error) {
+            handleFirestoreError(error, 'create', path);
+          }
+        },
         syncCartItem: async function (item) {
           if (!currentUser || !currentUser.emailVerified || !isCatalogueProduct(item.name)) return;
           if (!fallbackCatalogLoaded) await api.loadPublicCatalog();
@@ -2497,12 +2522,35 @@
   // Crew form.
   var form = document.getElementById('crewForm');
   if (form) {
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
       e.preventDefault();
-      var email = document.getElementById('crewEmail');
-      if (email && email.value) {
+      var emailInput = document.getElementById('crewEmail');
+      var submitBtn = form.querySelector('button[type="submit"]');
+      var rawEmail = emailInput && emailInput.value ? emailInput.value.trim() : '';
+      if (!rawEmail) return;
+      var origLabel = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'JOINING…';
+      }
+      try {
+        var fb = window.RedpolyFirebase && typeof window.RedpolyFirebase.joinCrew === 'function'
+          ? window.RedpolyFirebase
+          : await ensureFirebaseClient();
+        if (!fb || typeof fb.joinCrew !== 'function') {
+          throw new Error('Signup service is still loading. Try again.');
+        }
+        await fb.joinCrew(rawEmail, 'homepage-crew');
         showToast('Welcome to the crew - check your inbox!');
         form.reset();
+      } catch (err) {
+        console.error(err);
+        showToast(err && err.message && err.message.charAt(0) !== '{' ? err.message : 'Could not join right now. Please try again.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = origLabel || 'JOIN NOW →';
+        }
       }
     });
   }

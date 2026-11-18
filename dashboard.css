@@ -335,8 +335,8 @@ tr[tabindex]:focus-visible {
 }
 
 .page-wrap {
-  max-width: 1260px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
 }
 
 .page-header {
@@ -1927,6 +1927,145 @@ tr[tabindex]:focus-visible {
   .prod-group-toggle svg {
     transition: none;
   }
+}
+
+/* ============ PRODUCT COST & MARGIN ============ */
+.prod-cost-cell {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.prod-cost-cell strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.prod-cost-margin {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--success-ink);
+}
+
+.prod-cost-margin.is-loss {
+  color: var(--danger-ink);
+}
+
+.prod-cost-margin.is-muted {
+  color: var(--ink-secondary);
+}
+
+.prod-cost-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.prod-cost-empty-btn:hover {
+  background: var(--surface-muted);
+  color: var(--ink);
+  border-color: var(--ink-secondary);
+}
+
+.prod-margin-preview {
+  margin-top: 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.prod-margin-preview strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.prod-margin-preview.is-positive {
+  border-color: #cde8d6;
+  background: #f4fbf6;
+  color: #165e32;
+}
+
+.prod-margin-preview.is-loss {
+  border-color: #f4c6c4;
+  background: #fff5f5;
+  color: var(--danger-ink);
+}
+
+/* ============ CUSTOMERS DIRECTORY TABLE ============ */
+.customers-table td {
+  vertical-align: middle;
+}
+
+.cust-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+
+.cust-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cust-badge--account {
+  background: #e9f2ff;
+  color: #164e99;
+}
+
+.cust-badge--crew {
+  background: #eff7e6;
+  color: #1d5d2c;
+}
+
+.cust-contact-primary {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.cust-contact-sub {
+  display: block;
+  margin-top: 1px;
+  font-size: 11.5px;
+  color: var(--ink-secondary);
+}
+
+.cust-orders-cell {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.cust-orders-cell span {
+  display: block;
+  margin-top: 1px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-secondary);
 }
 
 

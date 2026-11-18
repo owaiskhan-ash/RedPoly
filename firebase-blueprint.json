@@ -500,6 +500,74 @@
         "priceComparisons",
         "updatedAt"
       ]
+    },
+    "ProductCost": {
+      "title": "ProductCost",
+      "description": "Admin-only per-SKU internal cost price used for profit margin and tax calculations.",
+      "type": "object",
+      "properties": {
+        "sku": {
+          "type": "string",
+          "enum": [
+            "bubble-gun",
+            "stunt-pet",
+            "mini-cool-car",
+            "gel-storm",
+            "mecha-rover",
+            "pixel-splash",
+            "cute-dinos-green",
+            "cute-dinos-red",
+            "cute-dinos-teal",
+            "cute-dinos-trio",
+            "magnetic-blocks-25-pcs",
+            "magnetic-blocks-36-pcs",
+            "magnetic-blocks-42-pcs",
+            "magnetic-blocks-64-pcs",
+            "rise-one-x-4x4"
+          ]
+        },
+        "costPrice": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500000
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["sku", "costPrice", "updatedAt"]
+    },
+    "CrewSubscriber": {
+      "title": "CrewSubscriber",
+      "description": "Email signup submitted via the Join the REDPOLY Crew form.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 200
+        },
+        "source": {
+          "type": "string",
+          "enum": ["homepage-crew", "storefront"]
+        },
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["email", "source", "createdAt"]
     }
   },
   "firestore": {
@@ -507,9 +575,17 @@
       "schema": { "$ref": "#/entities/ProductCatalog" },
       "description": "Public SKU catalog inventory, live pricing, card tags, and market comparison pills (admin-managed; atomic buyer stock decrement on checkout)."
     },
+    "/productCosts/{skuSlug}": {
+      "schema": { "$ref": "#/entities/ProductCost" },
+      "description": "Private admin-only wholesale cost price per SKU for margin and tax accounting."
+    },
+    "/crewSubscribers/{subscriberId}": {
+      "schema": { "$ref": "#/entities/CrewSubscriber" },
+      "description": "REDPOLY Crew email subscribers (publicly submittable; readable and manageable only by store admin)."
+    },
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserAccount" },
-      "description": "Non-PII customer account root document."
+      "description": "Non-PII customer account root document (readable by owner and store admin)."
     },
     "/users/{userId}/private/{docId}": {
       "schema": { "$ref": "#/entities/PrivateProfile" },

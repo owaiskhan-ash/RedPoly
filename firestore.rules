@@ -175,6 +175,26 @@ service cloud.firestore {
         nextData.updatedAt == request.time;
     }
 
+    function isValidProductCostDoc(data, skuSlug) {
+      return data.keys().hasAll(['sku', 'costPrice', 'updatedAt']) &&
+        data.keys().hasOnly(['sku', 'costPrice', 'updatedAt']) &&
+        data.sku is string && data.sku == skuSlug && isValidSkuSlug(skuSlug) &&
+        (data.costPrice is int || data.costPrice is float) &&
+        data.costPrice >= 0 && data.costPrice <= 500000 &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCrewSubscriber(data) {
+      return data.keys().hasAll(['email', 'source', 'createdAt']) &&
+        data.keys().hasOnly(['email', 'source', 'uid', 'displayName', 'createdAt']) &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 200 &&
+        data.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$') &&
+        data.source is string && data.source in ['homepage-crew', 'storefront'] &&
+        (!('uid' in data) || (isSignedIn() && data.uid is string && data.uid == request.auth.uid && isValidId(data.uid))) &&
+        (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 120)) &&
+        data.createdAt is timestamp;
+    }
+
     function isValidUserAccount(data, userId) {
       return data.keys().hasAll(['uid', 'displayName', 'createdAt', 'updatedAt']) &&
         data.keys().hasOnly(['uid', 'displayName', 'photoURL', 'createdAt', 'updatedAt']) &&
@@ -345,6 +365,11 @@ service cloud.firestore {
       allow list: if isAdmin();
     }
 
+    match /{path=**}/private/{docId} {
+      allow get: if docId == 'profile' && isAdmin();
+      allow list: if isAdmin();
+    }
+
     match /products/{skuSlug} {
       allow get: if isValidSkuSlug(skuSlug);
       allow list: if true;
@@ -360,6 +385,33 @@ service cloud.firestore {
         (isVerified() && isValidStockDecrement(incoming(), existing()))
       );
       allow delete: if false;
+    }
+
+    match /productCosts/{skuSlug} {
+      allow get: if isValidSkuSlug(skuSlug) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isAdmin() && isValidSkuSlug(skuSlug) &&
+        isValidProductCostDoc(incoming(), skuSlug) &&
+        incoming().updatedAt == request.time;
+      allow update: if isAdmin() && isValidSkuSlug(skuSlug) &&
+        isValidProductCostDoc(incoming(), skuSlug) &&
+        incoming().sku == existing().sku &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['costPrice', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    match /crewSubscribers/{subscriberId} {
+      allow get: if isValidId(subscriberId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(subscriberId) &&
+        isValidCrewSubscriber(incoming()) &&
+        incoming().createdAt == request.time;
+      allow update: if isAdmin() && isValidId(subscriberId) &&
+        isValidCrewSubscriber(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['email', 'source', 'uid', 'displayName']);
+      allow delete: if isAdmin() && isValidId(subscriberId);
     }
 
     match /products/{productSlug}/reviews/{reviewId} {
@@ -400,7 +452,7 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
-      allow list: if false;
+      allow list: if isAdmin();
       allow create: if isVerifiedOwner(userId) && isValidId(userId) &&
         isValidUserAccount(incoming(), userId) &&
         incoming().createdAt == request.time &&
