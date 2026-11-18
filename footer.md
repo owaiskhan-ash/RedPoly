@@ -1,37 +1,37 @@
-# Footer link rules
+# Footer
 
-Every footer on the site carries the same six links, in the same order, with the same wording. The help page at `/help` is the one place those six things live, so the first link always points at the page itself and the other five jump to its sections.
+There is **one** footer on the site, and every page carries exactly the same markup for it.
 
-## The canonical set
+## The markup
 
+```html
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <a class="site-footer__brand" href="/" aria-label="REDPOLY home">…logo…<span>COLLECT. EXPLORE. DISPLAY.</span></a>
+    <nav class="site-footer__links" aria-label="Help and policies">
+      <a href="/help">HELP + POLICIES</a>
+      <a href="/help#shipping">SHIPPING</a>
+      <a href="/help#returns">RETURNS</a>
+      <a href="/help#cancellation">CANCELLATION</a>
+      <a href="/help#privacy">PRIVACY</a>
+      <a href="/help#terms">TERMS</a>
+    </nav>
+    <p class="site-footer__legal">GSTIN 27BJGPK5062E1ZB</p>
+  </div>
+</footer>
 ```
-HELP + POLICIES   /help
-SHIPPING          /help#shipping
-RETURNS           /help#returns
-CANCELLATION      /help#cancellation
-PRIVACY           /help#privacy
-TERMS             /help#terms
-```
 
-Rules:
+Styles live in `styles.css` under the `Shared site footer` comment, so one stylesheet file drives the look everywhere. The other stylesheets (`product.css`, `pixel-splash.css`, `checkout.css`, `help.css`, `stories/stories.css`) no longer contain any footer rules.
 
-- The first link reads **HELP + POLICIES**, not "Help + Contact". The help page also holds the contact card and the business details, so one label covers it.
-- The fourth link reads **CANCELLATION** in full. Do not shorten it to "CANCEL" to make a row fit; shorten the type instead.
-- Keep the order. Someone who has learnt the order on one page should not have to learn it again on the next.
-- The `aria-label` on the wrapping `nav` is `Help and policies` everywhere.
+## Pages that carry it
 
-## Where it appears
+`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `stories/index.html` — 12 pages.
 
-| Page | Class on the `nav` |
-| --- | --- |
-| `index.html` | `foot__links` |
-| `products/*.html` (7 pages) | `char-footer__links` |
-| `checkout.html`, `thank-you.html` | `checkout-footer__links` |
-| `help.html` | none (bare `nav` inside `.help-footer`) |
-| `stories/index.html` | no policy nav; it carries the brand line and GSTIN only |
+## Editing it
 
-The five sections on `/help` are `#contact` (the "HELP + POLICIES" target), `#shipping`, `#returns`, `#cancellation`, `#privacy`, `#terms`. The help page's own sticky chip row lists the five policy sections and sits directly above them.
+Change the block above in all 12 pages in the same commit. There is no build step, so the duplication is real: a `git grep 'site-footer__legal'` lists every copy. If the page count keeps growing, generate this block from one fragment at build time instead.
 
-## Changing a label
+## Not part of the footer
 
-Edit every footer in the table above in the same commit. The classes differ per page, so a change to one page will not carry to the others on its own.
+- Page-specific demo warnings ("no payment taken", "no real order created") stay in the page body, where they are relevant.
+- The comic reader's own Prev/Next bar (`reader-footer`) is an in-dialog control, not a footer.
