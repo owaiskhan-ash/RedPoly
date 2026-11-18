@@ -397,7 +397,7 @@
             <section class="metrics-strip" aria-label="Catalog and inventory summary">
               <div class="metric-cell">
                 <span class="metric-cell__label">Active SKUs</span>
-                <strong class="metric-cell__value" id="metric-total-products">15</strong>
+                <strong class="metric-cell__value" id="metric-total-products">16</strong>
               </div>
               <div class="metric-cell">
                 <span class="metric-cell__label">Total stock units</span>
@@ -420,7 +420,7 @@
 
             <section class="orders-card" aria-label="Product catalog and inventory">
               <div class="orders-tabs" id="products-filter-tabs" role="tablist" aria-label="Filter products">
-                <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-product-filter="all">All <span id="prod-tab-all">15</span></button>
+                <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-product-filter="all">All <span id="prod-tab-all">16</span></button>
                 <button type="button" class="orders-tab" role="tab" aria-selected="false" data-product-filter="in_stock">In stock <span id="prod-tab-in-stock">0</span></button>
                 <button type="button" class="orders-tab" role="tab" aria-selected="false" data-product-filter="low_stock">Low stock <span id="prod-tab-low-stock">0</span></button>
                 <button type="button" class="orders-tab" role="tab" aria-selected="false" data-product-filter="out_of_stock">Out of stock <span id="prod-tab-out-stock">0</span></button>
@@ -800,11 +800,11 @@
             <div class="edit-grid">
               <label class="dash-field">
                 <span>Selling price (₹)</span>
-                <input type="number" id="prod-edit-price" min="1" max="100000" step="1" required />
+                <input type="number" id="prod-edit-price" min="1" max="500000" step="1" required />
               </label>
               <label class="dash-field">
                 <span>Compare-at MRP (₹, optional)</span>
-                <input type="number" id="prod-edit-compare-at" min="0" max="200000" step="1" placeholder="0 = hidden" />
+                <input type="number" id="prod-edit-compare-at" min="0" max="500000" step="1" placeholder="0 = hidden" />
               </label>
               <label class="dash-field edit-grid__full">
                 <span>Cost price (₹, internal only)</span>
@@ -827,7 +827,7 @@
               </label>
               <label class="dash-field">
                 <span>Low stock badge at (≤)</span>
-                <input type="number" id="prod-edit-threshold" min="0" max="1000" step="1" required />
+                <input type="number" id="prod-edit-threshold" min="0" max="10000" step="1" required />
               </label>
             </div>
             <div class="prod-quick-chips" id="prod-drawer-stock-chips" aria-label="Quick stock adjustments">
@@ -842,11 +842,11 @@
           <section class="drawer-section">
             <div class="drawer-section__head">
               <h3>Homepage card tag (sticker)</h3>
-              <span class="drawer-section__meta">Max 28 chars</span>
+              <span class="drawer-section__meta">Max 32 chars</span>
             </div>
             <label class="dash-field">
               <span>Corner badge text</span>
-              <input type="text" id="prod-edit-card-tag" maxlength="28" placeholder="Leave blank for no sticker" />
+              <input type="text" id="prod-edit-card-tag" maxlength="32" placeholder="Leave blank for no sticker" />
             </label>
             <div class="prod-quick-chips" id="prod-tag-presets" aria-label="Tag presets">
               <button type="button" class="btn btn--secondary btn--sm" data-tag-preset="">None</button>
@@ -864,7 +864,7 @@
               <button type="button" class="btn btn--secondary btn--sm" id="prod-add-comp-btn">+ Add platform</button>
             </div>
             <div class="prod-comp-list" id="prod-comparisons-list"></div>
-            <p class="edit-totals-note">Shown on product pages as small transparent non-linked tags (for example: “₹749 on Amazon”). Max 6 entries.</p>
+            <p class="edit-totals-note">Shown on product pages as small transparent non-linked tags (for example: “₹749 on Amazon”). Max 5 entries.</p>
           </section>
 
           <p class="drawer-status-error" id="prod-edit-error" hidden></p>

@@ -2344,6 +2344,17 @@
           }
         }
 
+        // Drift King card aside tracks live marketplace comparison price if configured
+        if (skuName === 'DRIFT KING') {
+          var dkAsideEl = card.querySelector('.shop-card__aside');
+          if (dkAsideEl) {
+            var dkComp = Array.isArray(rec.priceComparisons) && rec.priceComparisons.length ? rec.priceComparisons[0] : null;
+            dkAsideEl.textContent = dkComp
+              ? '12 cm · USB charge · ' + money(dkComp.price) + ' on ' + dkComp.platform
+              : '12 cm · USB charge · Follow & Escape modes';
+          }
+        }
+
         // B4 Stock pill on shop card
         var stockText = formatStockText(rec);
         var cardStock = card.querySelector('.shop-card__stock');

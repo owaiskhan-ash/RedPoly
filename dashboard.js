@@ -668,10 +668,12 @@
               if (SKU_TO_NAME[docSnap.id]) existingMap.set(docSnap.id, docSnap.data());
             });
             var missing = SKU_ORDER.filter(function (s) { return !existingMap.has(s); });
-            var missingCosts = SKU_ORDER.filter(function (s) {
-              return Object.prototype.hasOwnProperty.call(DEFAULT_COST_PRICES, s) &&
-                (!costsSnap || !costsSnap.docs.some(function (c) { return c.id === s; }));
-            });
+            var missingCosts = costsSnap
+              ? SKU_ORDER.filter(function (s) {
+                return Object.prototype.hasOwnProperty.call(DEFAULT_COST_PRICES, s) &&
+                  !costsSnap.docs.some(function (c) { return c.id === s; });
+              })
+              : [];
             if (missing.length || missingCosts.length) {
               var batch = fsMod.writeBatch(db);
               missing.forEach(function (s) {
@@ -701,8 +703,8 @@
               var price = Math.max(1, Math.round(Number(d.price != null ? d.price : base.price)));
               CATALOGUE[n].price = price;
               var comps = Array.isArray(d.priceComparisons)
-                ? d.priceComparisons.filter(function (c) { return c && c.platform && Number(c.price) > 0; }).map(function (c) {
-                  return { platform: String(c.platform).trim().slice(0, 40), price: Math.round(Number(c.price)) };
+                ? d.priceComparisons.filter(function (c) { return c && c.platform && Number(c.price) > 0 && Number(c.price) <= 500000; }).slice(0, 5).map(function (c) {
+                  return { platform: String(c.platform).trim().slice(0, 32), price: Math.round(Number(c.price)) };
                 })
                 : [];
               var ts = d.updatedAt;
@@ -712,7 +714,7 @@
                 costPrice: Object.prototype.hasOwnProperty.call(fallbackCostCache, s) ? fallbackCostCache[s] : null,
                 stock: Math.max(0, Math.floor(Number(d.stock != null ? d.stock : INITIAL_SEED_STOCK))),
                 lowStockThreshold: Math.max(0, Math.floor(Number(d.lowStockThreshold != null ? d.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD))),
-                cardTag: typeof d.cardTag === 'string' ? d.cardTag.trim().slice(0, 28) : (DEFAULT_CARD_TAGS[s] || ''),
+                cardTag: typeof d.cardTag === 'string' ? d.cardTag.trim().slice(0, 32) : (DEFAULT_CARD_TAGS[s] || ''),
                 priceComparisons: comps, href: base.href, image: base.image, initialized: true,
                 updatedAtMs: ts && typeof ts.toMillis === 'function' ? ts.toMillis() : Date.now()
               };
@@ -751,17 +753,17 @@
                 lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[sku] || '', priceComparisons: []
               };
               var nextPrice = patch.price !== undefined ? Math.round(Number(patch.price)) : Math.round(Number(prev.price || base.price));
-              if (!Number.isFinite(nextPrice) || nextPrice < 1 || nextPrice > 100000) throw new Error('Enter a valid price between ₹1 and ₹1,00,000.');
+              if (!Number.isFinite(nextPrice) || nextPrice < 1 || nextPrice > 500000) throw new Error('Enter a valid price between ₹1 and ₹5,00,000.');
               var nextCompareAt = patch.compareAtPrice !== undefined ? Math.round(Number(patch.compareAtPrice)) : Math.round(Number(prev.compareAtPrice || 0));
-              if (!Number.isFinite(nextCompareAt) || nextCompareAt < 0 || nextCompareAt > 200000) throw new Error('Compare-at MRP must be between ₹0 and ₹2,00,000.');
+              if (!Number.isFinite(nextCompareAt) || nextCompareAt < 0 || nextCompareAt > 500000) throw new Error('Compare-at MRP must be between ₹0 and ₹5,00,000.');
               var nextStock = patch.stock !== undefined ? Math.floor(Number(patch.stock)) : Math.floor(Number(prev.stock != null ? prev.stock : INITIAL_SEED_STOCK));
               if (!Number.isFinite(nextStock) || nextStock < 0 || nextStock > 100000) throw new Error('Stock must be between 0 and 1,00,000.');
               var nextThreshold = patch.lowStockThreshold !== undefined ? Math.floor(Number(patch.lowStockThreshold)) : Math.floor(Number(prev.lowStockThreshold != null ? prev.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD));
-              if (!Number.isFinite(nextThreshold) || nextThreshold < 0 || nextThreshold > 1000) throw new Error('Low-stock threshold must be between 0 and 1,000.');
-              var nextTag = patch.cardTag !== undefined ? String(patch.cardTag || '').trim().slice(0, 28) : String(prev.cardTag || '');
+              if (!Number.isFinite(nextThreshold) || nextThreshold < 0 || nextThreshold > 10000) throw new Error('Low-stock threshold must be between 0 and 10,000.');
+              var nextTag = patch.cardTag !== undefined ? String(patch.cardTag || '').trim().slice(0, 32) : String(prev.cardTag || '').trim().slice(0, 32);
               var rawComps = patch.priceComparisons !== undefined ? patch.priceComparisons : (Array.isArray(prev.priceComparisons) ? prev.priceComparisons : []);
-              var nextComps = (rawComps || []).filter(function (c) { return c && c.platform && Number(c.price) > 0; }).slice(0, 6).map(function (c) {
-                return { platform: String(c.platform).trim().slice(0, 40), price: Math.round(Number(c.price)) };
+              var nextComps = (rawComps || []).filter(function (c) { return c && c.platform && Number(c.price) > 0 && Number(c.price) <= 500000; }).slice(0, 5).map(function (c) {
+                return { platform: String(c.platform).trim().slice(0, 32), price: Math.round(Number(c.price)) };
               });
               tx.set(ref, {
                 sku: sku, name: n, price: nextPrice, compareAtPrice: nextCompareAt,
@@ -808,13 +810,20 @@
               };
               var curStock = Math.max(0, Math.floor(Number(prev.stock != null ? prev.stock : INITIAL_SEED_STOCK)));
               var nextStock = Math.max(0, Math.min(100000, curStock + dInt));
+              var cleanComps = (Array.isArray(prev.priceComparisons) ? prev.priceComparisons : [])
+                .filter(function (c) { return c && c.platform && Number(c.price) > 0 && Number(c.price) <= 500000; })
+                .slice(0, 5)
+                .map(function (c) {
+                  return { platform: String(c.platform).trim().slice(0, 32), price: Math.round(Number(c.price)) };
+                });
+              var cleanTag = typeof prev.cardTag === 'string' ? prev.cardTag.trim().slice(0, 32) : (DEFAULT_CARD_TAGS[sku] || '');
               tx.set(ref, {
                 sku: sku, name: n, price: Math.round(Number(prev.price || base.price)),
                 compareAtPrice: Math.round(Number(prev.compareAtPrice || 0)),
                 stock: nextStock,
                 lowStockThreshold: Math.floor(Number(prev.lowStockThreshold != null ? prev.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD)),
-                cardTag: typeof prev.cardTag === 'string' ? prev.cardTag : (DEFAULT_CARD_TAGS[sku] || ''),
-                priceComparisons: Array.isArray(prev.priceComparisons) ? prev.priceComparisons : [],
+                cardTag: cleanTag,
+                priceComparisons: cleanComps,
                 updatedAt: fsMod.serverTimestamp()
               });
               return {
@@ -823,8 +832,8 @@
                 costPrice: prevCost,
                 stock: nextStock,
                 lowStockThreshold: Math.floor(Number(prev.lowStockThreshold != null ? prev.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD)),
-                cardTag: typeof prev.cardTag === 'string' ? prev.cardTag : (DEFAULT_CARD_TAGS[sku] || ''),
-                priceComparisons: Array.isArray(prev.priceComparisons) ? prev.priceComparisons : [],
+                cardTag: cleanTag,
+                priceComparisons: cleanComps,
                 href: base.href, image: base.image, initialized: true, updatedAtMs: Date.now()
               };
             });
@@ -3541,7 +3550,7 @@
 
       var platInput = document.createElement('input');
       platInput.type = 'text';
-      platInput.maxLength = 40;
+      platInput.maxLength = 32;
       platInput.placeholder = 'Platform (e.g. Amazon)';
       platInput.value = comp.platform || '';
       platInput.setAttribute('aria-label', 'Comparison platform ' + (idx + 1));
@@ -3552,7 +3561,7 @@
       var priceInput = document.createElement('input');
       priceInput.type = 'number';
       priceInput.min = '1';
-      priceInput.max = '200000';
+      priceInput.max = '500000';
       priceInput.step = '1';
       priceInput.placeholder = 'Price (₹)';
       priceInput.value = comp.price ? String(comp.price) : '';
@@ -3694,8 +3703,8 @@
 
   if (prodAddCompBtn) {
     prodAddCompBtn.addEventListener('click', function () {
-      if (draftComparisons.length >= 6) {
-        showToast('Maximum 6 marketplace comparisons per product');
+      if (draftComparisons.length >= 5) {
+        showToast('Maximum 5 marketplace comparisons per product');
         return;
       }
       draftComparisons.push({ platform: '', price: 0 });
@@ -3722,18 +3731,18 @@
       var costVal = hasCostInput ? Math.round(Number(costRawStr) * 100) / 100 : null;
       var stockVal = Math.floor(Number(prodEditStock ? prodEditStock.value : 0));
       var thresholdVal = Math.floor(Number(prodEditThreshold ? prodEditThreshold.value : DEFAULT_LOW_STOCK_THRESHOLD));
-      var tagVal = (prodEditCardTag ? prodEditCardTag.value : '').trim().slice(0, 28);
+      var tagVal = (prodEditCardTag ? prodEditCardTag.value : '').trim().slice(0, 32);
 
-      if (!Number.isFinite(priceVal) || priceVal < 1 || priceVal > 100000) {
+      if (!Number.isFinite(priceVal) || priceVal < 1 || priceVal > 500000) {
         if (prodEditError) {
-          prodEditError.textContent = 'Enter a valid selling price between ₹1 and ₹1,00,000.';
+          prodEditError.textContent = 'Enter a valid selling price between ₹1 and ₹5,00,000.';
           prodEditError.hidden = false;
         }
         return;
       }
-      if (!Number.isFinite(compareVal) || compareVal < 0 || compareVal > 200000) {
+      if (!Number.isFinite(compareVal) || compareVal < 0 || compareVal > 500000) {
         if (prodEditError) {
-          prodEditError.textContent = 'Compare-at MRP must be between ₹0 and ₹2,00,000.';
+          prodEditError.textContent = 'Compare-at MRP must be between ₹0 and ₹5,00,000.';
           prodEditError.hidden = false;
         }
         return;
@@ -3752,21 +3761,21 @@
         }
         return;
       }
-      if (!Number.isFinite(thresholdVal) || thresholdVal < 0 || thresholdVal > 1000) {
+      if (!Number.isFinite(thresholdVal) || thresholdVal < 0 || thresholdVal > 10000) {
         if (prodEditError) {
-          prodEditError.textContent = 'Low-stock threshold must be between 0 and 1,000.';
+          prodEditError.textContent = 'Low-stock threshold must be between 0 and 10,000.';
           prodEditError.hidden = false;
         }
         return;
       }
 
       var cleanComparisons = [];
-      for (var cIdx = 0; cIdx < draftComparisons.length; cIdx += 1) {
+      for (var cIdx = 0; cIdx < draftComparisons.length && cleanComparisons.length < 5; cIdx += 1) {
         var comp = draftComparisons[cIdx];
-        var plat = String(comp.platform || '').trim().slice(0, 40);
+        var plat = String(comp.platform || '').trim().slice(0, 32);
         var cPrice = Math.round(Number(comp.price || 0));
         if (!plat && !cPrice) continue;
-        if (!plat || !Number.isFinite(cPrice) || cPrice < 1 || cPrice > 200000) {
+        if (!plat || !Number.isFinite(cPrice) || cPrice < 1 || cPrice > 500000) {
           if (prodEditError) {
             prodEditError.textContent = 'Each marketplace comparison needs a platform name and a valid ₹ price.';
             prodEditError.hidden = false;

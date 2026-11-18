@@ -2416,9 +2416,11 @@ export async function listAllProducts(): Promise<ProductCatalogRecord[]> {
     });
 
     const missingSkus = SKU_ORDER.filter((sku) => !docsMap.has(sku));
-    const missingDefaultCosts = SKU_ORDER.filter(
-      (sku) => !costMap.has(sku) && DEFAULT_PRODUCTS_META[sku].costPrice !== undefined
-    );
+    const missingDefaultCosts = costsSnap
+      ? SKU_ORDER.filter(
+          (sku) => !costMap.has(sku) && DEFAULT_PRODUCTS_META[sku].costPrice !== undefined
+        )
+      : [];
     if (missingSkus.length || missingDefaultCosts.length) {
       const batch = writeBatch(db);
       for (const sku of missingSkus) {
