@@ -43,8 +43,6 @@ body.creature-page--pixel{
 }
 
 /* Blocky chrome: square corners, hard shadows, pixel-grid surfaces. */
-body.creature-page--pixel .char-nav{border-bottom:4px solid var(--pixel-ink);background:var(--character-nav);backdrop-filter:none}
-body.creature-page--pixel .char-nav a{font-family:'Silkscreen','Archivo',sans-serif;letter-spacing:.2px}
 body.creature-page--pixel .char-hero{
   background:
     radial-gradient(circle at 76% 42%,rgba(75,210,247,.28),transparent 34%),
