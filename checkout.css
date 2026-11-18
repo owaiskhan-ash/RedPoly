@@ -1,11 +1,6 @@
 *{box-sizing:border-box}
 .checkout-page{min-height:100vh;background:#10100d;color:#f7f1e6;background-image:radial-gradient(ellipse at 8% 17%,rgba(200,255,0,.14),transparent 28%),radial-gradient(ellipse at 92% 38%,rgba(255,107,26,.14),transparent 30%),radial-gradient(ellipse at 72% 92%,rgba(99,69,255,.16),transparent 27%);font-family:'Archivo',system-ui,sans-serif}
-.checkout-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(18px,5vw,72px);border-bottom:1px solid rgba(255,255,255,.13);background:rgba(10,10,10,.72)}
-.checkout-brand{display:flex;align-items:center;gap:12px;color:#c8ff00;font-size:8px;font-weight:900;letter-spacing:2px}
-.checkout-brand img{width:95px;height:auto}
-.checkout-back{color:#fff;font-size:9px;font-weight:900;letter-spacing:1px}
-.checkout-back span{color:#c8ff00}
-.checkout-main{width:min(1200px,100% - 36px);margin:auto;padding:32px 0 76px}
+.checkout-main{width:min(1200px,100% - 36px);margin:auto;padding:26px 0 76px}
 .checkout-kicker{display:flex;justify-content:space-between;gap:15px;color:#c8ff00;font-size:9px;font-weight:900;letter-spacing:2px}
 .checkout-kicker span:last-child{color:#aaa69c}
 .checkout-main>h1{margin-top:17px;font:clamp(62px,10vw,120px)/.8 'Anton',sans-serif;letter-spacing:-1px}
@@ -86,7 +81,7 @@
 .thankyou-actions a{padding:12px 14px;background:#171512;color:#fff;font-size:9px;font-weight:900;letter-spacing:1px}
 .thankyou-actions a:first-child{background:#4439b8;color:#fff}
 @media(max-width:760px){.checkout-layout{grid-template-columns:1fr}.checkout-summary{position:relative;top:auto;grid-row:1}.checkout-form-panel{grid-row:2}.checkout-main{padding-top:24px}.checkout-kicker{font-size:7px;letter-spacing:1px}.checkout-summary{padding:21px}.checkout-fields,.demo-card-fields{gap:10px}}
-@media(max-width:440px){.checkout-fields,.demo-card-fields{grid-template-columns:1fr}.field--wide{grid-column:1}.checkout-header{padding:14px 16px}.checkout-brand img{width:78px}.checkout-brand{font-size:7px;letter-spacing:1.3px}.checkout-back{font-size:8px}.checkout-main{width:calc(100% - 28px)}.checkout-main>h1{font-size:58px}.demo-payment{padding:14px}.checkout-form-panel,.checkout-summary{padding:18px}.checkout-submit{font-size:10px}}
+@media(max-width:440px){.checkout-fields,.demo-card-fields{grid-template-columns:1fr}.field--wide{grid-column:1}.checkout-main{width:calc(100% - 28px)}.checkout-main>h1{font-size:58px}.demo-payment{padding:14px}.checkout-form-panel,.checkout-summary{padding:18px}.checkout-submit{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.checkout-submit{transition:none}}
 
 /* Quick checkout-to-thank-you handoff and a light celebration on arrival. */
@@ -106,7 +101,7 @@
 .thankyou-fx__piece--star{color:#c8ff00;font-size:22px;text-shadow:1px 1px #171512}
 .thankyou-fx__piece--dot{width:9px;height:9px;margin:9px;border-radius:50%;background:#ff6b1a;box-shadow:0 0 0 3px rgba(255,107,26,.16)}
 .thankyou-fx__piece--ribbon{width:7px;height:20px;background:#4439b8;border-radius:2px;transform:rotate(28deg)}
-.thankyou-page .checkout-header,.thankyou-page .thankyou-main{position:relative;z-index:3}
+.thankyou-page .thankyou-main{position:relative;z-index:3}
 @keyframes thankyou-card-in{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes thankyou-badge-pop{0%{opacity:0;transform:scale(.65) rotate(-24deg)}70%{opacity:1;transform:scale(1.12) rotate(7deg)}100%{transform:scale(1) rotate(0)}}
 @keyframes thankyou-confetti{0%{opacity:0;transform:translate3d(0,-10px,0) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate3d(12px,42vh,0) rotate(175deg)}}

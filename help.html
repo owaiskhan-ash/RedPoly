@@ -10,11 +10,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=footer-one-20261130" />
-  <link rel="stylesheet" href="/help.css?v=footer-one-20261130" />
+  <link rel="stylesheet" href="/styles.css?v=header-one-20261130" />
+  <link rel="stylesheet" href="/help.css?v=header-one-20261130" />
 </head>
 <body class="help-page">
-  <header class="checkout-header"><a href="/" class="checkout-brand" aria-label="REDPOLY home"><img src="/assets/images/redpoly/redpoly-logo.png" alt="REDPOLY" width="1353" height="711" /><span>TOYS</span></a><a href="/#shop" class="checkout-back">BACK TO THE SHOP <span aria-hidden="true">↗</span></a></header>
+<header class="site-header">
+  <div class="site-header__inner wrap">
+    <a class="site-header__brand" href="/" aria-label="REDPOLY home">
+      <img src="/assets/images/redpoly/redpoly-logo.png?v=redpoly-logo-20261114" alt="REDPOLY" width="1353" height="711" />
+      <span>TOYS</span>
+    </a>
+    <nav class="site-header__nav" aria-label="Main navigation">
+      <a href="/#shop">SHOP</a>
+      <a href="/stories">COMIC</a>
+      <a href="/help">HELP</a>
+      <a href="/help#shipping">POLICIES</a>
+    </nav>
+    <button class="site-header__menu" id="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><span class="site-header__menu-icon" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only">Menu</span></button>
+  </div>
+  <nav class="site-menu wrap" id="site-menu" aria-label="Menu">
+    <a href="/#shop">SHOP</a><a href="/stories">COMIC</a><a href="/help">HELP</a><a href="/help#shipping">POLICIES</a>
+  </nav>
+</header>
   <main class="help-main">
     <div class="help-intro"><p>THE REDPOLY HELP DESK</p><h1>HELP +<br /><span>POLICIES.</span></h1><p>Quick answers about your REDPOLY order.</p></div>
     <section class="help-contact" id="contact" aria-labelledby="contact-title"><span class="help-contact__spark" aria-hidden="true">✦</span><div><p class="help-eyebrow">NEED A HAND?</p><h2 id="contact-title">CONTACT THE CREW</h2><p>Demo support inbox: <strong>support@redpoly.com</strong></p><p class="help-placeholder-note">Placeholder only. This address is not monitored. Replace it with your real support contact before accepting orders.</p><p class="help-business__title">BUSINESS DETAILS</p><dl class="help-business" aria-label="Business details"><div><dt>LEGAL NAME</dt><dd>Owais Khan</dd></div><div><dt>TRADE NAME</dt><dd>Gizmoz Mobile Sales Services</dd></div><div><dt>GSTIN</dt><dd>27BJGPK5062E1ZB</dd></div><div><dt>ENTITY TYPE</dt><dd>Proprietorship</dd></div></dl></div></section>
@@ -35,5 +52,6 @@
     <p class="site-footer__legal">GSTIN 27BJGPK5062E1ZB</p>
   </div>
 </footer>
+<script src="/main.js?v=header-one-20261130" defer></script>
 </body>
 </html>

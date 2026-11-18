@@ -1,13 +1,6 @@
 .stories-page{min-height:100vh;background:#0a0a0a;color:#f4f0e6;background-image:radial-gradient(rgba(200,255,0,.1) .8px,transparent .9px),radial-gradient(ellipse at 78% 8%,rgba(80,43,120,.28),transparent 34rem);background-size:9px 9px,auto}
-.stories-header,.stories-main{width:min(1180px,calc(100% - 48px));margin-inline:auto}
-.stories-header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid rgba(244,240,230,.18)}
-.stories-brand{display:flex;align-items:center;gap:13px;color:var(--lime);font:10px/1 'Archivo',sans-serif;font-weight:900;letter-spacing:1.2px}
-.stories-brand img{width:84px;height:45px;object-fit:contain}
-.stories-home-link{display:inline-flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid rgba(244,240,230,.45);font-size:10px;font-weight:900;letter-spacing:1px;transition:background .2s,color .2s,transform .2s}
-.stories-home-link span{color:var(--lime);font-size:15px}
-.stories-home-link:hover{background:var(--lime);color:#111;transform:translateY(-2px)}
-.stories-home-link:hover span{color:#111}
-.stories-main{padding-bottom:74px}
+.stories-main{width:min(1180px,calc(100% - 48px));margin-inline:auto}
+.stories-main{padding-top:26px;padding-bottom:74px}
 .stories-hero{position:relative;isolation:isolate;min-height:300px;padding:68px 8% 48px;border-bottom:2px solid #000;background:linear-gradient(112deg,rgba(32,29,47,.96),rgba(12,12,16,.86));overflow:hidden}
 .stories-hero::before,.stories-hero::after{content:"";position:absolute;z-index:-1;pointer-events:none}
 .stories-hero::before{inset:0;opacity:.18;background:repeating-linear-gradient(135deg,transparent 0 27px,rgba(255,255,255,.2) 28px 29px,transparent 30px 58px);background-size:160% 160%;mask-image:linear-gradient(100deg,#000,transparent 76%);animation:hero-lines-drift 24s linear infinite}
@@ -91,11 +84,7 @@
 .reader-progress span{display:block;width:0;height:100%;background:var(--lime);transition:width .25s}
 
 @media(max-width:640px){
-  .stories-header,.stories-main{width:calc(100% - 30px)}
-  .stories-header{padding:16px 0}
-  .stories-brand img{width:67px;height:36px}
-  .stories-brand{font-size:8px;gap:8px}
-  .stories-home-link{padding:9px 8px;font-size:8px;letter-spacing:.6px}
+  .stories-main{width:calc(100% - 30px)}
   .stories-hero{min-height:260px;padding:51px 16px 33px}
   .stories-hero h1{font-size:clamp(43px,12vw,62px)}
   .stories-intro{font-size:11px}
@@ -127,7 +116,7 @@
   .reader-page-status{font-size:14px}
   .reader-progress{width:70px}
 }
-@media(prefers-reduced-motion:reduce){.issue-card,.issue-card__cover img,.stories-home-link,.reader-arrow,.reader-progress span{transition:none!important}.issue-card:hover{transform:none}.stories-kicker,.stories-hero h1,.stories-intro,.stories-stamp,.stories-hero::before,.stories-hero::after{animation:none!important;opacity:1}.stories-stamp{transform:rotate(9deg)}}
+@media(prefers-reduced-motion:reduce){.issue-card,.issue-card__cover img,.reader-arrow,.reader-progress span{transition:none!important}.issue-card:hover{transform:none}.stories-kicker,.stories-hero h1,.stories-intro,.stories-stamp,.stories-hero::before,.stories-hero::after{animation:none!important;opacity:1}.stories-stamp{transform:rotate(9deg)}}
 /* Small phones: the cover fits the card instead of forcing a 380px width */
 @media(max-width:420px){.issue-card__cover{aspect-ratio:auto}}
 
