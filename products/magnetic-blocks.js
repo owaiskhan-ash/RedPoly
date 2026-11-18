@@ -106,9 +106,9 @@
       finalBuy.setAttribute('data-price', String(price));
       finalBuy.setAttribute('aria-label', 'Add ' + say + ' to cart for ' + price + ' rupees');
       if (!finalBuy.disabled && !finalBuy.classList.contains('added')) {
-        finalBuy.textContent = 'ADD TO CART — ' + money(price);
+        finalBuy.textContent = 'ADD TO CART · ' + money(price);
       }
-      finalBuy.dataset.baseLabel = 'ADD TO CART — ' + money(price);
+      finalBuy.dataset.baseLabel = 'ADD TO CART · ' + money(price);
     }
 
     var stickyBar = document.querySelector('.mobile-buy-bar');

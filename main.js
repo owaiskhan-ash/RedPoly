@@ -1697,12 +1697,12 @@
         if (isOut) {
           var outNote = document.createElement('p');
           outNote.className = 'cart-item__stock cart-item__stock--out';
-          outNote.textContent = 'OUT OF STOCK — remove to check out';
+          outNote.textContent = 'OUT OF STOCK: remove to check out';
           details.appendChild(outNote);
         } else if (exceedsStock) {
           var overNote = document.createElement('p');
           overNote.className = 'cart-item__stock cart-item__stock--out';
-          overNote.textContent = 'ONLY ' + availStock + ' LEFT IN STOCK — reduce quantity';
+          overNote.textContent = 'ONLY ' + availStock + ' LEFT IN STOCK: reduce quantity';
           details.appendChild(overNote);
         } else if (stockManaged && availStock <= rec.lowStockThreshold) {
           var lowNote = document.createElement('p');
@@ -2470,11 +2470,11 @@
           var finalBuy = document.querySelector('.char-buy--final');
           if (finalBuy) {
             finalBuy.setAttribute('data-name', activeSku);
-            applyButtonStockState(finalBuy, activeRec, 'ADD TO CART — ' + money(activeRec.price), 'OUT OF STOCK');
+            applyButtonStockState(finalBuy, activeRec, 'ADD TO CART · ' + money(activeRec.price), 'OUT OF STOCK');
             if (!finalBuy.disabled && !finalBuy.classList.contains('added')) {
-              finalBuy.textContent = 'ADD TO CART — ' + money(activeRec.price);
+              finalBuy.textContent = 'ADD TO CART · ' + money(activeRec.price);
             }
-            finalBuy.dataset.baseLabel = 'ADD TO CART — ' + money(activeRec.price);
+            finalBuy.dataset.baseLabel = 'ADD TO CART · ' + money(activeRec.price);
           }
           if (stickyPriceNode) {
             stickyPriceNode.textContent = money(activeRec.price);
