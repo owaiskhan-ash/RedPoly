@@ -21,9 +21,11 @@
     'MAGNETIC BLOCKS 36 PCS': { price: 549, href: '/magnetic-blocks?pack=36pcs', image: '/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 42 PCS': { price: 599, href: '/magnetic-blocks?pack=42pcs', image: '/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 64 PCS': { price: 799, href: '/magnetic-blocks?pack=64pcs', image: '/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' },
-    'RISE ONE X 4X4': { price: 1499, href: '/rise-one-x-4x4', image: '/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' }
+    'RISE ONE X 4X4': { price: 1499, href: '/rise-one-x-4x4', image: '/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
+    'DRIFT KING': { price: 799, href: '/drift-king', image: '/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' }
   };
   var SKU_ORDER = [
+    'drift-king',
     'rise-one-x-4x4',
     'magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs',
     'mecha-rover', 'bubble-gun', 'stunt-pet',
@@ -31,6 +33,7 @@
     'mini-cool-car', 'gel-storm', 'pixel-splash'
   ];
   var SKU_TO_NAME = {
+    'drift-king': 'DRIFT KING',
     'rise-one-x-4x4': 'RISE ONE X 4X4',
     'magnetic-blocks-25-pcs': 'MAGNETIC BLOCKS 25 PCS',
     'magnetic-blocks-36-pcs': 'MAGNETIC BLOCKS 36 PCS',
@@ -52,6 +55,7 @@
     NAME_TO_SKU[SKU_TO_NAME[sku]] = sku;
   });
   var PRODUCT_GROUPS = [
+    { id: 'drift-king', name: 'DRIFT KING', href: '/drift-king', image: '/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124', skus: ['drift-king'], variantLabels: {} },
     { id: 'rise-one-x-4x4', name: 'RISE ONE X 4X4', href: '/rise-one-x-4x4', image: '/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122', skus: ['rise-one-x-4x4'], variantLabels: {} },
     {
       id: 'magnetic-blocks',
@@ -96,6 +100,7 @@
     });
   });
   var DEFAULT_CARD_TAGS = {
+    'drift-king': 'NEW IN STORE',
     'rise-one-x-4x4': 'NEW IN STORE',
     'magnetic-blocks-25-pcs': 'NEW IN STORE',
     'magnetic-blocks-36-pcs': '',
@@ -116,7 +121,7 @@
   var INITIAL_SEED_STOCK = 20;
 
   var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-  var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4'];
+  var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king'];
   var PRODUCT_PAGE_BY_SLUG = {
     'bubble-gun': '/bubble-gun#product-reviews',
     'stunt-pet': '/stunt-pet#product-reviews',
@@ -126,7 +131,8 @@
     'pixel-splash': '/pixel-splash#product-reviews',
     'cute-dinos': '/cute-dinos#product-reviews',
     'magnetic-blocks': '/magnetic-blocks#product-reviews',
-    'rise-one-x-4x4': '/rise-one-x-4x4#product-reviews'
+    'rise-one-x-4x4': '/rise-one-x-4x4#product-reviews',
+    'drift-king': '/drift-king#product-reviews'
   };
 
   var GOOGLE_SVG = '<svg class="google-btn-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5H1.2v3.1C3.2 21.4 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.2C.4 8.2 0 10.1 0 12s.4 3.8 1.2 5.4l4-3.1z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3.3.6 4.6 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.3 0 3.2 2.6 1.2 6.6l4 3.1c1-2.9 3.7-5 6.8-5z"/></svg>';
@@ -272,7 +278,9 @@
         if (!Number.isFinite(num) || num < 0 || num > 500000) return null;
         return Math.round(num * 100) / 100;
       }
-      var fallbackCostCache = {};
+      var DEFAULT_COST_PRICES = { 'drift-king': 485 };
+      var DEFAULT_PRICE_COMPARISONS = { 'drift-king': [{ platform: 'Amazon', price: 859 }] };
+      var fallbackCostCache = { 'drift-king': 485 };
 
       function toReviewRecord(docId, d, fallbackSlug) {
         var createdTs = d.createdAt;
@@ -610,11 +618,12 @@
           return SKU_ORDER.map(function (sku) {
             var name = SKU_TO_NAME[sku];
             var base = CATALOGUE[name];
+            var compsDefault = DEFAULT_PRICE_COMPARISONS[sku] ? DEFAULT_PRICE_COMPARISONS[sku].map(function (c) { return { platform: c.platform, price: c.price }; }) : [];
             return {
               sku: sku, name: name, price: base.price, compareAtPrice: 0,
               costPrice: Object.prototype.hasOwnProperty.call(fallbackCostCache, sku) ? fallbackCostCache[sku] : null,
               stock: null, lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[sku] || '',
-              priceComparisons: [], href: base.href, image: base.image, initialized: false, updatedAtMs: 0
+              priceComparisons: compsDefault, href: base.href, image: base.image, initialized: false, updatedAtMs: 0
             };
           });
         },
@@ -629,11 +638,12 @@
           if (!slug) return null;
           var name = SKU_TO_NAME[slug];
           var base = CATALOGUE[name];
+          var compsDefault = DEFAULT_PRICE_COMPARISONS[slug] ? DEFAULT_PRICE_COMPARISONS[slug].map(function (c) { return { platform: c.platform, price: c.price }; }) : [];
           return {
             sku: slug, name: name, price: base.price, compareAtPrice: 0,
             costPrice: Object.prototype.hasOwnProperty.call(fallbackCostCache, slug) ? fallbackCostCache[slug] : null,
             stock: null, lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[slug] || '',
-            priceComparisons: [], href: base.href, image: base.image, initialized: false, updatedAtMs: 0
+            priceComparisons: compsDefault, href: base.href, image: base.image, initialized: false, updatedAtMs: 0
           };
         },
         listAllProducts: async function () {
@@ -658,17 +668,29 @@
               if (SKU_TO_NAME[docSnap.id]) existingMap.set(docSnap.id, docSnap.data());
             });
             var missing = SKU_ORDER.filter(function (s) { return !existingMap.has(s); });
-            if (missing.length) {
+            var missingCosts = SKU_ORDER.filter(function (s) {
+              return Object.prototype.hasOwnProperty.call(DEFAULT_COST_PRICES, s) &&
+                (!costsSnap || !costsSnap.docs.some(function (c) { return c.id === s; }));
+            });
+            if (missing.length || missingCosts.length) {
               var batch = fsMod.writeBatch(db);
               missing.forEach(function (s) {
                 var n = SKU_TO_NAME[s];
+                var compsSeed = DEFAULT_PRICE_COMPARISONS[s] ? DEFAULT_PRICE_COMPARISONS[s].map(function (c) { return { platform: c.platform, price: c.price }; }) : [];
                 var seedPayload = {
                   sku: s, name: n, price: CATALOGUE[n].price, compareAtPrice: 0, stock: INITIAL_SEED_STOCK,
                   lowStockThreshold: DEFAULT_LOW_STOCK_THRESHOLD, cardTag: DEFAULT_CARD_TAGS[s] || '',
-                  priceComparisons: [], updatedAt: fsMod.serverTimestamp()
+                  priceComparisons: compsSeed, updatedAt: fsMod.serverTimestamp()
                 };
                 batch.set(fsMod.doc(db, 'products', s), seedPayload);
                 existingMap.set(s, seedPayload);
+              });
+              missingCosts.forEach(function (s) {
+                var cVal = DEFAULT_COST_PRICES[s];
+                batch.set(fsMod.doc(db, 'productCosts', s), {
+                  sku: s, costPrice: cVal, updatedAt: fsMod.serverTimestamp()
+                });
+                fallbackCostCache[s] = cVal;
               });
               await batch.commit();
             }

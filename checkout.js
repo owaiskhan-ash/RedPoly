@@ -23,7 +23,8 @@
     'MAGNETIC BLOCKS 36 PCS': { price:549, image:'/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 42 PCS': { price:599, image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 64 PCS': { price:799, image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' },
-    'RISE ONE X 4X4': { price:1499, image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' }
+    'RISE ONE X 4X4': { price:1499, image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
+    'DRIFT KING': { price:799, image:'/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' }
   };
   var liveCatalogMap = {};
   (function hydrateCatalogFromCache() {

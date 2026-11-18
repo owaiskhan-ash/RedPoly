@@ -44,6 +44,8 @@ const permanentRedirects = {
   '/products/rise-one-x-4x4.html': '/rise-one-x-4x4',
   '/rise-one-x': '/rise-one-x-4x4',
   '/products/rise-one-x': '/rise-one-x-4x4',
+  '/products/drift-king': '/drift-king',
+  '/products/drift-king.html': '/drift-king',
 };
 
 const temporaryRedirects = new Set([
@@ -87,6 +89,7 @@ const rewrites = {
   '/mecha-rover': 'products/mecha-rover.html',
   '/magnetic-blocks': 'products/magnetic-blocks.html',
   '/rise-one-x-4x4': 'products/rise-one-x-4x4.html',
+  '/drift-king': 'products/drift-king.html',
   '/account': 'account.html',
   '/my-account': 'account.html',
   '/dashboard': 'dashboard.html',

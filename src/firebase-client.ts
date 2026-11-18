@@ -106,7 +106,8 @@ export type ProductSlug =
   | 'pixel-splash'
   | 'cute-dinos'
   | 'magnetic-blocks'
-  | 'rise-one-x-4x4';
+  | 'rise-one-x-4x4'
+  | 'drift-king';
 
 export interface OrderRecord {
   id: string;
@@ -199,7 +200,8 @@ export type SkuSlug =
   | 'magnetic-blocks-36-pcs'
   | 'magnetic-blocks-42-pcs'
   | 'magnetic-blocks-64-pcs'
-  | 'rise-one-x-4x4';
+  | 'rise-one-x-4x4'
+  | 'drift-king';
 
 export interface ProductCatalogRecord {
   sku: SkuSlug;
@@ -389,6 +391,11 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
     href: '/rise-one-x-4x4',
     image: '/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122',
   },
+  'DRIFT KING': {
+    price: 799,
+    href: '/drift-king',
+    image: '/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124',
+  },
 };
 
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
@@ -400,6 +407,7 @@ const FREE_GIFT_FROM = 3500;
 const GST_RATE = 12;
 
 const SKU_ORDER: ReadonlyArray<SkuSlug> = [
+  'drift-king',
   'rise-one-x-4x4',
   'magnetic-blocks-25-pcs',
   'magnetic-blocks-36-pcs',
@@ -421,9 +429,18 @@ interface DefaultSeedMeta {
   name: string;
   price: number;
   cardTag: string;
+  costPrice?: number;
+  priceComparisons?: PriceComparison[];
 }
 
 const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
+  'drift-king': {
+    name: 'DRIFT KING',
+    price: 799,
+    cardTag: 'NEW IN STORE',
+    costPrice: 485,
+    priceComparisons: [{ platform: 'Amazon', price: 859 }],
+  },
   'rise-one-x-4x4': { name: 'RISE ONE X 4X4', price: 1499, cardTag: 'NEW IN STORE' },
   'magnetic-blocks-25-pcs': { name: 'MAGNETIC BLOCKS 25 PCS', price: 399, cardTag: 'NEW IN STORE' },
   'magnetic-blocks-36-pcs': { name: 'MAGNETIC BLOCKS 36 PCS', price: 549, cardTag: '' },
@@ -442,6 +459,7 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
 };
 
 const NAME_TO_SKU: Record<string, SkuSlug> = {
+  'DRIFT KING': 'drift-king',
   'RISE ONE X 4X4': 'rise-one-x-4x4',
   'MAGNETIC BLOCKS 25 PCS': 'magnetic-blocks-25-pcs',
   'MAGNETIC BLOCKS 36 PCS': 'magnetic-blocks-36-pcs',
@@ -471,11 +489,11 @@ function buildDefaultProductRecord(sku: SkuSlug): ProductCatalogRecord {
     name: seed.name,
     price: seed.price,
     compareAtPrice: 0,
-    costPrice: null,
+    costPrice: seed.costPrice ?? null,
     stock: null,
     lowStockThreshold: 5,
     cardTag: seed.cardTag,
-    priceComparisons: [],
+    priceComparisons: seed.priceComparisons ? seed.priceComparisons.map((c) => ({ ...c })) : [],
     href: cat ? cat.href : `/${sku}`,
     image: cat ? cat.image : '',
     updatedAtMs: 0,
@@ -522,7 +540,8 @@ function toProductCatalogRecord(sku: SkuSlug, data: Record<string, unknown>): Pr
     Number.isFinite(rawCompare) && rawCompare >= 0 && rawCompare <= 500000
       ? Math.round(rawCompare)
       : 0;
-  const costPrice = normalizeCostPrice(data.costPrice);
+  const costPrice =
+    normalizeCostPrice(data.costPrice) ?? (seed.costPrice !== undefined ? seed.costPrice : null);
   const hasStockField = data.stock !== undefined && data.stock !== null && Number.isFinite(Number(data.stock));
   const stock = hasStockField ? Math.max(0, Math.min(100000, Math.floor(Number(data.stock)))) : null;
   const rawThresh = Number(data.lowStockThreshold);
@@ -531,6 +550,12 @@ function toProductCatalogRecord(sku: SkuSlug, data: Record<string, unknown>): Pr
     : 5;
   const cardTag =
     typeof data.cardTag === 'string' ? data.cardTag.trim().slice(0, 32) : seed.cardTag;
+  const priceComparisons =
+    data.priceComparisons !== undefined
+      ? sanitizeComparisons(data.priceComparisons)
+      : seed.priceComparisons
+        ? seed.priceComparisons.map((c) => ({ ...c }))
+        : [];
   const ts = data.updatedAt as Timestamp | undefined;
   const updatedAtMs =
     ts && typeof ts.toMillis === 'function'
@@ -548,7 +573,7 @@ function toProductCatalogRecord(sku: SkuSlug, data: Record<string, unknown>): Pr
     stock,
     lowStockThreshold,
     cardTag,
-    priceComparisons: sanitizeComparisons(data.priceComparisons),
+    priceComparisons,
     href: cat ? cat.href : `/${sku}`,
     image: cat ? cat.image : '',
     updatedAtMs,
@@ -666,6 +691,7 @@ const VALID_PRODUCT_SLUGS: ReadonlyArray<ProductSlug> = [
   'cute-dinos',
   'magnetic-blocks',
   'rise-one-x-4x4',
+  'drift-king',
 ];
 
 function normalizeOrderStatus(raw: unknown): OrderStatus {
@@ -2390,7 +2416,10 @@ export async function listAllProducts(): Promise<ProductCatalogRecord[]> {
     });
 
     const missingSkus = SKU_ORDER.filter((sku) => !docsMap.has(sku));
-    if (missingSkus.length) {
+    const missingDefaultCosts = SKU_ORDER.filter(
+      (sku) => !costMap.has(sku) && DEFAULT_PRODUCTS_META[sku].costPrice !== undefined
+    );
+    if (missingSkus.length || missingDefaultCosts.length) {
       const batch = writeBatch(db);
       for (const sku of missingSkus) {
         const seed = DEFAULT_PRODUCTS_META[sku];
@@ -2402,18 +2431,35 @@ export async function listAllProducts(): Promise<ProductCatalogRecord[]> {
           stock: 20,
           lowStockThreshold: 5,
           cardTag: seed.cardTag,
-          priceComparisons: [] as PriceComparison[],
+          priceComparisons: seed.priceComparisons
+            ? seed.priceComparisons.map((c) => ({ ...c }))
+            : ([] as PriceComparison[]),
         };
         batch.set(doc(db, 'products', sku), {
           ...seedDoc,
           updatedAt: serverTimestamp(),
         });
-        const costVal = costMap.get(sku);
+        const costVal = costMap.get(sku) ?? seed.costPrice;
         docsMap.set(sku, {
           ...seedDoc,
           ...(costVal !== undefined ? { costPrice: costVal } : {}),
           updatedAtMs: Date.now(),
         });
+      }
+      for (const sku of missingDefaultCosts) {
+        const seedCost = DEFAULT_PRODUCTS_META[sku].costPrice;
+        if (seedCost !== undefined) {
+          batch.set(doc(db, 'productCosts', sku), {
+            sku,
+            costPrice: seedCost,
+            updatedAt: serverTimestamp(),
+          });
+          costMap.set(sku, seedCost);
+          const existingDoc = docsMap.get(sku);
+          if (existingDoc && existingDoc.costPrice === undefined) {
+            existingDoc.costPrice = seedCost;
+          }
+        }
       }
       await batch.commit();
     }
