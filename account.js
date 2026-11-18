@@ -794,7 +794,9 @@
 
     var actions = document.createElement('div');
     actions.className = 'order-card__actions';
-    var validRebuyItems = (order.items || []).filter(function (i) { return inCatalogue(i.name, i.price); });
+    var validRebuyItems = (order.items || []).filter(function (i) {
+      return Boolean(i && typeof i.name === 'string' && isKnownProduct(i.name));
+    });
     if (validRebuyItems.length) {
       var rebuy = document.createElement('button');
       rebuy.type = 'button';
@@ -802,19 +804,35 @@
       rebuy.textContent = 'BUY AGAIN ↗';
       rebuy.addEventListener('click', function () {
         var cart = readCart();
+        var addedAny = false;
         validRebuyItems.forEach(function (line) {
-          var id = line.name.toLowerCase() + '|' + Number(line.price);
+          var rec = getLiveProduct(line.name);
+          var livePrice = rec && rec.price > 0 ? rec.price : CATALOGUE[line.name].price;
+          var qtyRequested = Math.max(1, Math.floor(Number(line.quantity) || 1));
+          if (rec && rec.initialized && rec.stock <= 0) {
+            showToast(line.name + ' is out of stock');
+            return;
+          }
+          var id = line.name.toLowerCase() + '|' + livePrice;
           var existing = cart.find(function (c) { return c.id === id; });
-          var qtyToAdd = Math.max(1, Math.floor(Number(line.quantity) || 1));
-          if (existing) existing.quantity = Math.min(99, existing.quantity + qtyToAdd);
+          var curQty = existing ? existing.quantity : 0;
+          var maxAllowed = rec && rec.initialized ? Math.min(99, rec.stock) : 99;
+          var targetQty = Math.min(maxAllowed, curQty + qtyRequested);
+          if (targetQty <= curQty) {
+            showToast('Only ' + rec.stock + ' left in stock for ' + line.name);
+            return;
+          }
+          if (existing) existing.quantity = targetQty;
           else {
-            existing = { id: id, name: line.name, price: Number(line.price), quantity: Math.min(99, qtyToAdd) };
+            existing = { id: id, name: line.name, price: livePrice, quantity: targetQty };
             cart.push(existing);
           }
+          addedAny = true;
           if (window.RedpolyFirebase && window.RedpolyFirebase.getUser()) {
             window.RedpolyFirebase.syncCartItem(existing).catch(function (err) { console.error(err); });
           }
         });
+        if (!addedAny) return;
         writeCart(cart);
         renderCartSection();
         renderTabCounts();
@@ -874,7 +892,11 @@
     var list = document.createElement('div');
     list.className = 'orders-list';
     listToShow.forEach(function (entry) {
-      list.appendChild(buildOrderCard(entry.order, entry.sessionOnly));
+      try {
+        list.appendChild(buildOrderCard(entry.order, entry.sessionOnly));
+      } catch (err) {
+        console.error('Failed to render order card:', err);
+      }
     });
     ordersContainer.appendChild(list);
   }
@@ -1399,6 +1421,7 @@
   });
   window.addEventListener('redpoly:catalog-updated', function (event) {
     if (event.detail && event.detail.map) syncCatalogueMap(event.detail.map);
+    renderOrdersSection();
     renderFavoritesSection();
     renderCartSection();
     renderTabCounts();
