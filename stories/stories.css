@@ -29,7 +29,7 @@
 .issue-shelf__heading h2{margin-top:7px;font:clamp(28px,4vw,42px)/.95 'Anton',sans-serif;color:#fff}
 .issue-shelf__heading h2 span{color:var(--orange)}
 .issue-count{padding-bottom:3px;color:#a7a3ad;font-size:9px;font-weight:800;letter-spacing:1.1px;text-align:right}
-.issue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.issue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:20px}
 .issue-card{min-width:0;border:2px solid #000;background:#1c1a21;box-shadow:7px 7px 0 #000;transition:transform .2s,box-shadow .2s}
 .issue-card:hover{transform:translateY(-4px) rotate(-.25deg);box-shadow:9px 11px 0 #000}
 .issue-card__open{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(230px,.95fr);width:100%;height:100%;padding:0;border:0;background:transparent;color:inherit;text-align:left}
@@ -59,7 +59,7 @@
 .reader-toolbar h2{overflow:hidden;margin-top:5px;color:#fff;font:clamp(20px,3vw,28px)/1 'Anton',sans-serif;text-overflow:ellipsis;white-space:nowrap}
 .reader-close{flex:none;width:40px;height:40px;border:1px solid rgba(244,240,230,.32);background:transparent;color:#fff;font-size:29px;line-height:1}
 .reader-close:hover{background:var(--orange);color:#111}
-.reader-stage{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;grid-template-rows:minmax(0,1fr);align-items:center;justify-items:center;gap:14px;min-width:0;min-height:0;overflow:hidden;padding:12px 16px;background:radial-gradient(ellipse at 50% 42%,rgba(200,255,0,.09),transparent 38%),radial-gradient(ellipse at 50% 52%,#34333c,#17161d 72%);touch-action:pan-y}
+.reader-stage{position:relative;display:grid;grid-template-columns:56px minmax(0,1fr) 56px;grid-template-rows:minmax(0,1fr);align-items:center;justify-items:center;gap:14px;min-width:0;min-height:0;overflow:hidden;padding:12px 16px;background:radial-gradient(ellipse at 50% 42%,rgba(200,255,0,.09),transparent 38%),radial-gradient(ellipse at 50% 52%,#34333c,#17161d 72%);touch-action:pan-y}
 .reader-arrow{display:grid;place-items:center;width:46px;height:54px;border:2px solid #050505;border-radius:50%;background:var(--lime);box-shadow:3px 4px 0 #050505;color:#111;font-size:25px;font-weight:900;transition:transform .16s,box-shadow .16s}
 .reader-arrow:hover:not(:disabled){transform:translateY(-2px);box-shadow:5px 6px 0 #050505}
 .reader-arrow:disabled,.reader-page-button:disabled{opacity:.36;cursor:not-allowed}
