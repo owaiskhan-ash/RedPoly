@@ -1,0 +1,60 @@
+{
+  "id": "issue-003-sector-zero",
+  "number": "03",
+  "title": "Sector Zero",
+  "subtitle": "The future blasters were only prototypes, and something under the track just woke up.",
+  "pages": [
+    {
+      "image": "/comics/issue-003-sector-zero/pages/page-01.webp?v=issue03-webp-20261118",
+      "alt": "Page 1: Poko lands a 360 carrot-spin combo on the turbo track, Reno drifts past with zero brakes, the green and teal dinos worry their RPM is unsafe, and then something from the future drops out of the sky.",
+      "shop": [
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/pages/page-02.webp?v=issue03-webp-20261118",
+      "alt": "Page 2: Poko pops bubbles at Nino while Reno fires a blue gel blaster, then the white CC-01 car slams in with an alert: those were restricted prototypes, and firing them tripped a silent beacon.",
+      "shop": [
+        { "name": "BUBBLE GUN", "href": "/bubble-gun", "image": "/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/pages/page-03.webp?v=issue03-webp-20261118",
+      "alt": "Page 3: the ground cracks open with red light, the teal dino realises the floor is glowing, the green dino reports a massive seismic spike, and CC-01 shouts that this is not a stunt but a breach.",
+      "shop": [
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/pages/page-04.webp?v=issue03-webp-20261118",
+      "alt": "Page 4: a sealed hatch unlocks and smoke pours out of Sector Zero, Poko and CC-01 gear up for a showdown, Reno loads the blue gel, and the two dinos hope whatever is rising is a friendly giant.",
+      "shop": [
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/pages/page-05.webp?v=issue03-webp-20261118",
+      "alt": "Page 5: a huge silhouette with red eyes stirs in the smoke, Poko and Reno fire bubbles and blue gel at it, everything clangs off its armour with zero effect, and Poko admits that burst its confidence.",
+      "shop": [
+        { "name": "BUBBLE GUN", "href": "/bubble-gun", "image": "/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/pages/page-06.webp?v=issue03-webp-20261118",
+      "alt": "Page 6: the dinos complain that their ammo was eaten for breakfast, CC-01 reports that protocol zero has woken up, Mecha Rover steps out of the smoke in front of the whole crew, and its helmet closes on a red-eyed stare with a to-be-continued card.",
+      "shop": [
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" }
+      ]
+    }
+  ]
+}
