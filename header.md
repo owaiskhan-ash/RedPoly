@@ -35,3 +35,26 @@ chrome in `accessories.css`. `main.js` adds the cart and saved buttons into
 - Every page loads `main.js` so the phone menu works and the cart button appears. On pages with no
   shop controls (the help desk) the cart button is still shown but the drawer machinery is not built.
 - There is no back-to-top button anywhere in the site; none should be added.
+
+## The one exception: next toy
+
+Product pages carry a single extra element in the header, between the nav and the menu button:
+
+```html
+<a class="site-header__next" href="/NEXT-SLUG">NEXT: PRODUCT NAME <span aria-hidden="true">→</span></a>
+```
+
+It is a seven-toy rotation, so every toy is reachable from every other without returning to the shop:
+
+| Page | Links to |
+| --- | --- |
+| bubble-gun | stunt-pet |
+| stunt-pet | cute-dinos |
+| cute-dinos | mini-cool-car |
+| mini-cool-car | gel-storm |
+| gel-storm | pixel-splash |
+| pixel-splash | mecha-rover |
+| mecha-rover | bubble-gun |
+
+The same link also appears as a row inside the phone menu on those pages. No other page carries it.
+On phones the pill collapses to just the arrow so the brand, cart and menu still share one row.

@@ -27,6 +27,11 @@ button{font-family:inherit;cursor:pointer}
 .site-header__brand span{font-size:8px;font-weight:900;letter-spacing:2px;white-space:nowrap}
 .site-header__nav{display:flex;align-items:center;gap:clamp(18px,3vw,38px);margin-left:auto}
 .site-header__inner>.cart-toggle,.site-header__inner>.wish-toggle{flex:none;margin-left:10px}
+/* "Next toy" pill: product pages only, so visitors can move around the range without going back */
+.site-header__next{display:inline-flex;flex:none;align-items:center;gap:8px;order:1;margin-left:10px;padding:10px 13px;border:1px solid rgba(200,255,0,.6);color:#e9ffb0;font-size:8px;font-weight:900;letter-spacing:1px;white-space:nowrap;transition:background .18s ease,color .18s ease,transform .18s ease}
+.site-header__next span{color:var(--lime);font-size:12px;line-height:.8}
+.site-header__next:hover,.site-header__next:focus-visible{background:var(--lime);border-color:var(--lime);color:#111;transform:translateY(-1px)}
+.site-header__next:hover span,.site-header__next:focus-visible span{color:#111}
 .site-header__nav a{position:relative;padding:12px 0;color:#ddd;font-size:9px;font-weight:900;letter-spacing:1.4px;white-space:nowrap;transition:color .2s ease}
 .site-header__nav a::after{content:"";position:absolute;right:0;bottom:5px;left:0;height:2px;background:var(--lime);transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
 .site-header__nav a:hover,.site-header__nav a:focus-visible{color:var(--lime)}
@@ -547,6 +552,8 @@ html.motion-ready .c-card__soon{transition:transform .2s ease}
   .site-menu a:nth-child(even){box-shadow:3px 3px 0 var(--orange)}
   .site-menu a:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--lime)}
   .site-header__inner>.cart-toggle,.site-header__inner>.wish-toggle{margin-left:0}
+  .site-header__next{margin-left:0;padding:9px 10px;font-size:0;gap:0}
+  .site-header__next span{font-size:14px}
   .site-header .cart-toggle>span,.site-header .wish-toggle>span{display:none}
   .site-header .cart-toggle,.site-header .wish-toggle{padding:9px 10px}
   #figures,#accessories,#bundle-builder,#story,#featured,#limited,#crew{scroll-margin-top:74px}
