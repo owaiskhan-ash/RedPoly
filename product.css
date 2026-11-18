@@ -835,3 +835,29 @@ body.creature-page--rise .char-final-cta h2 span{color:#0b4fa8}
   body.creature-page--rise .char-file__no{font-size:44px}
 }
 
+/* Drift King: asphalt navy-charcoal, racing crimson stripes, and electric LED cyan */
+body.creature-page--drift{--character-primary:#0b1830;--character-mid:#081226;--character-dark:#030813;--character-deep:#060e1f;--character-hot:#38bdf8;--character-accent:#ff3b4e;--character-light:#f7f9ff;--character-ink:#071124;--character-story:#050b18;--character-card-dark:#102348;--character-glow:rgba(255,59,78,.42);--character-glow-soft:rgba(56,189,248,.42);--character-glow-faint:rgba(56,189,248,.22);--character-accent-soft:rgba(255,59,78,.16);--character-ring:rgba(56,189,248,.54);--character-accent-halo:rgba(255,59,78,.09);--character-accent-halo-strong:rgba(56,189,248,.06);--character-accent-inset:rgba(56,189,248,.12);--character-shadow:rgba(2,6,16,.64);--character-text-shadow:rgba(3,8,20,.55);--character-nav:rgba(4,10,24,.72);--character-soft-shade:rgba(3,9,20,.28);--character-muted:rgba(247,249,255,.78);--character-muted-strong:rgba(247,249,255,.96);--character-muted-border:rgba(247,249,255,.42);--character-muted-border-strong:rgba(247,249,255,.56);--character-card-ink:#071124;--character-button-shadow:rgba(2,6,16,.58);--character-final-ink:#071124;--character-accent-bright:#ff5e6e;--character-plate-top:#38bdf8;--character-plate-mid:#123d7a;--character-plate-bottom:#050e21;--character-border:#030814}
+body.creature-page--drift .char-hero__texture{background-image:repeating-linear-gradient(135deg,rgba(255,59,78,.06) 0 2px,transparent 2px 18px),radial-gradient(circle at 75% 32%,rgba(56,189,248,.22),transparent 54%)}
+body.creature-page--drift .char-hero::after{height:16px;clip-path:none;inset:auto 0 0 0;background:repeating-linear-gradient(90deg,var(--character-accent) 0 28px,var(--character-hot) 28px 56px);opacity:.9}
+body.creature-page--drift .char-hero h1{font-size:clamp(74px,11.4vw,156px);line-height:.8}
+body.creature-page--drift .char-stage__figure{width:min(104%,560px);max-height:430px;transform:rotate(-2deg);filter:drop-shadow(0 24px 18px var(--character-shadow))}
+body.creature-page--drift .char-tags span{border:2px solid var(--character-ring);background:rgba(56,189,248,.14)}
+body.creature-page--drift .char-market-compare__tag{border:1.5px solid var(--character-ring);background:rgba(56,189,248,.12);color:#f7f9ff}
+body.creature-page--drift .char-buy{color:#fff}
+body.creature-page--drift .char-box__photo{border:4px solid var(--character-light);background:#fff;box-shadow:8px 8px 0 var(--character-accent);overflow:hidden}
+body.creature-page--drift .char-box__photo img{filter:none}
+body.creature-page--drift .char-file__portrait{display:block;min-height:472px;padding:0;background:#050b18}
+body.creature-page--drift .char-file__photo{position:absolute;inset:0;z-index:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:50% 50%;border:0;box-shadow:none;transform:none;filter:none}
+body.creature-page--drift .char-file__portrait::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(5,11,24,.56),rgba(5,11,24,0) 26%),linear-gradient(0deg,rgba(5,11,24,.68),rgba(5,11,24,0) 32%)}
+body.creature-page--drift .char-file__no{top:14px;left:16px;z-index:3}
+body.creature-page--drift .char-file__stamp{z-index:3;bottom:16px;right:16px;background:rgba(5,11,24,.68)}
+body.creature-page--drift .char-final-cta h2 span{color:#d11a34}
+@media(max-width:900px){body.creature-page--drift .char-hero::after{height:12px}}
+@media(max-width:680px){
+  body.creature-page--drift .char-hero h1{font-size:clamp(58px,17.5vw,110px)}
+  body.creature-page--drift .char-stage__figure{width:min(100%,420px);max-height:290px}
+  body.creature-page--drift .char-file__portrait{min-height:400px}
+  body.creature-page--drift .char-file__no{font-size:44px}
+}
+
+

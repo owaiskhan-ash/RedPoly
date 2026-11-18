@@ -92,12 +92,14 @@
     'MAGNETIC BLOCKS 36 PCS': { price:549, href:'/magnetic-blocks?pack=36pcs', image:'/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 42 PCS': { price:599, href:'/magnetic-blocks?pack=42pcs', image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 64 PCS': { price:799, href:'/magnetic-blocks?pack=64pcs', image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' },
-    'RISE ONE X 4X4': { price:1499, href:'/rise-one-x-4x4', image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' }
+    'RISE ONE X 4X4': { price:1499, href:'/rise-one-x-4x4', image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
+    'DRIFT KING': { price:799, href:'/drift-king', image:'/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' }
   };
   function isCatalogueProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
   function inCatalogue(name, price) { return isCatalogueProduct(name) && catalogue[name].price === Number(price); }
   var CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v1';
   var DEFAULT_CARD_TAGS = {
+    'DRIFT KING': 'NEW IN STORE',
     'RISE ONE X 4X4': 'NEW IN STORE',
     'MAGNETIC BLOCKS 25 PCS': 'NEW IN STORE',
     'MAGNETIC BLOCKS 36 PCS': '',
@@ -114,7 +116,11 @@
     'GEL STORM': 'JUST LANDED',
     'PIXEL SPLASH': 'NEW IN STORE'
   };
+  var DEFAULT_PRICE_COMPARISONS = {
+    'drift-king': [{ platform: 'Amazon', price: 859 }]
+  };
   var SKU_ORDER = [
+    'drift-king',
     'rise-one-x-4x4',
     'magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs',
     'mecha-rover', 'bubble-gun', 'stunt-pet',
@@ -122,6 +128,7 @@
     'mini-cool-car', 'gel-storm', 'pixel-splash'
   ];
   var SKU_TO_NAME = {
+    'drift-king': 'DRIFT KING',
     'rise-one-x-4x4': 'RISE ONE X 4X4',
     'magnetic-blocks-25-pcs': 'MAGNETIC BLOCKS 25 PCS',
     'magnetic-blocks-36-pcs': 'MAGNETIC BLOCKS 36 PCS',
@@ -157,7 +164,7 @@
         }).slice(0, 5).map(function (c) {
           return { platform: c.platform.trim().slice(0, 32), price: Math.round(Number(c.price)) };
         })
-      : [];
+      : (DEFAULT_PRICE_COMPARISONS[sku] ? DEFAULT_PRICE_COMPARISONS[sku].map(function (c) { return { platform: c.platform, price: c.price }; }) : []);
     return {
       sku: sku,
       name: name,
@@ -268,7 +275,7 @@
       var FREE_GIFT_FROM = 3500;
       var GST_RATE = 12;
       var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4'];
+      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king'];
 
       function normalizeOrderStatus(raw) {
         var str = String(raw || '');
@@ -3025,7 +3032,8 @@
       'magnetic-blocks-36-pcs': '/magnetic-blocks',
       'magnetic-blocks-42-pcs': '/magnetic-blocks',
       'magnetic-blocks-64-pcs': '/magnetic-blocks',
-      'rise-one-x-4x4': '/rise-one-x-4x4'
+      'rise-one-x-4x4': '/rise-one-x-4x4',
+      'drift-king': '/drift-king'
     };
 
     function itemToSlug(name) {
@@ -3334,7 +3342,8 @@
       'pixel-splash': ['pixel-splash'],
       'cute-dinos': ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio'],
       'magnetic-blocks': ['magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs'],
-      'rise-one-x-4x4': ['rise-one-x-4x4']
+      'rise-one-x-4x4': ['rise-one-x-4x4'],
+      'drift-king': ['drift-king']
     };
     var matchingItemSlugs = ELIGIBLE_ITEM_SLUGS[productSlug] || [productSlug];
 
