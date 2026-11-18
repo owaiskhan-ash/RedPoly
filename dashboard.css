@@ -1801,5 +1801,133 @@ tr[tabindex]:focus-visible {
   }
 }
 
+/* ============ GROUPED PRODUCTS & SUB-PRODUCT VARIANTS ============ */
+.orders-table tbody tr.prod-group-row {
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.orders-table tbody tr.prod-group-row:hover {
+  background: var(--surface-hover);
+}
+
+.orders-table tbody tr.prod-group-row.is-expanded > td {
+  border-bottom-color: #f0f0f2;
+}
+
+.prod-group-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-muted);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  flex: none;
+  transition: transform 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.prod-group-toggle:hover {
+  background: var(--neutral-bg);
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+
+.prod-group-toggle svg {
+  transition: transform 140ms ease;
+}
+
+.prod-group-row.is-expanded .prod-group-toggle svg {
+  transform: rotate(90deg);
+}
+
+.prod-group-stock {
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.prod-group-stock strong {
+  font-family: var(--font-mono);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.orders-table tbody tr.prod-variant-row {
+  background: #fafafa;
+  cursor: default;
+}
+
+.orders-table tbody tr.prod-variant-row:hover {
+  background: #f4f5f6;
+}
+
+.orders-table tbody tr.prod-variant-row.is-selected {
+  background: #eef1f5;
+}
+
+.orders-table tbody tr.prod-variant-row td:first-child {
+  position: relative;
+  padding-left: 48px;
+}
+
+.orders-table tbody tr.prod-variant-row td:first-child::before {
+  content: '';
+  position: absolute;
+  left: 25px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #dcdce0;
+}
+
+.orders-table tbody tr.prod-variant-row.is-last-variant td:first-child::before {
+  bottom: 50%;
+}
+
+.orders-table tbody tr.prod-variant-row td:first-child::after {
+  content: '';
+  position: absolute;
+  left: 25px;
+  top: 50%;
+  width: 14px;
+  height: 1px;
+  background: #dcdce0;
+}
+
+.prod-cell--variant {
+  min-width: 165px;
+}
+
+.prod-cell__img--sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+.prod-variant-pill {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--neutral-bg);
+  color: var(--ink-secondary);
+  font-size: 10.5px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prod-group-toggle,
+  .prod-group-toggle svg {
+    transition: none;
+  }
+}
+
 
 
