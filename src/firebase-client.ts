@@ -13,7 +13,6 @@ import {
   deleteDoc,
   doc,
   getDoc,
-  getDocFromServer,
   getDocs,
   getFirestore,
   onSnapshot,
@@ -242,17 +241,6 @@ export function handleFirestoreError(
   console.error('Firestore Error: ', JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
 }
-
-async function testConnection(): Promise<void> {
-  try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error('Please check your Firebase configuration.');
-    }
-  }
-}
-void testConnection();
 
 function itemSlug(name: string): string {
   return name
@@ -600,7 +588,7 @@ function subscribeOrders(uid: string): void {
           gstRate: Number(d.gstRate || 12),
           gst: Number(d.gst || 0),
           total: Number(d.total || 0),
-          itemCount: Number(d.itemCount || lineItems.length),
+          itemCount: Number(d.itemCount || lineItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0)),
           status: statusVal,
           createdAtMs,
           items: lineItems,
@@ -930,7 +918,7 @@ export async function listAllOrders(): Promise<OrderRecord[]> {
           gstRate: Number(d.gstRate || 12),
           gst: Number(d.gst || 0),
           total: Number(d.total || 0),
-          itemCount: Number(d.itemCount || lineItems.length),
+          itemCount: Number(d.itemCount || lineItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0)),
           status: statusVal,
           createdAtMs,
           items: lineItems,

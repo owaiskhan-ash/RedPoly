@@ -19,7 +19,7 @@
       row.appendChild(name);row.appendChild(price);itemsNode.appendChild(row);
     });
     if (typeof order.gst === 'number' && typeof order.total === 'number') {
-      var gstLabel="GST ("+(Number(order.gstRate)||18)+"%)";
+      var gstLabel="GST ("+(Number(order.gstRate)||12)+"%)";
       var shippingRow=["SHIPPING · "+String(order.shippingMethod||'standard').toUpperCase(),order.shippingCost===0?'FREE':money(order.shippingCost)];
       // Orders placed since shelf prices include GST show the GST share under the total.
       var rows=order.gstIncluded

@@ -58,7 +58,14 @@
   var toast = document.getElementById('toast');
   var toastTimer = null;
   function showToast(msg) {
-    if (!toast) return;
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.className = 'toast';
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toast);
+    }
     toast.textContent = msg;
     toast.classList.add('show');
     clearTimeout(toastTimer);
@@ -178,16 +185,6 @@
         console.error('Firestore Error: ', JSON.stringify(errInfo));
         throw new Error(JSON.stringify(errInfo));
       }
-
-      (async function testConnection() {
-        try {
-          await fsMod.getDocFromServer(fsMod.doc(db, 'test', 'connection'));
-        } catch (error) {
-          if (error instanceof Error && error.message.indexOf('the client is offline') !== -1) {
-            console.error('Please check your Firebase configuration.');
-          }
-        }
-      })();
 
       function itemSlug(name) {
         return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, LIMITS.ID_MAX);
@@ -447,7 +444,7 @@
               gstRate: Number(d.gstRate || 12),
               gst: Number(d.gst || 0),
               total: Number(d.total || 0),
-              itemCount: Number(d.itemCount || lineItems.length),
+              itemCount: Number(d.itemCount || lineItems.reduce(function (sum, item) { return sum + Number(item.quantity || 0); }, 0)),
               status: statusVal,
               createdAtMs: createdAtMs,
               items: lineItems
@@ -675,7 +672,7 @@
                 gstRate: Number(d.gstRate || 12),
                 gst: Number(d.gst || 0),
                 total: Number(d.total || 0),
-                itemCount: Number(d.itemCount || lineItems.length),
+                itemCount: Number(d.itemCount || lineItems.reduce(function (sum, item) { return sum + Number(item.quantity || 0); }, 0)),
                 status: statusVal,
                 createdAtMs: createdAtMs,
                 items: lineItems
@@ -1033,7 +1030,7 @@
     var cartLayer = document.createElement('div');
     cartLayer.className = 'cart-layer';
     cartLayer.hidden = true;
-    cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping cart"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR REDPOLY CART</p><h2 id="cart-title">SHOPPING CART <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping cart">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your cart is empty. Pick something from the shop to get started.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">CART REWARDS</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE STANDARD SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free standard shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free standard shipping" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0"><span></span></div></div></div><div class="cart-reward" id="gift-reward"><span class="cart-reward__icon cart-reward__icon--gift" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11h17v9.5h-17z"/><path d="M2.5 7.5h19V11h-19z"/><path d="M12 7.5v13"/><path d="M12 7.5c-1.6 0-4.2-.6-4.2-2.6 0-1.4 1.2-2.2 2.4-2.2 1.6 0 1.8 2 1.8 4.8Zm0 0c1.6 0 4.2-.6 4.2-2.6 0-1.4-1.2-2.2-2.4-2.2-1.6 0-1.8 2-1.8 4.8Z"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE GIFT</strong><span id="gift-reward-copy">Add more to unlock a free gift</span></div><div class="cart-reward__track" id="gift-reward-track" role="progressbar" aria-label="Progress toward a free gift" aria-valuemin="0" aria-valuemax="3500" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS (INCL. GST)</span><strong id="cart-subtotal">₹0</strong></p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your cart is saved in this browser.</p></footer></aside></div>';
+    cartLayer.innerHTML = '<button class="cart-backdrop" type="button" aria-label="Close shopping cart"></button><aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1"><header class="cart-drawer__header"><div><p>YOUR REDPOLY CART</p><h2 id="cart-title">SHOPPING CART <span class="cart-drawer__count">0</span></h2></div><button class="cart-drawer__close" type="button" aria-label="Close shopping cart">×</button></header><div class="cart-drawer__items" id="cart-items"></div><p class="cart-empty" id="cart-empty">Your cart is empty. Pick something from the shop to get started.</p><button class="cart-undo" id="cart-undo" type="button" hidden>UNDO REMOVAL</button><footer class="cart-drawer__footer"><section class="cart-reward-progress" aria-label="Cart rewards"><p class="cart-reward-progress__title">CART REWARDS</p><div class="cart-reward" id="shipping-reward"><span class="cart-reward__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h12v10h-12zM14.5 10h4l3 3v3.5h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE STANDARD SHIPPING</strong><span id="shipping-reward-copy">Add more to unlock free standard shipping</span></div><div class="cart-reward__track" id="shipping-reward-track" role="progressbar" aria-label="Progress toward free standard shipping" aria-valuemin="0" aria-valuemax="2000" aria-valuenow="0"><span></span></div></div></div><div class="cart-reward" id="gift-reward"><span class="cart-reward__icon cart-reward__icon--gift" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11h17v9.5h-17z"/><path d="M2.5 7.5h19V11h-19z"/><path d="M12 7.5v13"/><path d="M12 7.5c-1.6 0-4.2-.6-4.2-2.6 0-1.4 1.2-2.2 2.4-2.2 1.6 0 1.8 2 1.8 4.8Zm0 0c1.6 0 4.2-.6 4.2-2.6 0-1.4-1.2-2.2-2.4-2.2-1.6 0-1.8 2-1.8 4.8Z"/></svg></span><div class="cart-reward__body"><div class="cart-reward__copy"><strong>FREE GIFT</strong><span id="gift-reward-copy">Add more to unlock a free gift</span></div><div class="cart-reward__track" id="gift-reward-track" role="progressbar" aria-label="Progress toward a free gift" aria-valuemin="0" aria-valuemax="3500" aria-valuenow="0"><span></span></div></div></div></section><p class="cart-subtotal"><span>ITEMS (INCL. GST)</span><strong id="cart-subtotal">₹0</strong></p><button class="cart-checkout" id="cart-checkout" type="button" disabled>PROCEED TO CHECKOUT <span aria-hidden="true">↗</span></button><p class="cart-checkout-note" id="cart-checkout-note" role="status" aria-live="polite" tabindex="-1">This is demo checkout only; no payment is collected. Your cart is saved in this browser.</p></footer></aside></div>';
     document.body.appendChild(cartLayer);
     var cartDrawer = cartLayer.querySelector('.cart-drawer');
     var cartItemsNode = cartLayer.querySelector('#cart-items');
@@ -1143,9 +1140,16 @@
       persistCart(); renderCart(); openCart();
       if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(existing).catch(function (err) { console.error(err); });
       var feedback = feedbackButton || button;
-      var original = feedback.innerHTML;
+      if (!Object.prototype.hasOwnProperty.call(feedback.dataset, 'originalHtml')) {
+        feedback.dataset.originalHtml = feedback.innerHTML;
+      }
+      clearTimeout(feedback._addedTimer);
       feedback.classList.add('added'); feedback.innerHTML = '✓ ADDED';
-      setTimeout(function () { feedback.classList.remove('added'); feedback.innerHTML = original; }, 1600);
+      feedback._addedTimer = setTimeout(function () {
+        feedback.classList.remove('added');
+        feedback.innerHTML = feedback.dataset.originalHtml;
+        delete feedback.dataset.originalHtml;
+      }, 1600);
     }
     cartToggle.addEventListener('click', openCart);
     cartUndo.addEventListener('click', function () {
@@ -1209,6 +1213,12 @@
     window.addEventListener('redpoly:cart-updated', function (event) {
       if (!event.detail || !Array.isArray(event.detail.items)) return;
       cartItems = event.detail.items.slice();
+      renderCart();
+    });
+    window.addEventListener('redpoly:cart-local-sync', function (event) {
+      if (!event.detail || event.detail.source !== 'checkout' || !Array.isArray(event.detail.items)) return;
+      cartItems = event.detail.items.slice();
+      lastRemovedItem = null;
       renderCart();
     });
     window.addEventListener('redpoly:open-cart', openCart);
