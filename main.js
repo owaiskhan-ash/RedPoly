@@ -87,12 +87,20 @@
     'CUTE DINOS GREEN': { price:249, href:'/cute-dinos?colour=green', image:'/assets/images/redpoly/products/cute-dinos-green-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS RED': { price:249, href:'/cute-dinos?colour=red', image:'/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TEAL': { price:249, href:'/cute-dinos?colour=teal', image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
-    'CUTE DINOS TRIO': { price:549, href:'/cute-dinos?pack=trio', image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' }
+    'CUTE DINOS TRIO': { price:549, href:'/cute-dinos?pack=trio', image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' },
+    'MAGNETIC BLOCKS 25 PCS': { price:399, href:'/magnetic-blocks?pack=25pcs', image:'/assets/images/redpoly/products/magnetic-blocks-25pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 36 PCS': { price:549, href:'/magnetic-blocks?pack=36pcs', image:'/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 42 PCS': { price:599, href:'/magnetic-blocks?pack=42pcs', image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 64 PCS': { price:799, href:'/magnetic-blocks?pack=64pcs', image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' }
   };
   function isCatalogueProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
   function inCatalogue(name, price) { return isCatalogueProduct(name) && catalogue[name].price === Number(price); }
   var CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v1';
   var DEFAULT_CARD_TAGS = {
+    'MAGNETIC BLOCKS 25 PCS': 'NEW IN STORE',
+    'MAGNETIC BLOCKS 36 PCS': '',
+    'MAGNETIC BLOCKS 42 PCS': '',
+    'MAGNETIC BLOCKS 64 PCS': '',
     'MECHA ROVER': '',
     'BUBBLE GUN': 'IN STORE NOW',
     'STUNT PET': 'NEW IN STORE',
@@ -105,11 +113,16 @@
     'PIXEL SPLASH': 'NEW IN STORE'
   };
   var SKU_ORDER = [
+    'magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs',
     'mecha-rover', 'bubble-gun', 'stunt-pet',
     'cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio',
     'mini-cool-car', 'gel-storm', 'pixel-splash'
   ];
   var SKU_TO_NAME = {
+    'magnetic-blocks-25-pcs': 'MAGNETIC BLOCKS 25 PCS',
+    'magnetic-blocks-36-pcs': 'MAGNETIC BLOCKS 36 PCS',
+    'magnetic-blocks-42-pcs': 'MAGNETIC BLOCKS 42 PCS',
+    'magnetic-blocks-64-pcs': 'MAGNETIC BLOCKS 64 PCS',
     'mecha-rover': 'MECHA ROVER',
     'bubble-gun': 'BUBBLE GUN',
     'stunt-pet': 'STUNT PET',
@@ -251,7 +264,7 @@
       var FREE_GIFT_FROM = 3500;
       var GST_RATE = 12;
       var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos'];
+      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks'];
 
       function normalizeOrderStatus(raw) {
         var str = String(raw || '');
@@ -266,6 +279,9 @@
       function itemSlugMatchesProduct(itemSlugVal, productSlug) {
         if (productSlug === 'cute-dinos') {
           return itemSlugVal === 'cute-dinos-green' || itemSlugVal === 'cute-dinos-red' || itemSlugVal === 'cute-dinos-teal' || itemSlugVal === 'cute-dinos-trio';
+        }
+        if (productSlug === 'magnetic-blocks') {
+          return itemSlugVal === 'magnetic-blocks-25-pcs' || itemSlugVal === 'magnetic-blocks-36-pcs' || itemSlugVal === 'magnetic-blocks-42-pcs' || itemSlugVal === 'magnetic-blocks-64-pcs';
         }
         return itemSlugVal === productSlug;
       }
@@ -2283,6 +2299,15 @@
           }
         }
 
+        // Magnetic Blocks card aside ("25, 36, 42 or 64 pcs · ₹399–₹799") tracks min/max live prices
+        if (skuName === 'MAGNETIC BLOCKS 25 PCS') {
+          var rec64 = getLiveRecord('MAGNETIC BLOCKS 64 PCS');
+          var magAsideEl = card.querySelector('.shop-card__aside');
+          if (magAsideEl && rec64) {
+            magAsideEl.textContent = '25, 36, 42 or 64 pcs · up to ' + money(rec64.price);
+          }
+        }
+
         // B4 Stock pill on shop card
         var stockText = formatStockText(rec);
         var cardStock = card.querySelector('.shop-card__stock');
@@ -2326,6 +2351,19 @@
           } else if (input.value === 'single' && singleRef) {
             input.setAttribute('data-price', String(singleRef.price));
           }
+        });
+      }
+
+      // 3b) Magnetic Blocks variant inputs (if on /magnetic-blocks)
+      var magneticPicker = document.getElementById('magnetic-picker');
+      if (magneticPicker) {
+        magneticPicker.querySelectorAll('input[name="magnetic-pack"]').forEach(function (input) {
+          var r = getLiveRecord(input.getAttribute('data-name'));
+          if (!r) return;
+          input.setAttribute('data-price', String(r.price));
+          var packLabel = input.closest('label');
+          var amountNode = packLabel ? packLabel.querySelector('.magnetic-pack__amount') : null;
+          if (amountNode) amountNode.textContent = money(r.price);
         });
       }
 
@@ -2411,6 +2449,9 @@
       syncStorefrontFromCatalog(event.detail && event.detail.map ? event.detail.map : null);
       if (document.getElementById('dino-picker')) {
         window.dispatchEvent(new CustomEvent('redpoly:cute-dinos-catalog-sync'));
+      }
+      if (document.getElementById('magnetic-picker')) {
+        window.dispatchEvent(new CustomEvent('redpoly:magnetic-blocks-catalog-sync'));
       }
       renderWish();
     });
@@ -2851,7 +2892,11 @@
       'cute-dinos-green': '/cute-dinos',
       'cute-dinos-red': '/cute-dinos',
       'cute-dinos-teal': '/cute-dinos',
-      'cute-dinos-trio': '/cute-dinos'
+      'cute-dinos-trio': '/cute-dinos',
+      'magnetic-blocks-25-pcs': '/magnetic-blocks',
+      'magnetic-blocks-36-pcs': '/magnetic-blocks',
+      'magnetic-blocks-42-pcs': '/magnetic-blocks',
+      'magnetic-blocks-64-pcs': '/magnetic-blocks'
     };
 
     function itemToSlug(name) {
@@ -3158,7 +3203,8 @@
       'gel-storm': ['gel-storm'],
       'mecha-rover': ['mecha-rover'],
       'pixel-splash': ['pixel-splash'],
-      'cute-dinos': ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio']
+      'cute-dinos': ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio'],
+      'magnetic-blocks': ['magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs']
     };
     var matchingItemSlugs = ELIGIBLE_ITEM_SLUGS[productSlug] || [productSlug];
 
@@ -3294,7 +3340,8 @@
       var meta = document.createElement('div');
       meta.className = 'review-card__meta';
       var author = document.createElement('span');
-      author.textContent = review.authorName + (review.productName && productSlug === 'cute-dinos' ? ' · ' + review.productName : '');
+      var showVariantSuffix = review.productName && (productSlug === 'cute-dinos' || productSlug === 'magnetic-blocks');
+      author.textContent = review.authorName + (showVariantSuffix ? ' · ' + review.productName : '');
       var date = document.createElement('span');
       date.textContent = formatReviewDate(review.createdAtMs);
       meta.appendChild(author);

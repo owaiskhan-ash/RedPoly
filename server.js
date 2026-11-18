@@ -35,6 +35,11 @@ const permanentRedirects = {
   '/products/pixel-splash.html': '/pixel-splash',
   '/products/mecha-rover': '/mecha-rover',
   '/products/mecha-rover.html': '/mecha-rover',
+  '/products/magnetic-blocks': '/magnetic-blocks',
+  '/products/magnetic-blocks.html': '/magnetic-blocks',
+  '/magnetic-block': '/magnetic-blocks',
+  '/products/magnetic-block': '/magnetic-blocks',
+  '/products/magnetic-block.html': '/magnetic-blocks',
 };
 
 const temporaryRedirects = new Set([
@@ -76,6 +81,7 @@ const rewrites = {
   '/gel-storm': 'products/gel-storm.html',
   '/pixel-splash': 'products/pixel-splash.html',
   '/mecha-rover': 'products/mecha-rover.html',
+  '/magnetic-blocks': 'products/magnetic-blocks.html',
   '/account': 'account.html',
   '/my-account': 'account.html',
   '/dashboard': 'dashboard.html',

@@ -104,7 +104,8 @@ export type ProductSlug =
   | 'gel-storm'
   | 'mecha-rover'
   | 'pixel-splash'
-  | 'cute-dinos';
+  | 'cute-dinos'
+  | 'magnetic-blocks';
 
 export interface OrderRecord {
   id: string;
@@ -192,7 +193,11 @@ export type SkuSlug =
   | 'cute-dinos-green'
   | 'cute-dinos-red'
   | 'cute-dinos-teal'
-  | 'cute-dinos-trio';
+  | 'cute-dinos-trio'
+  | 'magnetic-blocks-25-pcs'
+  | 'magnetic-blocks-36-pcs'
+  | 'magnetic-blocks-42-pcs'
+  | 'magnetic-blocks-64-pcs';
 
 export interface ProductCatalogRecord {
   sku: SkuSlug;
@@ -326,6 +331,26 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
     href: '/cute-dinos?pack=trio',
     image: '/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116',
   },
+  'MAGNETIC BLOCKS 25 PCS': {
+    price: 399,
+    href: '/magnetic-blocks?pack=25pcs',
+    image: '/assets/images/redpoly/products/magnetic-blocks-25pcs-thumb.webp?v=mag-20261122',
+  },
+  'MAGNETIC BLOCKS 36 PCS': {
+    price: 549,
+    href: '/magnetic-blocks?pack=36pcs',
+    image: '/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122',
+  },
+  'MAGNETIC BLOCKS 42 PCS': {
+    price: 599,
+    href: '/magnetic-blocks?pack=42pcs',
+    image: '/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122',
+  },
+  'MAGNETIC BLOCKS 64 PCS': {
+    price: 799,
+    href: '/magnetic-blocks?pack=64pcs',
+    image: '/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122',
+  },
 };
 
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
@@ -337,6 +362,10 @@ const FREE_GIFT_FROM = 3500;
 const GST_RATE = 12;
 
 const SKU_ORDER: ReadonlyArray<SkuSlug> = [
+  'magnetic-blocks-25-pcs',
+  'magnetic-blocks-36-pcs',
+  'magnetic-blocks-42-pcs',
+  'magnetic-blocks-64-pcs',
   'mecha-rover',
   'bubble-gun',
   'stunt-pet',
@@ -356,6 +385,10 @@ interface DefaultSeedMeta {
 }
 
 const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
+  'magnetic-blocks-25-pcs': { name: 'MAGNETIC BLOCKS 25 PCS', price: 399, cardTag: 'NEW IN STORE' },
+  'magnetic-blocks-36-pcs': { name: 'MAGNETIC BLOCKS 36 PCS', price: 549, cardTag: '' },
+  'magnetic-blocks-42-pcs': { name: 'MAGNETIC BLOCKS 42 PCS', price: 599, cardTag: '' },
+  'magnetic-blocks-64-pcs': { name: 'MAGNETIC BLOCKS 64 PCS', price: 799, cardTag: '' },
   'mecha-rover': { name: 'MECHA ROVER', price: 499, cardTag: '' },
   'bubble-gun': { name: 'BUBBLE GUN', price: 499, cardTag: 'IN STORE NOW' },
   'stunt-pet': { name: 'STUNT PET', price: 599, cardTag: 'NEW IN STORE' },
@@ -369,6 +402,10 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
 };
 
 const NAME_TO_SKU: Record<string, SkuSlug> = {
+  'MAGNETIC BLOCKS 25 PCS': 'magnetic-blocks-25-pcs',
+  'MAGNETIC BLOCKS 36 PCS': 'magnetic-blocks-36-pcs',
+  'MAGNETIC BLOCKS 42 PCS': 'magnetic-blocks-42-pcs',
+  'MAGNETIC BLOCKS 64 PCS': 'magnetic-blocks-64-pcs',
   'MECHA ROVER': 'mecha-rover',
   'BUBBLE GUN': 'bubble-gun',
   'STUNT PET': 'stunt-pet',
@@ -576,6 +613,7 @@ const VALID_PRODUCT_SLUGS: ReadonlyArray<ProductSlug> = [
   'mecha-rover',
   'pixel-splash',
   'cute-dinos',
+  'magnetic-blocks',
 ];
 
 function normalizeOrderStatus(raw: unknown): OrderStatus {
@@ -598,6 +636,14 @@ function itemSlugMatchesProduct(itemSlugVal: string, productSlug: ProductSlug): 
       itemSlugVal === 'cute-dinos-red' ||
       itemSlugVal === 'cute-dinos-teal' ||
       itemSlugVal === 'cute-dinos-trio'
+    );
+  }
+  if (productSlug === 'magnetic-blocks') {
+    return (
+      itemSlugVal === 'magnetic-blocks-25-pcs' ||
+      itemSlugVal === 'magnetic-blocks-36-pcs' ||
+      itemSlugVal === 'magnetic-blocks-42-pcs' ||
+      itemSlugVal === 'magnetic-blocks-64-pcs'
     );
   }
   return itemSlugVal === productSlug;
