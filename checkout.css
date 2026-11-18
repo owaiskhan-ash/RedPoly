@@ -189,3 +189,15 @@
 .checkout-totals>p.checkout-gst-note{margin-top:-3px;color:rgba(255,255,255,.66);font-size:8px}
 .checkout-totals>p.checkout-gst-note strong{font:800 11px/1 'Archivo',sans-serif;letter-spacing:.4px}
 .thankyou-total--note{padding-top:2px;color:#6d665d;font-size:8px}
+
+/* Google Account banner in checkout */
+.checkout-account{margin-bottom:20px;padding:14px 15px;border:2px solid #171512;background:#fff;box-shadow:4px 4px 0 #171512}
+.checkout-account__row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.checkout-account__copy strong{display:block;font:900 11px/1.2 'Archivo',sans-serif;letter-spacing:.8px;text-transform:uppercase;color:#171512}
+.checkout-account__copy span{display:block;margin-top:4px;font-size:11px;line-height:1.45;color:#5b554d;font-weight:600}
+.checkout-account__btn{display:inline-flex;align-items:center;gap:8px;padding:10px 13px;border:2px solid #171512;background:#c8ff00;color:#111;font:900 10px/1 'Archivo',sans-serif;letter-spacing:.9px;text-transform:uppercase;cursor:pointer}
+.checkout-account__btn:hover:not(:disabled){background:#d9ff55}
+.checkout-account__btn svg{width:15px;height:15px;flex:none}
+.checkout-account__save{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed #c8c0b4;font-size:11px;font-weight:700;color:#2b2722;cursor:pointer}
+.checkout-account__save input{accent-color:#5b7600}
+

@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=toys-label-20261130" />
   <link rel="stylesheet" href="/checkout.css?v=header-one-20261130" />
+  <script src="/firebase-client.js" defer></script>
   <script src="/checkout.js?v=pixel-20261117-v3" defer></script>
 </head>
 <body class="checkout-page">
@@ -38,6 +39,7 @@
     <h1>YOUR CART,<br /><span>YOUR WAY.</span></h1>
     <div class="checkout-layout" id="checkout-layout">
       <section class="checkout-form-panel" aria-labelledby="checkout-form-title">
+        <section class="checkout-account" id="checkout-account" aria-live="polite"></section>
         <p class="checkout-overline">01 / YOUR DETAILS</p>
         <h2 id="checkout-form-title">DELIVERY DETAILS</h2>
         <form id="demo-checkout-form" novalidate>

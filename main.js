@@ -107,6 +107,290 @@
   var homeHeader = document.querySelector('.site-header__inner');
   if (homeHeader) homeHeader.appendChild(cartToggle);
 
+  function initAccountChrome() {
+    if (!homeHeader) return;
+    var googleSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5H1.2v3.1C3.2 21.4 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V6.6H1.2C.4 8.2 0 10.1 0 12s.4 3.8 1.2 5.4l4-3.1z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3.3.6 4.6 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.3 0 3.2 2.6 1.2 6.6l4 3.1c1-2.9 3.7-5 6.8-5z"/></svg>';
+    var authToggle = document.createElement('button');
+    authToggle.type = 'button';
+    authToggle.className = 'auth-toggle';
+    authToggle.setAttribute('aria-haspopup', 'dialog');
+    authToggle.setAttribute('aria-label', 'Sign in with Google');
+    authToggle.innerHTML = googleSvg + '<span class="auth-toggle__label">SIGN IN</span>';
+    homeHeader.insertBefore(authToggle, cartToggle);
+
+    var accountPanel = document.createElement('dialog');
+    accountPanel.className = 'account-panel';
+    accountPanel.setAttribute('aria-labelledby', 'account-panel-title');
+    accountPanel.innerHTML = '<button class="account-panel__close" type="button" aria-label="Close account dialog">×</button><p class="account-panel__eyebrow">REDPOLY CREW ACCOUNT</p><h2 id="account-panel-title">SIGN IN WITH GOOGLE</h2><div id="account-panel-body"></div><p class="account-panel__status" id="account-panel-status" role="status" aria-live="polite"></p>';
+    document.body.appendChild(accountPanel);
+
+    var accountTitle = accountPanel.querySelector('#account-panel-title');
+    var accountBody = accountPanel.querySelector('#account-panel-body');
+    var accountStatus = accountPanel.querySelector('#account-panel-status');
+    var accountClose = accountPanel.querySelector('.account-panel__close');
+
+    function moneyFmt(amount) { return '₹' + Number(amount).toLocaleString('en-IN'); }
+    function closeAccount() {
+      if (accountPanel.open && accountPanel.close) accountPanel.close();
+      else accountPanel.removeAttribute('open');
+    }
+    function setAccountStatus(msg, isOk) {
+      accountStatus.textContent = msg || '';
+      accountStatus.classList.toggle('is-ok', Boolean(isOk));
+    }
+
+    function updateAuthButton(user) {
+      authToggle.textContent = '';
+      if (user) {
+        authToggle.classList.add('is-signed-in');
+        var firstName = (user.displayName || 'ACCOUNT').split(/\s+/)[0].toUpperCase();
+        authToggle.setAttribute('aria-label', 'Open account for ' + (user.displayName || user.email));
+        if (user.photoURL) {
+          var img = document.createElement('img');
+          img.className = 'auth-toggle__avatar';
+          img.src = user.photoURL;
+          img.alt = '';
+          img.referrerPolicy = 'no-referrer';
+          authToggle.appendChild(img);
+        } else {
+          var initial = document.createElement('span');
+          initial.className = 'auth-toggle__initial';
+          initial.textContent = firstName.charAt(0) || 'R';
+          authToggle.appendChild(initial);
+        }
+        var lbl = document.createElement('span');
+        lbl.className = 'auth-toggle__label';
+        lbl.textContent = firstName;
+        authToggle.appendChild(lbl);
+      } else {
+        authToggle.classList.remove('is-signed-in');
+        authToggle.setAttribute('aria-label', 'Sign in with Google');
+        authToggle.innerHTML = googleSvg + '<span class="auth-toggle__label">SIGN IN</span>';
+      }
+    }
+
+    function renderAccountModal() {
+      var fb = window.RedpolyFirebase;
+      var user = fb ? fb.getUser() : null;
+      var profile = fb ? fb.getProfile() : null;
+      var orders = fb ? fb.getOrders() : [];
+      updateAuthButton(user);
+      accountBody.textContent = '';
+
+      if (!user) {
+        accountTitle.textContent = 'SIGN IN WITH GOOGLE';
+        var copy = document.createElement('p');
+        copy.className = 'account-panel__copy';
+        copy.textContent = 'Use your Google account to sync your cart, saved toys, delivery details, and REDPOLY demo order history across devices.';
+        var perks = document.createElement('ul');
+        perks.className = 'account-panel__perks';
+        ['Sync shopping cart across browser tabs and devices', 'Keep your Saved toys list tied to your account', 'Pre-fill checkout and track your REDPOLY orders'].forEach(function (text) {
+          var li = document.createElement('li');
+          li.textContent = text;
+          perks.appendChild(li);
+        });
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'google-signin-btn';
+        btn.innerHTML = googleSvg + '<span>CONTINUE WITH GOOGLE</span>';
+        btn.addEventListener('click', async function () {
+          if (!window.RedpolyFirebase) {
+            setAccountStatus('Authentication is still loading. Please try again in a second.', false);
+            return;
+          }
+          btn.disabled = true;
+          setAccountStatus('Opening Google sign-in…', true);
+          try {
+            var signedIn = await window.RedpolyFirebase.signInWithGoogle();
+            if (signedIn) {
+              setAccountStatus('Signed in as ' + (signedIn.displayName || signedIn.email), true);
+              showToast('Signed in with Google');
+            } else {
+              setAccountStatus('', false);
+            }
+          } catch (err) {
+            var msg = err && err.message ? err.message : 'Google sign-in failed.';
+            setAccountStatus(msg.indexOf('popup-blocked') !== -1 ? 'Popup was blocked by your browser. Please allow popups and try again.' : 'Could not sign in with Google. Please try again.', false);
+          } finally {
+            btn.disabled = false;
+          }
+        });
+        accountBody.appendChild(copy);
+        accountBody.appendChild(perks);
+        accountBody.appendChild(btn);
+        return;
+      }
+
+      accountTitle.textContent = 'YOUR ACCOUNT';
+      var card = document.createElement('div');
+      card.className = 'account-user-card';
+      var info = document.createElement('div');
+      info.className = 'account-user-card__info';
+      if (user.photoURL) {
+        var avatar = document.createElement('img');
+        avatar.className = 'account-user-card__avatar';
+        avatar.src = user.photoURL;
+        avatar.alt = '';
+        avatar.referrerPolicy = 'no-referrer';
+        info.appendChild(avatar);
+      } else {
+        var init = document.createElement('span');
+        init.className = 'account-user-card__initial';
+        init.textContent = (user.displayName || 'R').charAt(0).toUpperCase();
+        info.appendChild(init);
+      }
+      var textWrap = document.createElement('div');
+      textWrap.className = 'account-user-card__text';
+      var nameEl = document.createElement('strong');
+      nameEl.textContent = user.displayName || 'REDPOLY Member';
+      var emailEl = document.createElement('span');
+      emailEl.textContent = user.email || '';
+      textWrap.appendChild(nameEl);
+      textWrap.appendChild(emailEl);
+      info.appendChild(textWrap);
+
+      var signOutBtn = document.createElement('button');
+      signOutBtn.type = 'button';
+      signOutBtn.className = 'account-signout-btn';
+      signOutBtn.textContent = 'SIGN OUT';
+      signOutBtn.addEventListener('click', async function () {
+        if (!window.RedpolyFirebase) return;
+        signOutBtn.disabled = true;
+        try {
+          await window.RedpolyFirebase.signOut();
+          setAccountStatus('Signed out.', true);
+          showToast('Signed out');
+        } catch (err) {
+          setAccountStatus('Could not sign out. Please try again.', false);
+        } finally {
+          signOutBtn.disabled = false;
+        }
+      });
+      card.appendChild(info);
+      card.appendChild(signOutBtn);
+      accountBody.appendChild(card);
+
+      // Delivery profile section
+      var profileSection = document.createElement('section');
+      profileSection.className = 'account-section';
+      profileSection.innerHTML = '<div class="account-section__title"><h3>DELIVERY DETAILS</h3><span class="account-section__badge">CLOUD SYNCED</span></div>';
+      var form = document.createElement('form');
+      form.className = 'account-profile-grid';
+      form.noValidate = true;
+      var fields = [
+        { name: 'fullName', label: 'FULL NAME', val: (profile && profile.fullName) || user.displayName || '', max: 120, wide: true, ph: 'Your full name' },
+        { name: 'phone', label: 'MOBILE (10 DIGITS)', val: (profile && profile.phone) || '', max: 10, wide: false, ph: '9876543210' },
+        { name: 'pinCode', label: 'PIN CODE', val: (profile && profile.pinCode) || '', max: 6, wide: false, ph: '400001' },
+        { name: 'address', label: 'ADDRESS', val: (profile && profile.address) || '', max: 300, wide: true, ph: 'House, street, area' },
+        { name: 'city', label: 'CITY', val: (profile && profile.city) || '', max: 100, wide: false, ph: 'City' },
+        { name: 'state', label: 'STATE', val: (profile && profile.state) || '', max: 100, wide: false, ph: 'State' }
+      ];
+      fields.forEach(function (f) {
+        var lbl = document.createElement('label');
+        lbl.className = 'account-field' + (f.wide ? ' account-field--wide' : '');
+        lbl.textContent = f.label;
+        var inp = document.createElement('input');
+        inp.name = f.name;
+        inp.value = f.val;
+        inp.maxLength = f.max;
+        inp.placeholder = f.ph;
+        lbl.appendChild(inp);
+        form.appendChild(lbl);
+      });
+      var saveProfileBtn = document.createElement('button');
+      saveProfileBtn.type = 'submit';
+      saveProfileBtn.className = 'account-save-btn account-field--wide';
+      saveProfileBtn.textContent = 'SAVE DELIVERY DETAILS';
+      form.appendChild(saveProfileBtn);
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        if (!window.RedpolyFirebase) return;
+        saveProfileBtn.disabled = true;
+        setAccountStatus('Saving delivery details…', true);
+        try {
+          await window.RedpolyFirebase.saveDeliveryProfile({
+            email: user.email || '',
+            fullName: form.elements.fullName.value,
+            phone: form.elements.phone.value,
+            address: form.elements.address.value,
+            pinCode: form.elements.pinCode.value,
+            city: form.elements.city.value,
+            state: form.elements.state.value
+          });
+          setAccountStatus('Delivery details saved to your Google account.', true);
+          showToast('Delivery details saved');
+        } catch (err) {
+          setAccountStatus(err && err.message ? err.message : 'Could not save details.', false);
+        } finally {
+          saveProfileBtn.disabled = false;
+        }
+      });
+      profileSection.appendChild(form);
+      accountBody.appendChild(profileSection);
+
+      // Order history section
+      var ordersSection = document.createElement('section');
+      ordersSection.className = 'account-section';
+      ordersSection.innerHTML = '<div class="account-section__title"><h3>ORDER HISTORY</h3><span class="account-section__badge">' + orders.length + '</span></div>';
+      if (!orders.length) {
+        var emptyOrders = document.createElement('p');
+        emptyOrders.className = 'account-empty-orders';
+        emptyOrders.textContent = 'No orders placed under this account yet. Demo orders completed while signed in appear here.';
+        ordersSection.appendChild(emptyOrders);
+      } else {
+        var list = document.createElement('ul');
+        list.className = 'account-orders-list';
+        orders.forEach(function (order) {
+          var li = document.createElement('li');
+          li.className = 'account-order-card';
+          var top = document.createElement('div');
+          top.className = 'account-order-card__top';
+          var ref = document.createElement('span');
+          ref.className = 'account-order-card__ref';
+          ref.textContent = order.reference + ' · ' + String(order.status || 'placed').toUpperCase();
+          var total = document.createElement('strong');
+          total.className = 'account-order-card__total';
+          total.textContent = moneyFmt(order.total);
+          top.appendChild(ref);
+          top.appendChild(total);
+          var meta = document.createElement('p');
+          meta.className = 'account-order-card__meta';
+          var dateStr = order.createdAtMs ? new Date(order.createdAtMs).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+          meta.textContent = dateStr + ' · ' + String(order.shippingMethod || 'standard').toUpperCase() + ' · PIN ' + order.pin;
+          var itemsLine = document.createElement('p');
+          itemsLine.className = 'account-order-card__items';
+          itemsLine.textContent = (order.items && order.items.length)
+            ? order.items.map(function (i) { return i.name + ' × ' + i.quantity; }).join(', ')
+            : order.itemCount + ' item(s)';
+          li.appendChild(top);
+          li.appendChild(meta);
+          li.appendChild(itemsLine);
+          list.appendChild(li);
+        });
+        ordersSection.appendChild(list);
+      }
+      accountBody.appendChild(ordersSection);
+    }
+
+    authToggle.addEventListener('click', function () {
+      setAccountStatus('', false);
+      renderAccountModal();
+      if (accountPanel.showModal) accountPanel.showModal();
+      else accountPanel.setAttribute('open', '');
+    });
+    accountClose.addEventListener('click', closeAccount);
+    accountPanel.addEventListener('click', function (event) { if (event.target === accountPanel) closeAccount(); });
+    window.addEventListener('redpoly:firebase-ready', renderAccountModal);
+    window.addEventListener('redpoly:auth-changed', renderAccountModal);
+    window.addEventListener('redpoly:profile-updated', renderAccountModal);
+    window.addEventListener('redpoly:orders-updated', renderAccountModal);
+    window.addEventListener('redpoly:auth-error', function (event) {
+      if (event.detail && event.detail.message) setAccountStatus(event.detail.message, false);
+    });
+    renderAccountModal();
+  }
+  initAccountChrome();
+
   function initShopChrome() {
     var cartLayer = document.createElement('div');
     cartLayer.className = 'cart-layer';
@@ -213,8 +497,12 @@
       var id = name.toLowerCase() + '|' + price;
       var existing = cartItems.find(function (item) { return item.id === id; });
       if (existing) existing.quantity += 1;
-      else cartItems.push({ id:id, name:name, price:price, quantity:1 });
+      else {
+        existing = { id:id, name:name, price:price, quantity:1 };
+        cartItems.push(existing);
+      }
       persistCart(); renderCart(); openCart();
+      if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(existing).catch(function (err) { console.error(err); });
       var feedback = feedbackButton || button;
       var original = feedback.innerHTML;
       feedback.classList.add('added'); feedback.innerHTML = '✓ ADDED';
@@ -225,8 +513,12 @@
       if (!lastRemovedItem) return;
       var existing = cartItems.find(function (entry) { return entry.id === lastRemovedItem.item.id; });
       if (existing) existing.quantity += lastRemovedItem.item.quantity;
-      else cartItems.splice(Math.min(lastRemovedItem.index, cartItems.length), 0, lastRemovedItem.item);
+      else {
+        existing = lastRemovedItem.item;
+        cartItems.splice(Math.min(lastRemovedItem.index, cartItems.length), 0, existing);
+      }
       lastRemovedItem = null; persistCart(); renderCart();
+      if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(existing).catch(function (err) { console.error(err); });
     });
     cartLayer.querySelector('.cart-backdrop').addEventListener('click', closeCart);
     cartLayer.querySelector('.cart-drawer__close').addEventListener('click', closeCart);
@@ -236,13 +528,22 @@
       var item = cartItems.find(function (entry) { return entry.id === control.getAttribute('data-cart-id'); });
       if (!item) return;
       var action = control.getAttribute('data-cart-action');
-      if (action === 'increase') item.quantity += 1;
-      else if (action === 'decrease') {
+      if (action === 'increase') {
+        item.quantity += 1;
+        if (window.RedpolyFirebase) window.RedpolyFirebase.syncCartItem(item).catch(function (err) { console.error(err); });
+      } else if (action === 'decrease') {
         item.quantity -= 1;
-        if (item.quantity <= 0) { lastRemovedItem = { item: { id:item.id, name:item.name, price:item.price, quantity:1 }, index:cartItems.indexOf(item) }; cartItems = cartItems.filter(function (entry) { return entry.id !== item.id; }); }
+        if (item.quantity <= 0) {
+          lastRemovedItem = { item: { id:item.id, name:item.name, price:item.price, quantity:1 }, index:cartItems.indexOf(item) };
+          cartItems = cartItems.filter(function (entry) { return entry.id !== item.id; });
+          if (window.RedpolyFirebase) window.RedpolyFirebase.removeCartItem(item.name).catch(function (err) { console.error(err); });
+        } else if (window.RedpolyFirebase) {
+          window.RedpolyFirebase.syncCartItem(item).catch(function (err) { console.error(err); });
+        }
       } else if (action === 'remove') {
         lastRemovedItem = { item: { id:item.id, name:item.name, price:item.price, quantity:item.quantity }, index:cartItems.indexOf(item) };
         cartItems = cartItems.filter(function (entry) { return entry.id !== item.id; });
+        if (window.RedpolyFirebase) window.RedpolyFirebase.removeCartItem(item.name).catch(function (err) { console.error(err); });
       }
       persistCart(); renderCart();
     });
@@ -264,6 +565,11 @@
         var synced = JSON.parse(event.newValue || '[]');
         cartItems = Array.isArray(synced) ? synced.filter(function (item) { return item && typeof item.name === 'string' && inCatalogue(item.name, item.price) && Number(item.quantity) >= 1; }).map(function (item) { return { id:item.name.toLowerCase() + '|' + Number(item.price), name:item.name, price:Number(item.price), quantity:Math.floor(Number(item.quantity)) }; }) : [];
       } catch (ignoreStorageEvent) { cartItems = []; }
+      renderCart();
+    });
+    window.addEventListener('redpoly:cart-updated', function (event) {
+      if (!event.detail || !Array.isArray(event.detail.items)) return;
+      cartItems = event.detail.items.slice();
       renderCart();
     });
     renderCart();
@@ -529,8 +835,14 @@
     }
     function toggleWish(data, quiet) {
       var saved = isWished(data.name);
-      if (saved) wishItems = wishItems.filter(function (item) { return item.name !== data.name; });
-      else wishItems.push({ name:data.name, href:data.href, image:data.image, price:data.price });
+      if (saved) {
+        wishItems = wishItems.filter(function (item) { return item.name !== data.name; });
+        if (window.RedpolyFirebase) window.RedpolyFirebase.removeWishlistItem(data.name).catch(function (err) { console.error(err); });
+      } else {
+        var entry = { name:data.name, href:data.href, image:data.image, price:data.price };
+        wishItems.push(entry);
+        if (window.RedpolyFirebase) window.RedpolyFirebase.saveWishlistItem(entry).catch(function (err) { console.error(err); });
+      }
       persistWish(); renderWish();
       if (!quiet) showToast(saved ? data.name + ' removed from saved' : data.name + ' saved for later');
     }
@@ -574,6 +886,11 @@
     window.addEventListener('storage', function (event) {
       if (event.key !== wishKey) return;
       wishItems = parseWish(event.newValue); renderWish();
+    });
+    window.addEventListener('redpoly:wishlist-updated', function (event) {
+      if (!event.detail || !Array.isArray(event.detail.items)) return;
+      wishItems = event.detail.items.slice();
+      renderWish();
     });
     renderWish();
   }
