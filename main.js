@@ -91,12 +91,14 @@
     'MAGNETIC BLOCKS 25 PCS': { price:399, href:'/magnetic-blocks?pack=25pcs', image:'/assets/images/redpoly/products/magnetic-blocks-25pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 36 PCS': { price:549, href:'/magnetic-blocks?pack=36pcs', image:'/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 42 PCS': { price:599, href:'/magnetic-blocks?pack=42pcs', image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
-    'MAGNETIC BLOCKS 64 PCS': { price:799, href:'/magnetic-blocks?pack=64pcs', image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' }
+    'MAGNETIC BLOCKS 64 PCS': { price:799, href:'/magnetic-blocks?pack=64pcs', image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' },
+    'RISE ONE X 4X4': { price:1499, href:'/rise-one-x-4x4', image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' }
   };
   function isCatalogueProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
   function inCatalogue(name, price) { return isCatalogueProduct(name) && catalogue[name].price === Number(price); }
   var CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v1';
   var DEFAULT_CARD_TAGS = {
+    'RISE ONE X 4X4': 'NEW IN STORE',
     'MAGNETIC BLOCKS 25 PCS': 'NEW IN STORE',
     'MAGNETIC BLOCKS 36 PCS': '',
     'MAGNETIC BLOCKS 42 PCS': '',
@@ -113,12 +115,14 @@
     'PIXEL SPLASH': 'NEW IN STORE'
   };
   var SKU_ORDER = [
+    'rise-one-x-4x4',
     'magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs',
     'mecha-rover', 'bubble-gun', 'stunt-pet',
     'cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio',
     'mini-cool-car', 'gel-storm', 'pixel-splash'
   ];
   var SKU_TO_NAME = {
+    'rise-one-x-4x4': 'RISE ONE X 4X4',
     'magnetic-blocks-25-pcs': 'MAGNETIC BLOCKS 25 PCS',
     'magnetic-blocks-36-pcs': 'MAGNETIC BLOCKS 36 PCS',
     'magnetic-blocks-42-pcs': 'MAGNETIC BLOCKS 42 PCS',
@@ -264,7 +268,7 @@
       var FREE_GIFT_FROM = 3500;
       var GST_RATE = 12;
       var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks'];
+      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4'];
 
       function normalizeOrderStatus(raw) {
         var str = String(raw || '');
@@ -2628,6 +2632,11 @@
       productStage.style.setProperty('--stage-tilt-y', '0deg');
     });
   }
+  function parseYouTubeId(url) {
+    var m = String(url || '').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : '';
+  }
+
   // Comic media card on a product page: opens a rounded viewer with previous and next slides.
   (function () {
     var viewer = document.getElementById('media-viewer');
@@ -2639,9 +2648,13 @@
     var indexNode = viewer.querySelector('#media-viewer-index');
     var totalNode = viewer.querySelector('#media-viewer-total');
     var slides = Array.prototype.map.call(slidesNode.querySelectorAll('li'), function (item) {
+      var rawType = item.getAttribute('data-type') || 'image';
+      var src = item.getAttribute('data-src') || '';
+      var ytId = rawType === 'youtube' ? (parseYouTubeId(src) || src) : parseYouTubeId(src);
       return {
-        type: item.getAttribute('data-type') === 'video' ? 'video' : 'image',
-        src: item.getAttribute('data-src') || '',
+        type: ytId ? 'youtube' : (rawType === 'video' ? 'video' : 'image'),
+        src: src,
+        youtubeId: ytId,
         alt: item.getAttribute('data-alt') || '',
         poster: item.getAttribute('data-poster') || '',
         caption: item.getAttribute('data-caption') || ''
@@ -2659,6 +2672,10 @@
         video.textContent = '';
         video.load();
       }
+      var frame = stage.querySelector('iframe');
+      if (frame) {
+        frame.src = 'about:blank';
+      }
       stage.textContent = '';
     }
 
@@ -2666,7 +2683,17 @@
       clearStage();
       var slide = slides[index];
       var media;
-      if (slide.type === 'video') {
+      if (slide.type === 'youtube' && slide.youtubeId) {
+        media = document.createElement('div');
+        media.className = 'media-viewer__embed';
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube.com/embed/' + encodeURIComponent(slide.youtubeId) + '?rel=0&playsinline=1&autoplay=1';
+        iframe.title = slide.alt || slide.caption || 'Product demonstration video';
+        iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share');
+        iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        iframe.allowFullscreen = true;
+        media.appendChild(iframe);
+      } else if (slide.type === 'video') {
         media = document.createElement('video');
         media.controls = true;
         media.defaultMuted = true;
@@ -2696,7 +2723,9 @@
     function open(event) {
       opener = event.currentTarget;
       var preferredType = opener.getAttribute('data-media-open');
-      index = Math.max(0, slides.findIndex(function (slide) { return slide.type === preferredType; }));
+      index = Math.max(0, slides.findIndex(function (slide) {
+        return preferredType === 'video' ? (slide.type === 'video' || slide.type === 'youtube') : slide.type === preferredType;
+      }));
       render();
       viewer.hidden = false;
       document.documentElement.classList.add('viewer-open');
@@ -2729,7 +2758,7 @@
       if (event.key === 'ArrowRight') { event.preventDefault(); step(1); return; }
       if (event.key !== 'Tab') return;
       var focusable = Array.prototype.filter.call(
-        viewer.querySelectorAll('button, video, [tabindex]:not([tabindex="-1"])'),
+        viewer.querySelectorAll('button, video, iframe, [tabindex]:not([tabindex="-1"])'),
         function (element) { return !element.disabled && element.offsetParent !== null; }
       );
       if (!focusable.length) return;
@@ -2745,6 +2774,57 @@
     var portrait = document.querySelector('.char-file__portrait');
     var slidesNode = document.getElementById('media-viewer-slides');
     if (!portrait || !slidesNode) return;
+
+    var ytSlide = slidesNode.querySelector('li[data-type="youtube"][data-src]');
+    if (ytSlide) {
+      var ytId = parseYouTubeId(ytSlide.dataset.src) || ytSlide.dataset.src;
+      if (!ytId) return;
+      portrait.classList.add('has-portrait-video');
+      var ytToggle = portrait.querySelector('.char-file__video-toggle');
+      if (!ytToggle) {
+        ytToggle = document.createElement('button');
+        ytToggle.className = 'char-file__video-toggle';
+        ytToggle.type = 'button';
+        ytToggle.setAttribute('aria-pressed', 'false');
+        ytToggle.textContent = 'Play demo';
+        portrait.appendChild(ytToggle);
+      }
+      var ytEmbed = null;
+      function closeYt() {
+        if (!ytEmbed) return;
+        var f = ytEmbed.querySelector('iframe');
+        if (f) f.src = 'about:blank';
+        ytEmbed.remove();
+        ytEmbed = null;
+        ytToggle.textContent = 'Play demo';
+        ytToggle.setAttribute('aria-pressed', 'false');
+      }
+      ytToggle.addEventListener('click', function () {
+        if (ytEmbed) {
+          closeYt();
+          return;
+        }
+        ytEmbed = document.createElement('div');
+        ytEmbed.className = 'char-file__embed';
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube.com/embed/' + encodeURIComponent(ytId) + '?rel=0&playsinline=1&autoplay=1&mute=1';
+        iframe.title = ytSlide.dataset.alt || 'Product demonstration video';
+        iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share');
+        iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        iframe.allowFullscreen = true;
+        ytEmbed.appendChild(iframe);
+        portrait.insertBefore(ytEmbed, ytToggle);
+        ytToggle.textContent = 'Close demo';
+        ytToggle.setAttribute('aria-pressed', 'true');
+      });
+      var ytGallery = document.getElementById('media-viewer');
+      if (ytGallery && 'MutationObserver' in window) {
+        new MutationObserver(function () {
+          if (!ytGallery.hidden) closeYt();
+        }).observe(ytGallery, { attributes: true, attributeFilter: ['hidden'] });
+      }
+      return;
+    }
 
     var videoSlide = slidesNode.querySelector('li[data-type="video"][data-src]');
     var video = portrait.querySelector('video.char-file__video');
@@ -2896,7 +2976,8 @@
       'magnetic-blocks-25-pcs': '/magnetic-blocks',
       'magnetic-blocks-36-pcs': '/magnetic-blocks',
       'magnetic-blocks-42-pcs': '/magnetic-blocks',
-      'magnetic-blocks-64-pcs': '/magnetic-blocks'
+      'magnetic-blocks-64-pcs': '/magnetic-blocks',
+      'rise-one-x-4x4': '/rise-one-x-4x4'
     };
 
     function itemToSlug(name) {
@@ -3204,7 +3285,8 @@
       'mecha-rover': ['mecha-rover'],
       'pixel-splash': ['pixel-splash'],
       'cute-dinos': ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio'],
-      'magnetic-blocks': ['magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs']
+      'magnetic-blocks': ['magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs'],
+      'rise-one-x-4x4': ['rise-one-x-4x4']
     };
     var matchingItemSlugs = ELIGIBLE_ITEM_SLUGS[productSlug] || [productSlug];
 
