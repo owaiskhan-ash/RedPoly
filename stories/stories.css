@@ -1,5 +1,5 @@
 .stories-page{min-height:100vh;background:#0a0a0a;color:#f4f0e6;background-image:radial-gradient(rgba(200,255,0,.1) .8px,transparent .9px),radial-gradient(ellipse at 78% 8%,rgba(80,43,120,.28),transparent 34rem);background-size:9px 9px,auto}
-.stories-header,.stories-main,.stories-footer{width:min(1180px,calc(100% - 48px));margin-inline:auto}
+.stories-header,.stories-main{width:min(1180px,calc(100% - 48px));margin-inline:auto}
 .stories-header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid rgba(244,240,230,.18)}
 .stories-brand{display:flex;align-items:center;gap:13px;color:var(--lime);font:10px/1 'Archivo',sans-serif;font-weight:900;letter-spacing:1.2px}
 .stories-brand img{width:84px;height:45px;object-fit:contain}
@@ -56,10 +56,6 @@
 .issue-card__cta b{font-size:17px;line-height:.8}
 .shelf-status{grid-column:1/-1;padding:25px;color:#c7c2ce;font-size:13px}
 .shelf-status--error{border:1px solid #7a3630;color:#ffd2c9}
-.stories-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;padding:20px 0 28px;border-top:1px solid rgba(244,240,230,.16);color:#a7a3ad;font-size:8px;font-weight:900;letter-spacing:1px}
-.stories-footer__gst{width:100%;text-align:right;font-size:7px;font-weight:800;letter-spacing:1.1px;color:#615d69}
-.stories-footer>a{color:var(--lime)}
-.stories-footer>a span{color:#a7a3ad}
 
  .reader-dialog{width:min(1040px,calc(100vw - 28px));height:min(96dvh,1120px);max-width:none;max-height:none;margin:auto;padding:0;overflow:hidden;border:2px solid #080808;background:#111014;color:#f4f0e6;box-shadow:0 28px 100px rgba(0,0,0,.75)}
 .reader-dialog::backdrop{background:rgba(4,4,8,.88);backdrop-filter:blur(5px)}
@@ -95,7 +91,7 @@
 .reader-progress span{display:block;width:0;height:100%;background:var(--lime);transition:width .25s}
 
 @media(max-width:640px){
-  .stories-header,.stories-main,.stories-footer{width:calc(100% - 30px)}
+  .stories-header,.stories-main{width:calc(100% - 30px)}
   .stories-header{padding:16px 0}
   .stories-brand img{width:67px;height:36px}
   .stories-brand{font-size:8px;gap:8px}
@@ -114,7 +110,6 @@
   .issue-card__cover{min-height:190px;aspect-ratio:16/8;border-right:0;border-bottom:2px solid #000}
   .issue-card__body{padding:19px}
   .issue-card__body h3{font-size:31px}
-  .stories-footer{flex-direction:column;gap:8px;padding-bottom:20px;font-size:7px}
   .reader-dialog{width:100vw;height:100dvh;border:0}
   .reader-toolbar{padding:10px 12px}
   .reader-toolbar h2{font-size:20px}

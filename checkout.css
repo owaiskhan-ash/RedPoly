@@ -62,9 +62,6 @@
 .checkout-gift{color:#ffb066}
 .checkout-gift strong{max-width:150px;text-align:right;font:700 9px/1.4 'Archivo',sans-serif!important;letter-spacing:0}
 .checkout-return{display:inline-block;margin-top:25px;color:#ff9a69;font-size:9px;font-weight:900;letter-spacing:1px}
-.checkout-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:15px;padding:18px clamp(18px,5vw,72px);border-top:1px solid rgba(255,255,255,.13);color:#a7a094;font-size:8px;font-weight:800;letter-spacing:1px}
-.checkout-footer__gst{width:100%;text-align:right;font-size:7px;font-weight:800;letter-spacing:1.1px;color:#6d685f}
-.checkout-footer span:first-child{color:#c8ff00}
 .checkout-empty-state{max-width:600px;margin:60px auto;padding:35px;background:#f4f0e6;color:#171512;text-align:center;border:2px solid #c8ff00;box-shadow:7px 7px 0 #c8ff00}
 .checkout-empty-state h2{font:40px 'Anton',sans-serif}
 .checkout-empty-state p{margin-top:10px;font-size:13px}
@@ -88,7 +85,7 @@
 .thankyou-actions{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .thankyou-actions a{padding:12px 14px;background:#171512;color:#fff;font-size:9px;font-weight:900;letter-spacing:1px}
 .thankyou-actions a:first-child{background:#4439b8;color:#fff}
-@media(max-width:760px){.checkout-layout{grid-template-columns:1fr}.checkout-summary{position:relative;top:auto;grid-row:1}.checkout-form-panel{grid-row:2}.checkout-main{padding-top:24px}.checkout-kicker{font-size:7px;letter-spacing:1px}.checkout-summary{padding:21px}.checkout-footer{flex-direction:column}.checkout-fields,.demo-card-fields{gap:10px}}
+@media(max-width:760px){.checkout-layout{grid-template-columns:1fr}.checkout-summary{position:relative;top:auto;grid-row:1}.checkout-form-panel{grid-row:2}.checkout-main{padding-top:24px}.checkout-kicker{font-size:7px;letter-spacing:1px}.checkout-summary{padding:21px}.checkout-fields,.demo-card-fields{gap:10px}}
 @media(max-width:440px){.checkout-fields,.demo-card-fields{grid-template-columns:1fr}.field--wide{grid-column:1}.checkout-header{padding:14px 16px}.checkout-brand img{width:78px}.checkout-brand{font-size:7px;letter-spacing:1.3px}.checkout-back{font-size:8px}.checkout-main{width:calc(100% - 28px)}.checkout-main>h1{font-size:58px}.demo-payment{padding:14px}.checkout-form-panel,.checkout-summary{padding:18px}.checkout-submit{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.checkout-submit{transition:none}}
 
@@ -109,7 +106,7 @@
 .thankyou-fx__piece--star{color:#c8ff00;font-size:22px;text-shadow:1px 1px #171512}
 .thankyou-fx__piece--dot{width:9px;height:9px;margin:9px;border-radius:50%;background:#ff6b1a;box-shadow:0 0 0 3px rgba(255,107,26,.16)}
 .thankyou-fx__piece--ribbon{width:7px;height:20px;background:#4439b8;border-radius:2px;transform:rotate(28deg)}
-.thankyou-page .checkout-header,.thankyou-page .thankyou-main,.thankyou-page .checkout-footer{position:relative;z-index:3}
+.thankyou-page .checkout-header,.thankyou-page .thankyou-main{position:relative;z-index:3}
 @keyframes thankyou-card-in{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes thankyou-badge-pop{0%{opacity:0;transform:scale(.65) rotate(-24deg)}70%{opacity:1;transform:scale(1.12) rotate(7deg)}100%{transform:scale(1) rotate(0)}}
 @keyframes thankyou-confetti{0%{opacity:0;transform:translate3d(0,-10px,0) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate3d(12px,42vh,0) rotate(175deg)}}
@@ -117,10 +114,6 @@
 .pin-lookup-status{grid-column:1/-1;margin:0;font-size:9px;line-height:1.45;letter-spacing:0}
 .pin-lookup-status{margin-top:-4px;color:#426100;font-weight:800}
 .field input[name="city"][readonly],.field input[name="state"][readonly]{border-color:#96b83d;background:#f1f8db;color:#35440b;cursor:default}
-.checkout-footer__links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 12px}
-.checkout-footer__links a{color:#d5d0c6;font-size:8px;font-weight:900;letter-spacing:.65px}
-.checkout-footer__links a:hover,.checkout-footer__links a:focus-visible{color:#c8ff00}
-.checkout-footer__links a:focus-visible{outline:2px solid #ff6b1a;outline-offset:3px}
 .checkout-line{align-items:center}
 .checkout-line__image{flex:none;width:54px;height:54px;object-fit:contain;padding:3px;background:#f4f0e6;border:1px solid rgba(255,255,255,.16)}
 .checkout-line--reward{background:rgba(200,255,0,.08)}
