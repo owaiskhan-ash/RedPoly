@@ -21,8 +21,7 @@ There is **one** header on the site, and every page carries exactly the same mar
 </header>
 ```
 
-Styles live in `styles.css` (`site-header`, plus the phone menu rules), with the cart/saved button
-chrome in `accessories.css`. `main.js` adds the cart and saved buttons into
+Styles live in `styles.css` (`site-header`, phone menu rules, and shared cart/saved/auth header buttons and drawers). `main.js` adds the account, saved, and cart buttons into
 `.site-header__inner` on every page, so the markup above stays identical everywhere.
 
 ## Pages that carry it
