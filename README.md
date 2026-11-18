@@ -6,6 +6,7 @@
 
 | Product | Page | Price (incl. GST) |
 | --- | --- | --- |
+| Rise one X 4X4 (2.4 GHz spray drift F1 car with mecanum wheels, gamepad + wrist gesture controller, ages 6+) | `/rise-one-x-4x4` (`products/rise-one-x-4x4.html`) | ₹1,499 |
 | Magnetic Blocks (STEM magnetic sticks & balls; 25 PCS, 36 PCS, 42 PCS or 64 PCS packs, ages 3+) | `/magnetic-blocks` (`products/magnetic-blocks.html`) | ₹399 – ₹799 |
 | Bubble Gun (12-hole automatic bubble blaster, with 1 bottle of bubble water) | `/bubble-gun` (`products/bubble-gun.html`) | ₹499 |
 | Stunt Pet (voice-control rolling rabbit toy with light and music; needs 3 AA batteries, not included) | `/stunt-pet` (`products/stunt-pet.html`) | ₹599 |

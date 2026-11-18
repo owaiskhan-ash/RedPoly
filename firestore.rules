@@ -54,7 +54,8 @@ service cloud.firestore {
         'magnetic-blocks-25-pcs',
         'magnetic-blocks-36-pcs',
         'magnetic-blocks-42-pcs',
-        'magnetic-blocks-64-pcs'
+        'magnetic-blocks-64-pcs',
+        'rise-one-x-4x4'
       ];
     }
 
@@ -65,6 +66,7 @@ service cloud.firestore {
         name == 'GEL STORM' ? 'gel-storm' :
         name == 'MECHA ROVER' ? 'mecha-rover' :
         name == 'PIXEL SPLASH' ? 'pixel-splash' :
+        name == 'RISE ONE X 4X4' ? 'rise-one-x-4x4' :
         name == 'CUTE DINOS GREEN' ? 'cute-dinos-green' :
         name == 'CUTE DINOS RED' ? 'cute-dinos-red' :
         name == 'CUTE DINOS TEAL' ? 'cute-dinos-teal' :
@@ -82,6 +84,7 @@ service cloud.firestore {
         slug == 'gel-storm' ? 'GEL STORM' :
         slug == 'mecha-rover' ? 'MECHA ROVER' :
         slug == 'pixel-splash' ? 'PIXEL SPLASH' :
+        slug == 'rise-one-x-4x4' ? 'RISE ONE X 4X4' :
         slug == 'cute-dinos-green' ? 'CUTE DINOS GREEN' :
         slug == 'cute-dinos-red' ? 'CUTE DINOS RED' :
         slug == 'cute-dinos-teal' ? 'CUTE DINOS TEAL' :
@@ -99,6 +102,7 @@ service cloud.firestore {
         name == 'GEL STORM' ? 1999 :
         name == 'MECHA ROVER' ? 499 :
         name == 'PIXEL SPLASH' ? 1749 :
+        name == 'RISE ONE X 4X4' ? 1499 :
         name == 'CUTE DINOS GREEN' ? 249 :
         name == 'CUTE DINOS RED' ? 249 :
         name == 'CUTE DINOS TEAL' ? 249 :
@@ -227,7 +231,8 @@ service cloud.firestore {
         'mecha-rover',
         'pixel-splash',
         'cute-dinos',
-        'magnetic-blocks'
+        'magnetic-blocks',
+        'rise-one-x-4x4'
       ];
     }
 

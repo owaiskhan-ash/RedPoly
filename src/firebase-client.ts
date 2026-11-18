@@ -105,7 +105,8 @@ export type ProductSlug =
   | 'mecha-rover'
   | 'pixel-splash'
   | 'cute-dinos'
-  | 'magnetic-blocks';
+  | 'magnetic-blocks'
+  | 'rise-one-x-4x4';
 
 export interface OrderRecord {
   id: string;
@@ -197,7 +198,8 @@ export type SkuSlug =
   | 'magnetic-blocks-25-pcs'
   | 'magnetic-blocks-36-pcs'
   | 'magnetic-blocks-42-pcs'
-  | 'magnetic-blocks-64-pcs';
+  | 'magnetic-blocks-64-pcs'
+  | 'rise-one-x-4x4';
 
 export interface ProductCatalogRecord {
   sku: SkuSlug;
@@ -351,6 +353,11 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
     href: '/magnetic-blocks?pack=64pcs',
     image: '/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122',
   },
+  'RISE ONE X 4X4': {
+    price: 1499,
+    href: '/rise-one-x-4x4',
+    image: '/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122',
+  },
 };
 
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
@@ -362,6 +369,7 @@ const FREE_GIFT_FROM = 3500;
 const GST_RATE = 12;
 
 const SKU_ORDER: ReadonlyArray<SkuSlug> = [
+  'rise-one-x-4x4',
   'magnetic-blocks-25-pcs',
   'magnetic-blocks-36-pcs',
   'magnetic-blocks-42-pcs',
@@ -385,6 +393,7 @@ interface DefaultSeedMeta {
 }
 
 const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
+  'rise-one-x-4x4': { name: 'RISE ONE X 4X4', price: 1499, cardTag: 'NEW IN STORE' },
   'magnetic-blocks-25-pcs': { name: 'MAGNETIC BLOCKS 25 PCS', price: 399, cardTag: 'NEW IN STORE' },
   'magnetic-blocks-36-pcs': { name: 'MAGNETIC BLOCKS 36 PCS', price: 549, cardTag: '' },
   'magnetic-blocks-42-pcs': { name: 'MAGNETIC BLOCKS 42 PCS', price: 599, cardTag: '' },
@@ -402,6 +411,7 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
 };
 
 const NAME_TO_SKU: Record<string, SkuSlug> = {
+  'RISE ONE X 4X4': 'rise-one-x-4x4',
   'MAGNETIC BLOCKS 25 PCS': 'magnetic-blocks-25-pcs',
   'MAGNETIC BLOCKS 36 PCS': 'magnetic-blocks-36-pcs',
   'MAGNETIC BLOCKS 42 PCS': 'magnetic-blocks-42-pcs',
@@ -614,6 +624,7 @@ const VALID_PRODUCT_SLUGS: ReadonlyArray<ProductSlug> = [
   'pixel-splash',
   'cute-dinos',
   'magnetic-blocks',
+  'rise-one-x-4x4',
 ];
 
 function normalizeOrderStatus(raw: unknown): OrderStatus {
