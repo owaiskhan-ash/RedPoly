@@ -9,7 +9,11 @@
     { "source": "/gel-storm", "destination": "/products/gel-storm" },
     { "source": "/pixel-splash", "destination": "/products/pixel-splash" },
     { "source": "/mecha-rover", "destination": "/products/mecha-rover" },
-    { "source": "/help", "destination": "/help.html" }
+    { "source": "/help", "destination": "/help.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/privacy-policy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/terms-and-conditions", "destination": "/terms.html" }
   ],
   "redirects": [
     { "source": "/products/bubble-gun", "destination": "/bubble-gun", "permanent": true },
