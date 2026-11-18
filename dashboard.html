@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orders · REDPOLY Admin</title>
+  <meta name="description" content="REDPOLY merchant orders dashboard showing all placed customer orders, fulfillment statuses, and order details." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#1a1a1a" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/redpoly/favicon.png?v=logo-puff-20261118" />
+  <link rel="shortcut icon" href="/assets/images/redpoly/favicon.ico?v=logo-puff-20261118" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/dashboard.css?v=dash-20261118" />
+</head>
+<body>
+  <header class="top-bar">
+    <div class="top-bar__left">
+      <button type="button" class="top-bar__menu-btn" id="sidebar-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="dash-sidebar">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 5h14M3 10h14M3 15h14" />
+        </svg>
+      </button>
+      <a class="top-bar__brand" href="/dashboard" aria-label="REDPOLY Orders Admin">
+        <span class="top-bar__logo-badge" aria-hidden="true">R</span>
+        <span class="top-bar__brand-name">REDPOLY</span>
+        <span class="top-bar__brand-sep" aria-hidden="true">/</span>
+        <span class="top-bar__brand-scope">Admin</span>
+      </a>
+    </div>
+
+    <div class="top-bar__right">
+      <a class="top-bar__store-link" href="/">
+        <span>Online Store</span>
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10M9.5 2H14m0 0v4.5M14 2L7.5 8.5" />
+        </svg>
+      </a>
+      <div class="top-bar__account" id="top-bar-account"></div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+    <aside class="sidebar" id="dash-sidebar" aria-label="Dashboard navigation">
+      <nav class="sidebar__nav">
+        <p class="sidebar__section-label">Store management</p>
+        <a class="sidebar__link is-active" href="/dashboard" aria-current="page">
+          <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3.5 5.5h13l-1 10.5h-11L3.5 5.5Z" />
+            <path d="M7 5.5V4a3 3 0 0 1 6 0v1.5" />
+          </svg>
+          <span>Orders</span>
+          <span class="sidebar__count" id="sidebar-orders-count">0</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <a class="sidebar__footer-link" href="/">
+          <span>Storefront</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a class="sidebar__footer-link" href="/account">
+          <span>My Account</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main-canvas">
+      <div class="page-wrap">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Orders</h1>
+          </div>
+          <div class="page-actions" id="page-actions" hidden>
+            <button type="button" class="btn btn--secondary" id="refresh-orders-btn">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M13.5 8a5.5 5.5 0 1 1-1.35-3.6M13.5 2.5v2.75h-2.75" />
+              </svg>
+              <span>Refresh</span>
+            </button>
+            <button type="button" class="btn btn--primary" id="export-csv-btn">
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Auth / Admin Gate -->
+        <section class="gate-card" id="auth-gate" hidden aria-live="polite"></section>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content" id="dashboard-content" hidden>
+          <!-- Metrics Strip -->
+          <section class="metrics-strip" aria-label="Order summary">
+            <div class="metric-cell">
+              <span class="metric-cell__label">Total orders</span>
+              <strong class="metric-cell__value" id="metric-total-orders">0</strong>
+            </div>
+            <div class="metric-cell">
+              <span class="metric-cell__label">Gross sales</span>
+              <strong class="metric-cell__value" id="metric-gross-sales">₹0</strong>
+            </div>
+            <div class="metric-cell">
+              <span class="metric-cell__label">Items ordered</span>
+              <strong class="metric-cell__value" id="metric-items-ordered">0</strong>
+            </div>
+            <div class="metric-cell">
+              <span class="metric-cell__label">Open / Unfulfilled</span>
+              <strong class="metric-cell__value" id="metric-unfulfilled">0</strong>
+            </div>
+          </section>
+
+          <!-- Error Banner -->
+          <div class="inline-alert" id="orders-error-banner" hidden role="alert">
+            <p id="orders-error-text"></p>
+            <button type="button" class="btn btn--secondary btn--sm" id="orders-retry-btn">Try again</button>
+          </div>
+
+          <!-- Orders Table Card -->
+          <section class="orders-card" aria-label="All placed orders">
+            <div class="orders-tabs" id="orders-filter-tabs" role="tablist" aria-label="Filter orders">
+              <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-filter="all">All <span id="tab-count-all">0</span></button>
+              <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="placed">Unfulfilled <span id="tab-count-placed">0</span></button>
+              <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="fulfilled">Fulfilled <span id="tab-count-fulfilled">0</span></button>
+              <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="cancelled">Cancelled <span id="tab-count-cancelled">0</span></button>
+              <button type="button" class="orders-tab" role="tab" aria-selected="false" data-filter="express">Express <span id="tab-count-express">0</span></button>
+            </div>
+
+            <div class="orders-toolbar">
+              <div class="search-field">
+                <svg class="search-field__icon" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="7" cy="7" r="4.5" />
+                  <path d="M10.5 10.5L14 14" />
+                </svg>
+                <input type="search" id="orders-search" placeholder="Search orders by ID, customer, email, city, PIN, or toy" aria-label="Search orders" />
+                <button type="button" class="search-field__clear" id="orders-search-clear" hidden aria-label="Clear search">×</button>
+              </div>
+              <div class="toolbar-controls">
+                <label class="sort-control" for="orders-sort">
+                  <span class="sr-only">Sort orders</span>
+                  <select id="orders-sort" aria-label="Sort orders">
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="total-desc">Total: high to low</option>
+                    <option value="total-asc">Total: low to high</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <!-- Loading Skeleton -->
+            <div class="table-skeleton" id="orders-skeleton" hidden aria-hidden="true">
+              <div class="skeleton-row"></div>
+              <div class="skeleton-row"></div>
+              <div class="skeleton-row"></div>
+              <div class="skeleton-row"></div>
+              <div class="skeleton-row"></div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="orders-empty" hidden>
+              <div class="empty-state__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 7h16l-1.2 12H5.2L4 7Z" />
+                  <path d="M8.5 7V5a3.5 3.5 0 0 1 7 0v2" />
+                </svg>
+              </div>
+              <h2 class="empty-state__title" id="orders-empty-title">No orders yet</h2>
+              <p class="empty-state__copy" id="orders-empty-copy">Orders completed through REDPOLY checkout will appear here automatically.</p>
+              <div class="empty-state__actions" id="orders-empty-actions"></div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-scroll" id="orders-table-wrap">
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Order</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Payment</th>
+                    <th scope="col">Fulfillment</th>
+                    <th scope="col">Items</th>
+                    <th scope="col">Delivery</th>
+                    <th scope="col" class="col-num">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-tbody"></tbody>
+              </table>
+            </div>
+
+            <div class="table-footer" id="orders-table-footer" hidden>
+              <span id="orders-showing-text">Showing 0 orders</span>
+              <span>Click any order row to inspect line items and shipping details</span>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Order Detail Slide-Over Drawer -->
+  <div class="drawer-layer" id="order-drawer-layer" hidden>
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <aside class="drawer" id="order-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-order-ref" tabindex="-1">
+      <header class="drawer__header">
+        <div>
+          <div class="drawer__title-row">
+            <h2 class="drawer__title" id="drawer-order-ref">#RED-DEMO-000000</h2>
+            <span class="status-badge" id="drawer-status-badge">Placed</span>
+          </div>
+          <p class="drawer__sub" id="drawer-order-date">—</p>
+        </div>
+        <button type="button" class="drawer__close" id="drawer-close-btn" aria-label="Close order details">×</button>
+      </header>
+
+      <div class="drawer__body">
+        <!-- Fulfillment Controls -->
+        <section class="drawer-section">
+          <div class="drawer-section__head">
+            <h3>Fulfillment status</h3>
+            <span class="drawer-saving" id="drawer-status-saving" hidden>Saving…</span>
+          </div>
+          <div class="status-actions" id="drawer-status-actions">
+            <button type="button" class="btn btn--primary btn--sm" data-status-action="fulfilled">Mark as fulfilled</button>
+            <button type="button" class="btn btn--secondary btn--sm" data-status-action="placed">Mark unfulfilled</button>
+            <button type="button" class="btn btn--danger-ghost btn--sm" data-status-action="cancelled">Cancel order</button>
+          </div>
+          <p class="drawer-status-error" id="drawer-status-error" hidden></p>
+        </section>
+
+        <!-- Items -->
+        <section class="drawer-section">
+          <div class="drawer-section__head">
+            <h3>Items</h3>
+            <span class="drawer-section__meta" id="drawer-item-count">0 items</span>
+          </div>
+          <ul class="drawer-items" id="drawer-items-list"></ul>
+        </section>
+
+        <!-- Payment Summary -->
+        <section class="drawer-section">
+          <div class="drawer-section__head">
+            <h3>Payment summary</h3>
+            <span class="status-badge status-badge--neutral">Demo</span>
+          </div>
+          <dl class="summary-list" id="drawer-summary-list"></dl>
+        </section>
+
+        <!-- Customer & Shipping -->
+        <section class="drawer-section">
+          <div class="drawer-section__head">
+            <h3>Customer &amp; shipping</h3>
+          </div>
+          <div class="customer-details" id="drawer-customer-details"></div>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <div class="dash-toast" id="dash-toast" role="status" aria-live="polite"></div>
+
+  <script src="/firebase-client.js?v=fb-20261118" defer></script>
+  <script src="/dashboard.js?v=dash-20261118" defer></script>
+</body>
+</html>

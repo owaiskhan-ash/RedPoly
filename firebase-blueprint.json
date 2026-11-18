@@ -229,7 +229,7 @@
         },
         "status": {
           "type": "string",
-          "enum": ["placed"]
+          "enum": ["placed", "fulfilled", "cancelled"]
         },
         "createdAt": {
           "type": "string",

@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth';
 import {
   collection,
+  collectionGroup,
   deleteDoc,
   doc,
   getDoc,
@@ -84,8 +85,11 @@ export interface PrivateProfile {
   state: string;
 }
 
+export type OrderStatus = 'placed' | 'fulfilled' | 'cancelled';
+
 export interface OrderRecord {
   id: string;
+  uid: string;
   reference: string;
   customerName: string;
   email: string;
@@ -103,7 +107,7 @@ export interface OrderRecord {
   gst: number;
   total: number;
   itemCount: number;
-  status: 'placed';
+  status: OrderStatus;
   createdAtMs: number;
   items: Array<{ name: string; price: number; quantity: number }>;
 }
@@ -574,8 +578,12 @@ function subscribeOrders(uid: string): void {
           handleFirestoreError(error, OperationType.LIST, itemsPath);
         }
 
+        const statusVal: OrderStatus =
+          d.status === 'fulfilled' || d.status === 'cancelled' ? d.status : 'placed';
+
         orders.push({
           id: docSnap.id,
+          uid: String(d.uid || uid),
           reference: String(d.reference || ''),
           customerName: String(d.customerName || ''),
           email: String(d.email || ''),
@@ -593,7 +601,7 @@ function subscribeOrders(uid: string): void {
           gst: Number(d.gst || 0),
           total: Number(d.total || 0),
           itemCount: Number(d.itemCount || lineItems.length),
-          status: 'placed',
+          status: statusVal,
           createdAtMs,
           items: lineItems,
         });
@@ -863,8 +871,104 @@ export async function placeOrder(input: PlaceOrderInput): Promise<void> {
   }
 }
 
+const ADMIN_EMAIL = 'ashketchupkeke@gmail.com';
+
+export function isAdminUser(): boolean {
+  return Boolean(currentUser && currentUser.emailVerified && currentUser.email === ADMIN_EMAIL);
+}
+
+export async function listAllOrders(): Promise<OrderRecord[]> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to view all store orders.');
+  }
+  const cgPath = 'orders';
+  try {
+    const snapshot = await getDocs(collectionGroup(db, 'orders'));
+    const orders: OrderRecord[] = await Promise.all(
+      snapshot.docs.map(async (docSnap) => {
+        const d = docSnap.data();
+        const ts = d.createdAt as Timestamp | undefined;
+        const createdAtMs = ts && typeof ts.toMillis === 'function' ? ts.toMillis() : 0;
+        const orderUid = String(d.uid || docSnap.ref.parent.parent?.id || '');
+        const lineItems: Array<{ name: string; price: number; quantity: number }> = [];
+        const itemsPath = `${docSnap.ref.path}/items`;
+        try {
+          const itemsSnap = await getDocs(collection(docSnap.ref, 'items'));
+          itemsSnap.forEach((itemDoc) => {
+            const itemData = itemDoc.data();
+            if (typeof itemData.name === 'string') {
+              lineItems.push({
+                name: itemData.name,
+                price: Number(itemData.price),
+                quantity: Number(itemData.quantity),
+              });
+            }
+          });
+        } catch (itemErr) {
+          handleFirestoreError(itemErr, OperationType.LIST, itemsPath);
+        }
+
+        const statusVal: OrderStatus =
+          d.status === 'fulfilled' || d.status === 'cancelled' ? d.status : 'placed';
+
+        return {
+          id: docSnap.id,
+          uid: orderUid,
+          reference: String(d.reference || ''),
+          customerName: String(d.customerName || ''),
+          email: String(d.email || ''),
+          phone: String(d.phone || ''),
+          address: String(d.address || ''),
+          pin: String(d.pin || ''),
+          city: String(d.city || ''),
+          state: String(d.state || ''),
+          shippingMethod: d.shippingMethod === 'express' ? 'express' : 'standard',
+          shippingCost: Number(d.shippingCost || 0),
+          freeShipping: Boolean(d.freeShipping),
+          freeGift: Boolean(d.freeGift),
+          subtotal: Number(d.subtotal || 0),
+          gstRate: Number(d.gstRate || 12),
+          gst: Number(d.gst || 0),
+          total: Number(d.total || 0),
+          itemCount: Number(d.itemCount || lineItems.length),
+          status: statusVal,
+          createdAtMs,
+          items: lineItems,
+        };
+      })
+    );
+    orders.sort((a, b) => b.createdAtMs - a.createdAtMs);
+    return orders;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, cgPath);
+  }
+}
+
+export async function updateOrderStatus(
+  uid: string,
+  orderId: string,
+  status: OrderStatus
+): Promise<void> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to update order status.');
+  }
+  if (!LIMITS.ID_PATTERN.test(uid) || !LIMITS.ID_PATTERN.test(orderId)) {
+    throw new Error('Invalid order identifier.');
+  }
+  if (status !== 'placed' && status !== 'fulfilled' && status !== 'cancelled') {
+    throw new Error('Invalid order status.');
+  }
+  const orderPath = `users/${uid}/orders/${orderId}`;
+  try {
+    await updateDoc(doc(db, 'users', uid, 'orders', orderId), { status });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, orderPath);
+  }
+}
+
 const api = {
   isReady: () => authReady,
+  isAdmin: isAdminUser,
   getUser: () =>
     currentUser
       ? {
@@ -885,6 +989,8 @@ const api = {
   removeWishlistItem,
   saveDeliveryProfile,
   placeOrder,
+  listAllOrders,
+  updateOrderStatus,
 };
 
 declare global {

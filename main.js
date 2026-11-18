@@ -427,8 +427,10 @@
             } catch (error) {
               handleFirestoreError(error, 'list', itemsPath);
             }
+            var statusVal = (d.status === 'fulfilled' || d.status === 'cancelled') ? d.status : 'placed';
             orders.push({
               id: docSnap.id,
+              uid: String(d.uid || uid),
               reference: String(d.reference || ''),
               customerName: String(d.customerName || ''),
               email: String(d.email || ''),
@@ -446,7 +448,7 @@
               gst: Number(d.gst || 0),
               total: Number(d.total || 0),
               itemCount: Number(d.itemCount || lineItems.length),
-              status: 'placed',
+              status: statusVal,
               createdAtMs: createdAtMs,
               items: lineItems
             });
@@ -491,8 +493,14 @@
         }
       });
 
+      var ADMIN_EMAIL = 'ashketchupkeke@gmail.com';
+      function isAdminUser() {
+        return Boolean(currentUser && currentUser.emailVerified && currentUser.email === ADMIN_EMAIL);
+      }
+
       var api = {
         isReady: function () { return authReady; },
+        isAdmin: isAdminUser,
         getUser: function () {
           return currentUser ? {
             uid: currentUser.uid,
@@ -625,6 +633,70 @@
             }, { merge: true });
           }
           try { await batch.commit(); } catch (error) { handleFirestoreError(error, 'write', orderPath); }
+        },
+        listAllOrders: async function () {
+          if (!isAdminUser()) throw new Error('Admin access required to view all store orders.');
+          try {
+            var snapshot = await fsMod.getDocs(fsMod.collectionGroup(db, 'orders'));
+            var orders = await Promise.all(snapshot.docs.map(async function (docSnap) {
+              var d = docSnap.data();
+              var ts = d.createdAt;
+              var createdAtMs = ts && typeof ts.toMillis === 'function' ? ts.toMillis() : 0;
+              var orderUid = String(d.uid || (docSnap.ref.parent && docSnap.ref.parent.parent ? docSnap.ref.parent.parent.id : ''));
+              var lineItems = [];
+              try {
+                var itemsSnap = await fsMod.getDocs(fsMod.collection(docSnap.ref, 'items'));
+                itemsSnap.forEach(function (itemDoc) {
+                  var itemData = itemDoc.data();
+                  if (typeof itemData.name === 'string') {
+                    lineItems.push({ name: itemData.name, price: Number(itemData.price), quantity: Number(itemData.quantity) });
+                  }
+                });
+              } catch (itemErr) {
+                handleFirestoreError(itemErr, 'list', docSnap.ref.path + '/items');
+              }
+              var statusVal = (d.status === 'fulfilled' || d.status === 'cancelled') ? d.status : 'placed';
+              return {
+                id: docSnap.id,
+                uid: orderUid,
+                reference: String(d.reference || ''),
+                customerName: String(d.customerName || ''),
+                email: String(d.email || ''),
+                phone: String(d.phone || ''),
+                address: String(d.address || ''),
+                pin: String(d.pin || ''),
+                city: String(d.city || ''),
+                state: String(d.state || ''),
+                shippingMethod: d.shippingMethod === 'express' ? 'express' : 'standard',
+                shippingCost: Number(d.shippingCost || 0),
+                freeShipping: Boolean(d.freeShipping),
+                freeGift: Boolean(d.freeGift),
+                subtotal: Number(d.subtotal || 0),
+                gstRate: Number(d.gstRate || 12),
+                gst: Number(d.gst || 0),
+                total: Number(d.total || 0),
+                itemCount: Number(d.itemCount || lineItems.length),
+                status: statusVal,
+                createdAtMs: createdAtMs,
+                items: lineItems
+              };
+            }));
+            orders.sort(function (a, b) { return b.createdAtMs - a.createdAtMs; });
+            return orders;
+          } catch (error) {
+            handleFirestoreError(error, 'list', 'orders');
+          }
+        },
+        updateOrderStatus: async function (uid, orderId, status) {
+          if (!isAdminUser()) throw new Error('Admin access required to update order status.');
+          if (!LIMITS.ID_PATTERN.test(uid) || !LIMITS.ID_PATTERN.test(orderId)) throw new Error('Invalid order identifier.');
+          if (status !== 'placed' && status !== 'fulfilled' && status !== 'cancelled') throw new Error('Invalid order status.');
+          var orderPath = 'users/' + uid + '/orders/' + orderId;
+          try {
+            await fsMod.updateDoc(fsMod.doc(db, 'users', uid, 'orders', orderId), { status: status });
+          } catch (error) {
+            handleFirestoreError(error, 'update', orderPath);
+          }
         }
       };
 

@@ -77,6 +77,8 @@ const rewrites = {
   '/mecha-rover': 'products/mecha-rover.html',
   '/account': 'account.html',
   '/my-account': 'account.html',
+  '/dashboard': 'dashboard.html',
+  '/dashboard/': 'dashboard.html',
   '/help': 'help.html',
   '/privacy': 'privacy.html',
   '/privacy-policy': 'privacy.html',

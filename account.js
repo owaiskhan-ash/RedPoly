@@ -347,6 +347,13 @@
           signOutBtn.disabled = false;
         }
       });
+      if (fb && typeof fb.isAdmin === 'function' && fb.isAdmin()) {
+        var dashLink = document.createElement('a');
+        dashLink.className = 'account-btn';
+        dashLink.href = '/dashboard';
+        dashLink.textContent = 'ORDERS DASHBOARD ↗';
+        controls.appendChild(dashLink);
+      }
       controls.appendChild(signOutBtn);
       grid.appendChild(left);
       grid.appendChild(controls);
@@ -528,7 +535,7 @@
     ref.textContent = order.reference || 'RED-DEMO';
     var statusPill = document.createElement('span');
     statusPill.className = isSessionOnly ? 'account-badge account-badge--guest' : 'account-badge';
-    statusPill.textContent = isSessionOnly ? 'SESSION DEMO RECEIPT' : 'SAVED IN CLOUD · PLACED';
+    statusPill.textContent = isSessionOnly ? 'SESSION DEMO RECEIPT' : 'SAVED IN CLOUD · ' + String(order.status || 'placed').toUpperCase();
     refRow.appendChild(ref);
     refRow.appendChild(statusPill);
     if (order.freeGift) {
