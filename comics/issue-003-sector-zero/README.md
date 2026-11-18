@@ -19,6 +19,6 @@ Mecha Rover shifts into overdrive, and the chase takes the crew to the Sector Ze
 
 The magnet portal drops the crew into Pixel World, where they face Mecha Rover again.
 
-- `part-3/pages/` holds all six pages at 2048 × 2048. The printed issue number in the footer was corrected from 04 to 03; the page numbers and panels were kept intact.
+- `part-3/pages/` holds all seven pages at 2048 × 2048, ending with the Lo’s World reveal. The printed issue number in the footer was corrected from 04 to 03; the page numbers and panels were kept intact.
 - `part-3/cover.webp` shows Poko coming through the portal in the first panel of page 01.
 - `part-3/issue.json` is the reader manifest. The catalog's `part` field lets readers continue directly from the end of Part 2.

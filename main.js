@@ -749,6 +749,7 @@
         type: item.getAttribute('data-type') === 'video' ? 'video' : 'image',
         src: item.getAttribute('data-src') || '',
         alt: item.getAttribute('data-alt') || '',
+        poster: item.getAttribute('data-poster') || '',
         caption: item.getAttribute('data-caption') || ''
       };
     });
@@ -758,7 +759,12 @@
 
     function clearStage() {
       var video = stage.querySelector('video');
-      if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
+      if (video) {
+        video.pause();
+        video.removeAttribute('src');
+        video.textContent = '';
+        video.load();
+      }
       stage.textContent = '';
     }
 
@@ -769,11 +775,13 @@
       if (slide.type === 'video') {
         media = document.createElement('video');
         media.controls = true;
+        media.defaultMuted = true;
         media.muted = true;
         media.loop = true;
         media.preload = 'metadata';
         media.setAttribute('playsinline', '');
-        media.setAttribute('aria-label', slide.caption);
+        media.setAttribute('aria-label', slide.alt || slide.caption);
+        if (slide.poster) media.poster = slide.poster;
         if (!reduceMotion) media.autoplay = true;
         var source = document.createElement('source');
         source.src = slide.src;
@@ -793,7 +801,8 @@
 
     function open(event) {
       opener = event.currentTarget;
-      index = 0;
+      var preferredType = opener.getAttribute('data-media-open');
+      index = Math.max(0, slides.findIndex(function (slide) { return slide.type === preferredType; }));
       render();
       viewer.hidden = false;
       document.documentElement.classList.add('viewer-open');
