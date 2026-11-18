@@ -416,7 +416,7 @@
     },
     "/users/{userId}/private/{docId}": {
       "schema": { "$ref": "#/entities/PrivateProfile" },
-      "description": "Owner-only PII delivery profile stored at docId 'profile'."
+      "description": "PII delivery profile stored at docId 'profile' (owner-writable; readable by owner and store admin)."
     },
     "/users/{userId}/cart/{itemId}": {
       "schema": { "$ref": "#/entities/CartItem" },
@@ -424,7 +424,7 @@
     },
     "/users/{userId}/wishlist/{itemId}": {
       "schema": { "$ref": "#/entities/WishlistItem" },
-      "description": "Synced saved-for-later wishlist items for a customer."
+      "description": "Synced saved-for-later wishlist items for a customer (readable by owner and store admin)."
     },
     "/users/{userId}/orders/{orderId}": {
       "schema": { "$ref": "#/entities/Order" },

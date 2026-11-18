@@ -67,7 +67,8 @@
       window.RedpolyFirebase &&
       typeof window.RedpolyFirebase.listAllOrders === 'function' &&
       typeof window.RedpolyFirebase.updateOrderDetails === 'function' &&
-      typeof window.RedpolyFirebase.listAllReviews === 'function'
+      typeof window.RedpolyFirebase.listAllReviews === 'function' &&
+      typeof window.RedpolyFirebase.listAllWishlists === 'function'
     ) {
       return Promise.resolve(window.RedpolyFirebase);
     }
@@ -90,7 +91,8 @@
         window.RedpolyFirebase &&
         typeof window.RedpolyFirebase.listAllOrders === 'function' &&
         typeof window.RedpolyFirebase.updateOrderDetails === 'function' &&
-        typeof window.RedpolyFirebase.listAllReviews === 'function'
+        typeof window.RedpolyFirebase.listAllReviews === 'function' &&
+        typeof window.RedpolyFirebase.listAllWishlists === 'function'
       ) {
         return window.RedpolyFirebase;
       }
@@ -418,6 +420,67 @@
             handleFirestoreError(error, 'update', orderPath);
           }
         },
+        listAllWishlists: async function () {
+          if (!isAdminUser()) throw new Error('Admin access required to view customer favorites.');
+          try {
+            var snap = await fsMod.getDocs(fsMod.collectionGroup(db, 'wishlist'));
+            var rawItems = [];
+            var uidSet = new Set();
+            snap.forEach(function (docSnap) {
+              var d = docSnap.data();
+              var parentUid = docSnap.ref.parent && docSnap.ref.parent.parent ? docSnap.ref.parent.parent.id : '';
+              var uid = String(d.uid || parentUid || '');
+              var productName = typeof d.name === 'string' ? d.name : '';
+              if (!uid || !productName) return;
+              if (LIMITS.ID_PATTERN.test(uid)) uidSet.add(uid);
+              var ts = d.createdAt;
+              var createdAtMs = ts && typeof ts.toMillis === 'function' ? ts.toMillis() : 0;
+              var catEntry = CATALOGUE[productName];
+              rawItems.push({
+                id: docSnap.id,
+                uid: uid,
+                productName: productName,
+                href: typeof d.href === 'string' && d.href.charAt(0) === '/' ? d.href : (catEntry ? catEntry.href : '/'),
+                image: typeof d.image === 'string' && d.image.charAt(0) === '/' ? d.image : (catEntry ? catEntry.image : ''),
+                price: Number(d.price || (catEntry ? catEntry.price : 0)),
+                createdAtMs: createdAtMs
+              });
+            });
+            var userMap = new Map();
+            await Promise.all(Array.from(uidSet).map(async function (uid) {
+              var pair = await Promise.all([
+                fsMod.getDoc(fsMod.doc(db, 'users', uid)).catch(function () { return null; }),
+                fsMod.getDoc(fsMod.doc(db, 'users', uid, 'private', 'profile')).catch(function () { return null; })
+              ]);
+              var accountData = pair[0] && pair[0].exists() ? pair[0].data() : {};
+              var profileData = pair[1] && pair[1].exists() ? pair[1].data() : {};
+              userMap.set(uid, {
+                name: String(profileData.fullName || accountData.displayName || 'REDPOLY Member'),
+                email: String(profileData.email || ''),
+                photoURL: sanitizePhoto(typeof accountData.photoURL === 'string' ? accountData.photoURL : '')
+              });
+            }));
+            var results = rawItems.map(function (item) {
+              var u = userMap.get(item.uid);
+              return {
+                id: item.id,
+                uid: item.uid,
+                userName: (u && u.name) || 'REDPOLY Member',
+                userEmail: (u && u.email) || '',
+                userPhotoURL: (u && u.photoURL) || '',
+                productName: item.productName,
+                href: item.href,
+                image: item.image,
+                price: item.price,
+                createdAtMs: item.createdAtMs
+              };
+            });
+            results.sort(function (a, b) { return b.createdAtMs - a.createdAtMs; });
+            return results;
+          } catch (error) {
+            handleFirestoreError(error, 'list', 'wishlist');
+          }
+        },
         listAllReviews: async function () {
           if (!isAdminUser()) throw new Error('Admin access required to manage product reviews.');
           try {
@@ -476,8 +539,10 @@
   var sidebarBackdrop = document.getElementById('sidebar-backdrop');
   var navOrdersLink = document.getElementById('nav-orders');
   var navReviewsLink = document.getElementById('nav-reviews');
+  var navFavoritesLink = document.getElementById('nav-favorites');
   var sidebarOrdersCount = document.getElementById('sidebar-orders-count');
   var sidebarReviewsCount = document.getElementById('sidebar-reviews-count');
+  var sidebarFavoritesCount = document.getElementById('sidebar-favorites-count');
   var pageTitleEl = document.getElementById('page-title');
 
   var pageActions = document.getElementById('page-actions');
@@ -487,6 +552,7 @@
   var dashboardContent = document.getElementById('dashboard-content');
   var ordersView = document.getElementById('orders-view');
   var reviewsView = document.getElementById('reviews-view');
+  var favoritesView = document.getElementById('favorites-view');
 
   var metricTotalOrders = document.getElementById('metric-total-orders');
   var metricGrossSales = document.getElementById('metric-gross-sales');
@@ -587,10 +653,31 @@
   var reviewsFooter = document.getElementById('reviews-footer');
   var reviewsShowingText = document.getElementById('reviews-showing-text');
 
+  // Favorites View DOM
+  var metricTotalFavorites = document.getElementById('metric-total-favorites');
+  var metricFavoriteUsers = document.getElementById('metric-favorite-users');
+  var metricFavoriteProducts = document.getElementById('metric-favorite-products');
+  var metricTopFavorite = document.getElementById('metric-top-favorite');
+  var favoritesErrorBanner = document.getElementById('favorites-error-banner');
+  var favoritesErrorText = document.getElementById('favorites-error-text');
+  var favoritesRetryBtn = document.getElementById('favorites-retry-btn');
+  var favoritesProductTabs = document.getElementById('favorites-product-tabs');
+  var favoritesSearchInput = document.getElementById('favorites-search');
+  var favoritesSearchClear = document.getElementById('favorites-search-clear');
+  var favoritesSortSelect = document.getElementById('favorites-sort');
+  var favoritesSkeleton = document.getElementById('favorites-skeleton');
+  var favoritesEmpty = document.getElementById('favorites-empty');
+  var favoritesEmptyTitle = document.getElementById('favorites-empty-title');
+  var favoritesEmptyCopy = document.getElementById('favorites-empty-copy');
+  var favoritesTableWrap = document.getElementById('favorites-table-wrap');
+  var favoritesTbody = document.getElementById('favorites-tbody');
+  var favoritesFooter = document.getElementById('favorites-footer');
+  var favoritesShowingText = document.getElementById('favorites-showing-text');
+
   var toastEl = document.getElementById('dash-toast');
 
   // State
-  var activeView = window.location.hash === '#reviews' ? 'reviews' : 'orders';
+  var activeView = window.location.hash === '#reviews' ? 'reviews' : (window.location.hash === '#favorites' ? 'favorites' : 'orders');
   var allOrders = [];
   var activeFilter = 'all';
   var searchQuery = '';
@@ -607,6 +694,12 @@
   var reviewSearchQuery = '';
   var reviewsLoading = false;
   var pendingDeleteConfirmId = null;
+
+  var allFavorites = [];
+  var favoriteProductFilter = 'all';
+  var favoriteSearchQuery = '';
+  var favoriteSortMode = 'newest';
+  var favoritesLoading = false;
 
   function money(val) {
     return '₹' + Number(val || 0).toLocaleString('en-IN');
@@ -667,13 +760,16 @@
   }
 
   function switchView(nextView) {
-    activeView = nextView === 'reviews' ? 'reviews' : 'orders';
+    activeView = nextView === 'reviews' ? 'reviews' : (nextView === 'favorites' ? 'favorites' : 'orders');
     var isOrders = activeView === 'orders';
+    var isReviews = activeView === 'reviews';
+    var isFavorites = activeView === 'favorites';
 
     if (ordersView) ordersView.hidden = !isOrders;
-    if (reviewsView) reviewsView.hidden = isOrders;
-    if (pageTitleEl) pageTitleEl.textContent = isOrders ? 'Orders' : 'Reviews';
-    if (exportCsvBtn) exportCsvBtn.hidden = !isOrders;
+    if (reviewsView) reviewsView.hidden = !isReviews;
+    if (favoritesView) favoritesView.hidden = !isFavorites;
+    if (pageTitleEl) pageTitleEl.textContent = isOrders ? 'Orders' : (isReviews ? 'Reviews' : 'Favorites');
+    if (exportCsvBtn) exportCsvBtn.hidden = isReviews;
 
     if (navOrdersLink) {
       navOrdersLink.classList.toggle('is-active', isOrders);
@@ -681,9 +777,14 @@
       else navOrdersLink.removeAttribute('aria-current');
     }
     if (navReviewsLink) {
-      navReviewsLink.classList.toggle('is-active', !isOrders);
-      if (!isOrders) navReviewsLink.setAttribute('aria-current', 'page');
+      navReviewsLink.classList.toggle('is-active', isReviews);
+      if (isReviews) navReviewsLink.setAttribute('aria-current', 'page');
       else navReviewsLink.removeAttribute('aria-current');
+    }
+    if (navFavoritesLink) {
+      navFavoritesLink.classList.toggle('is-active', isFavorites);
+      if (isFavorites) navFavoritesLink.setAttribute('aria-current', 'page');
+      else navFavoritesLink.removeAttribute('aria-current');
     }
 
     if (window.location.hash !== '#' + activeView) {
@@ -693,8 +794,10 @@
     }
 
     setSidebarOpen(false);
-    if (!isOrders && !allReviews.length && !reviewsLoading) {
+    if (isReviews && !allReviews.length && !reviewsLoading) {
       loadAllReviews(true);
+    } else if (isFavorites && !allFavorites.length && !favoritesLoading) {
+      loadAllWishlists(true);
     }
   }
 
@@ -708,6 +811,12 @@
     navReviewsLink.addEventListener('click', function (e) {
       e.preventDefault();
       switchView('reviews');
+    });
+  }
+  if (navFavoritesLink) {
+    navFavoritesLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      switchView('favorites');
     });
   }
 
@@ -1544,6 +1653,34 @@
 
   if (exportCsvBtn) {
     exportCsvBtn.addEventListener('click', function () {
+      if (activeView === 'favorites') {
+        var favRows = filteredAndSortedFavorites();
+        if (!favRows.length) return;
+        var favHeaders = ['Customer Name', 'Email', 'User UID', 'Product', 'Price (INR)', 'Favorited At'];
+        var favLines = [favHeaders.map(escapeCsvCell).join(',')];
+        favRows.forEach(function (f) {
+          favLines.push([
+            f.userName,
+            f.userEmail || '',
+            f.uid,
+            f.productName,
+            f.price,
+            f.createdAtMs ? new Date(f.createdAtMs).toISOString() : ''
+          ].map(escapeCsvCell).join(','));
+        });
+        var favBlob = new Blob([favLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        var favUrl = URL.createObjectURL(favBlob);
+        var favAnchor = document.createElement('a');
+        favAnchor.href = favUrl;
+        favAnchor.download = 'redpoly-favorites-' + new Date().toISOString().slice(0, 10) + '.csv';
+        document.body.appendChild(favAnchor);
+        favAnchor.click();
+        document.body.removeChild(favAnchor);
+        URL.revokeObjectURL(favUrl);
+        showToast('Exported ' + favRows.length + (favRows.length === 1 ? ' favorite' : ' favorites') + ' to CSV');
+        return;
+      }
+
       var rows = filteredAndSortedOrders();
       if (!rows.length) return;
       var headers = ['Order Reference', 'Date', 'Customer Name', 'Email', 'Phone', 'Address', 'City', 'State', 'PIN', 'Shipping Method', 'Status', 'Tracking Carrier', 'Tracking Code', 'Items', 'Item Count', 'Subtotal (INR)', 'Shipping (INR)', 'GST (INR)', 'Total (INR)'];
@@ -1826,6 +1963,211 @@
     });
   }
 
+  // ---------- FAVORITES VIEW ----------
+  function updateFavoritesSummaryAndTabs() {
+    var total = allFavorites.length;
+    var userSet = new Set();
+    var productCounts = {};
+    allFavorites.forEach(function (f) {
+      if (f.uid) userSet.add(f.uid);
+      if (f.productName) productCounts[f.productName] = (productCounts[f.productName] || 0) + 1;
+    });
+    var productKeys = Object.keys(productCounts).sort(function (a, b) {
+      return productCounts[b] - productCounts[a] || a.localeCompare(b);
+    });
+    var topLabel = '—';
+    if (productKeys.length) {
+      topLabel = productKeys[0] + ' (' + productCounts[productKeys[0]] + ')';
+    }
+
+    if (sidebarFavoritesCount) sidebarFavoritesCount.textContent = String(total);
+    if (metricTotalFavorites) metricTotalFavorites.textContent = String(total);
+    if (metricFavoriteUsers) metricFavoriteUsers.textContent = String(userSet.size);
+    if (metricFavoriteProducts) metricFavoriteProducts.textContent = String(productKeys.length);
+    if (metricTopFavorite) metricTopFavorite.textContent = topLabel;
+
+    if (favoritesProductTabs) {
+      if (favoriteProductFilter !== 'all' && !productCounts[favoriteProductFilter]) {
+        favoriteProductFilter = 'all';
+      }
+      favoritesProductTabs.textContent = '';
+      var allBtn = document.createElement('button');
+      allBtn.type = 'button';
+      allBtn.className = 'orders-tab' + (favoriteProductFilter === 'all' ? ' is-active' : '');
+      allBtn.setAttribute('role', 'tab');
+      allBtn.setAttribute('aria-selected', favoriteProductFilter === 'all' ? 'true' : 'false');
+      allBtn.setAttribute('data-fav-product', 'all');
+      allBtn.textContent = 'All ';
+      var allSpan = document.createElement('span');
+      allSpan.textContent = String(total);
+      allBtn.appendChild(allSpan);
+      favoritesProductTabs.appendChild(allBtn);
+
+      productKeys.forEach(function (name) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        var isActive = favoriteProductFilter === name;
+        btn.className = 'orders-tab' + (isActive ? ' is-active' : '');
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        btn.setAttribute('data-fav-product', name);
+        btn.textContent = name + ' ';
+        var countSpan = document.createElement('span');
+        countSpan.textContent = String(productCounts[name]);
+        btn.appendChild(countSpan);
+        favoritesProductTabs.appendChild(btn);
+      });
+    }
+  }
+
+  function filteredAndSortedFavorites() {
+    var q = favoriteSearchQuery.trim().toLowerCase();
+    var list = allFavorites.filter(function (f) {
+      if (favoriteProductFilter !== 'all' && f.productName !== favoriteProductFilter) return false;
+      if (!q) return true;
+      var hay = [f.userName, f.userEmail, f.uid, f.productName].join(' ').toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+    list.sort(function (a, b) {
+      if (favoriteSortMode === 'customer-asc') {
+        return (a.userName || '').localeCompare(b.userName || '') || (b.createdAtMs - a.createdAtMs);
+      }
+      if (favoriteSortMode === 'product-asc') {
+        return (a.productName || '').localeCompare(b.productName || '') || (a.userName || '').localeCompare(b.userName || '');
+      }
+      return b.createdAtMs - a.createdAtMs;
+    });
+    return list;
+  }
+
+  function renderFavoritesTable() {
+    if (!favoritesTbody || !favoritesTableWrap || !favoritesEmpty || !favoritesSkeleton || !favoritesFooter) return;
+    favoritesSkeleton.hidden = !favoritesLoading;
+    if (favoritesLoading) {
+      favoritesTableWrap.hidden = true;
+      favoritesEmpty.hidden = true;
+      favoritesFooter.hidden = true;
+      return;
+    }
+
+    var rows = filteredAndSortedFavorites();
+    favoritesTbody.textContent = '';
+
+    if (!rows.length) {
+      favoritesTableWrap.hidden = true;
+      favoritesFooter.hidden = true;
+      favoritesEmpty.hidden = false;
+      if (!allFavorites.length) {
+        favoritesEmptyTitle.textContent = 'No customer favorites yet';
+        favoritesEmptyCopy.textContent = 'When signed-in customers save toys as favorites, you will see who favorited each product here.';
+      } else {
+        favoritesEmptyTitle.textContent = 'No favorites match this filter';
+        favoritesEmptyCopy.textContent = 'Choose another product tab or clear your search query.';
+      }
+      return;
+    }
+
+    favoritesEmpty.hidden = true;
+    favoritesTableWrap.hidden = false;
+    favoritesFooter.hidden = false;
+    favoritesShowingText.textContent = 'Showing ' + rows.length + ' of ' + allFavorites.length + (allFavorites.length === 1 ? ' favorite' : ' favorites');
+
+    rows.forEach(function (fav) {
+      var tr = document.createElement('tr');
+
+      var tdCustomer = document.createElement('td');
+      var custWrap = document.createElement('div');
+      custWrap.className = 'fav-customer';
+      if (fav.userPhotoURL) {
+        var avatar = document.createElement('img');
+        avatar.className = 'fav-customer__avatar';
+        avatar.src = fav.userPhotoURL;
+        avatar.alt = '';
+        avatar.referrerPolicy = 'no-referrer';
+        custWrap.appendChild(avatar);
+      } else {
+        var initial = document.createElement('span');
+        initial.className = 'fav-customer__initial';
+        initial.textContent = (fav.userName || fav.userEmail || 'R').charAt(0).toUpperCase();
+        custWrap.appendChild(initial);
+      }
+      var custText = document.createElement('div');
+      custText.className = 'fav-customer__text';
+      var custName = document.createElement('strong');
+      custName.textContent = fav.userName || 'REDPOLY Member';
+      var custSub = document.createElement('small');
+      custSub.textContent = fav.userEmail ? fav.userEmail : ('UID: ' + fav.uid);
+      custText.appendChild(custName);
+      custText.appendChild(custSub);
+      custWrap.appendChild(custText);
+      tdCustomer.appendChild(custWrap);
+
+      var tdProduct = document.createElement('td');
+      var prodLink = document.createElement('a');
+      prodLink.className = 'fav-product-cell';
+      prodLink.href = fav.href || '/';
+      if (fav.image) {
+        var thumb = document.createElement('img');
+        thumb.src = fav.image;
+        thumb.alt = '';
+        thumb.loading = 'lazy';
+        prodLink.appendChild(thumb);
+      }
+      var prodName = document.createElement('span');
+      prodName.textContent = fav.productName;
+      prodLink.appendChild(prodName);
+      tdProduct.appendChild(prodLink);
+
+      var tdPrice = document.createElement('td');
+      tdPrice.className = 'col-num';
+      tdPrice.textContent = money(fav.price);
+
+      var tdDate = document.createElement('td');
+      tdDate.className = 'cell-date';
+      tdDate.textContent = formatDateShort(fav.createdAtMs);
+
+      tr.appendChild(tdCustomer);
+      tr.appendChild(tdProduct);
+      tr.appendChild(tdPrice);
+      tr.appendChild(tdDate);
+      favoritesTbody.appendChild(tr);
+    });
+  }
+
+  if (favoritesProductTabs) {
+    favoritesProductTabs.addEventListener('click', function (event) {
+      var tab = event.target.closest('[data-fav-product]');
+      if (!tab) return;
+      favoriteProductFilter = tab.getAttribute('data-fav-product') || 'all';
+      updateFavoritesSummaryAndTabs();
+      renderFavoritesTable();
+    });
+  }
+
+  if (favoritesSearchInput) {
+    favoritesSearchInput.addEventListener('input', function () {
+      favoriteSearchQuery = favoritesSearchInput.value || '';
+      if (favoritesSearchClear) favoritesSearchClear.hidden = !favoriteSearchQuery;
+      renderFavoritesTable();
+    });
+  }
+
+  if (favoritesSearchClear) {
+    favoritesSearchClear.addEventListener('click', function () {
+      favoriteSearchQuery = '';
+      if (favoritesSearchInput) { favoritesSearchInput.value = ''; favoritesSearchInput.focus(); }
+      favoritesSearchClear.hidden = true;
+      renderFavoritesTable();
+    });
+  }
+
+  if (favoritesSortSelect) {
+    favoritesSortSelect.addEventListener('change', function () {
+      favoriteSortMode = favoritesSortSelect.value || 'newest';
+      renderFavoritesTable();
+    });
+  }
+
   async function loadAllOrders(force) {
     var fb = await ensureDashboardFirebase();
     var user = fb.getUser();
@@ -1881,9 +2223,35 @@
     }
   }
 
+  async function loadAllWishlists(force) {
+    var fb = await ensureDashboardFirebase();
+    var user = fb.getUser();
+    if (!isCurrentAdmin(user)) return;
+    if (favoritesLoading && !force) return;
+
+    favoritesLoading = true;
+    if (refreshBtn) refreshBtn.disabled = true;
+    if (favoritesErrorBanner) favoritesErrorBanner.hidden = true;
+    renderFavoritesTable();
+
+    try {
+      allFavorites = await fb.listAllWishlists();
+      updateFavoritesSummaryAndTabs();
+    } catch (err) {
+      console.error(err);
+      if (favoritesErrorText) favoritesErrorText.textContent = 'Could not load customer favorites from Firestore. Ensure updated Firestore rules are published.';
+      if (favoritesErrorBanner) favoritesErrorBanner.hidden = false;
+    } finally {
+      favoritesLoading = false;
+      if (refreshBtn) refreshBtn.disabled = false;
+      renderFavoritesTable();
+    }
+  }
+
   if (refreshBtn) {
     refreshBtn.addEventListener('click', function () {
       if (activeView === 'reviews') loadAllReviews(true);
+      else if (activeView === 'favorites') loadAllWishlists(true);
       else loadAllOrders(true);
     });
   }
@@ -1892,6 +2260,9 @@
   }
   if (reviewsRetryBtn) {
     reviewsRetryBtn.addEventListener('click', function () { loadAllReviews(true); });
+  }
+  if (favoritesRetryBtn) {
+    favoritesRetryBtn.addEventListener('click', function () { loadAllWishlists(true); });
   }
 
   document.addEventListener('keydown', function (event) {
@@ -1936,10 +2307,12 @@
     if (!user) {
       allOrders = [];
       allReviews = [];
+      allFavorites = [];
       lastFetchedUid = null;
       closeOrderDrawer();
       updateMetricsAndCounts();
       updateReviewCounts();
+      updateFavoritesSummaryAndTabs();
       renderAuthGate('signed-out', null);
       return;
     }
@@ -1947,10 +2320,12 @@
     if (!isCurrentAdmin(user)) {
       allOrders = [];
       allReviews = [];
+      allFavorites = [];
       lastFetchedUid = null;
       closeOrderDrawer();
       updateMetricsAndCounts();
       updateReviewCounts();
+      updateFavoritesSummaryAndTabs();
       renderAuthGate('forbidden', user);
       return;
     }
@@ -1964,6 +2339,7 @@
       lastFetchedUid = user.uid;
       loadAllOrders(true);
       loadAllReviews(true);
+      loadAllWishlists(true);
     }
   }
 
