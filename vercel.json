@@ -12,6 +12,13 @@
     { "source": "/help", "destination": "/help.html" }
   ],
   "redirects": [
+    { "source": "/products/bubble-gun", "destination": "/bubble-gun", "permanent": true },
+    { "source": "/products/stunt-pet", "destination": "/stunt-pet", "permanent": true },
+    { "source": "/products/cute-dinos", "destination": "/cute-dinos", "permanent": true },
+    { "source": "/products/mini-cool-car", "destination": "/mini-cool-car", "permanent": true },
+    { "source": "/products/gel-storm", "destination": "/gel-storm", "permanent": true },
+    { "source": "/products/pixel-splash", "destination": "/pixel-splash", "permanent": true },
+    { "source": "/products/mecha-rover", "destination": "/mecha-rover", "permanent": true },
     { "source": "/barsaat", "destination": "/", "permanent": false },
     { "source": "/products/barsaat", "destination": "/", "permanent": false },
     { "source": "/agni", "destination": "/", "permanent": false },
@@ -30,6 +37,14 @@
     { "source": "/products/iphone-15-case", "destination": "/", "permanent": false }
   ],
   "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=()" }
+      ]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]

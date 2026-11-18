@@ -1,3 +1,8 @@
-# Not part of the storefront: storyboard art and video sources stay in the repo only.
+# Not part of the storefront: design sources and production art stay in the repo only.
 storyboard
 assets/images/redpoly/products/sources
+Sample Images
+assets/images/redpoly/redpoly-logo.png
+# Mac metadata that sneaks in from Finder.
+.DS_Store
+**/.DS_Store
