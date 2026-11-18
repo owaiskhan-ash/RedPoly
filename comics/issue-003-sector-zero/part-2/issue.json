@@ -1,0 +1,68 @@
+{
+  "id": "issue-003-sector-zero-part-2",
+  "number": "03",
+  "title": "Sector Zero",
+  "subtitle": "Mecha Rover shifts into overdrive, and the crew races toward the Sector Zero Magnet Core.",
+  "pages": [
+    {
+      "image": "/comics/issue-003-sector-zero/part-2/pages/page-01.webp?v=issue03-part2-20261118",
+      "alt": "Page 1: Mecha Rover announces Protocol 00. The green dino spots a giant Phillips-head screw on its chest, Poko jokes that someone wound the robot up wrong, and CC-01 grumbles about emotionally unstable vehicles.",
+      "shop": [
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-2/pages/page-02.webp?v=issue03-part2-20261118",
+      "alt": "Page 2: Mecha Rover stomps toward the crew. Poko sprays bubbles from a rock, sending the robot sliding, and Reno the red dino joins in with a blue gel blaster.",
+      "shop": [
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "BUBBLE GUN", "href": "/bubble-gun", "image": "/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-2/pages/page-03.webp?v=issue03-part2-20261118",
+      "alt": "Page 3: The teal dino worries Mecha Rover will flatten them. The green dino thinks one full turn of the chest screw will calm the robot down. Poko raises two carrots, and CC-01 takes the gamble despite three-percent survival odds.",
+      "shop": [
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-2/pages/page-04.webp?v=issue03-part2-20261118",
+      "alt": "Page 4: CC-01 launches Poko in Fastball Protocol. Poko spins past Mecha Rover's chest screw with the carrots, and the robot's eyes go from red to turquoise before an anti-tickle alert snaps it back.",
+      "shop": [
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-2/pages/page-05.webp?v=issue03-part2-20261118",
+      "alt": "Page 5: Mecha Rover transforms into a monster truck with a bucket lift. The teal dino asks if it'll mop the floor with them, Reno is delighted by the prospect of a truck race, and Mecha Rover orders the crew to pull over.",
+      "shop": [
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" }
+      ]
+    },
+    {
+      "image": "/comics/issue-003-sector-zero/part-2/pages/page-06.webp?v=issue03-part2-20261118",
+      "alt": "Page 6: The chase reaches a dead end at the Sector Zero Magnet Core. The teal dino's wheels slip and trip the Magnet Overdrive switch, opening a pixelated portal that pulls the crew in. To be continued in the Part 3 finale.",
+      "shop": [
+        { "name": "MINI COOL CAR", "href": "/mini-cool-car", "image": "/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117" },
+        { "name": "STUNT PET", "href": "/stunt-pet", "image": "/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122" },
+        { "name": "CUTE DINOS", "href": "/cute-dinos", "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116" },
+        { "name": "GEL STORM", "href": "/gel-storm", "image": "/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121" },
+        { "name": "MECHA ROVER", "href": "/mecha-rover", "image": "/assets/images/redpoly/products/mecha-rover-thumb.webp?v=mecha-20261120" }
+      ]
+    }
+  ]
+}

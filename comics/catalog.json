@@ -1,14 +1,28 @@
 [
   {
+    "id": "issue-003-sector-zero-part-2",
+    "number": "03",
+    "part": 2,
+    "title": "Sector Zero",
+    "subtitle": "Mecha Rover shifts into overdrive, and the crew races toward the Sector Zero Magnet Core.",
+    "cover": "/comics/issue-003-sector-zero/part-2/cover.webp?v=issue03-part2-20261118",
+    "manifest": "/comics/issue-003-sector-zero/part-2/issue.json",
+    "pageCount": 6,
+    "panelCount": 24,
+    "status": "READ PART 2",
+    "label": "SECTOR ZERO"
+  },
+  {
     "id": "issue-003-sector-zero",
     "number": "03",
+    "part": 1,
     "title": "Sector Zero",
     "subtitle": "The restricted blasters tripped a beacon, and something under the track just woke up.",
     "cover": "/comics/issue-003-sector-zero/cover.webp?v=issue03-cover-20261118",
     "manifest": "/comics/issue-003-sector-zero/issue.json",
     "pageCount": 6,
     "panelCount": 24,
-    "status": "READ ISSUE 03 · PART 1",
+    "status": "READ PART 1",
     "label": "SECTOR ZERO"
   },
   {
