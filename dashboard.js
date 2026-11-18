@@ -1294,7 +1294,7 @@
   }
 
   function formatDateShort(ms) {
-    if (!ms) return '—';
+    if (!ms) return '-';
     return new Date(ms).toLocaleDateString('en-IN', {
       day: 'numeric',
       month: 'short',
@@ -1752,7 +1752,7 @@
 
       var tdDest = document.createElement('td');
       tdDest.className = 'cell-dest';
-      tdDest.textContent = [order.city, order.pin].filter(Boolean).join(', ') || '—';
+      tdDest.textContent = [order.city, order.pin].filter(Boolean).join(', ') || '-';
 
       var tdPay = document.createElement('td');
       var payBadge = document.createElement('span');
@@ -1774,7 +1774,7 @@
       var itemsPreview = document.createElement('span');
       itemsPreview.textContent = (order.items && order.items.length)
         ? order.items.map(function (i) { return i.quantity + '× ' + i.name; }).join(', ')
-        : '—';
+        : '-';
       tdItems.appendChild(countStrong);
       tdItems.appendChild(itemsPreview);
 
@@ -2027,14 +2027,14 @@
 
     drawerCustomerDetails.textContent = '';
     var cName = document.createElement('strong');
-    cName.textContent = order.customerName || '—';
+    cName.textContent = order.customerName || '-';
     drawerCustomerDetails.appendChild(cName);
 
     [
       order.email,
       order.phone ? '+91 ' + order.phone : '',
       order.address,
-      [order.city, order.state].filter(Boolean).join(', ') + (order.pin ? ' — ' + order.pin : ''),
+      [order.city, order.state].filter(Boolean).join(', ') + (order.pin ? ' - ' + order.pin : ''),
       order.trackingCode ? ('Tracking: ' + (order.trackingCarrier ? order.trackingCarrier + ' · ' : '') + order.trackingCode) : ''
     ].filter(Boolean).forEach(function (line) {
       var p = document.createElement('p');
@@ -2694,7 +2694,7 @@
     var productKeys = Object.keys(productCounts).sort(function (a, b) {
       return productCounts[b] - productCounts[a] || a.localeCompare(b);
     });
-    var topLabel = '—';
+    var topLabel = '-';
     if (productKeys.length) {
       topLabel = productKeys[0] + ' (' + productCounts[productKeys[0]] + ')';
     }
@@ -2998,7 +2998,7 @@
 
     if (sidebarProductsCount) sidebarProductsCount.textContent = String(total || SKU_ORDER.length);
     if (metricTotalProducts) metricTotalProducts.textContent = String(total || SKU_ORDER.length);
-    if (metricTotalUnits) metricTotalUnits.textContent = total ? String(totalUnits) : '—';
+    if (metricTotalUnits) metricTotalUnits.textContent = total ? String(totalUnits) : '-';
     if (metricLowStockProducts) metricLowStockProducts.textContent = String(lowStockCount);
     if (metricOutStockProducts) metricOutStockProducts.textContent = String(outStockCount);
 
@@ -3240,7 +3240,7 @@
     } else {
       var noneSpan = document.createElement('span');
       noneSpan.className = 'prod-tag-empty';
-      noneSpan.textContent = '—';
+      noneSpan.textContent = '-';
       tdTag.appendChild(noneSpan);
     }
 
@@ -3426,7 +3426,7 @@
     } else {
       var noneSpan = document.createElement('span');
       noneSpan.className = 'prod-tag-empty';
-      noneSpan.textContent = '—';
+      noneSpan.textContent = '-';
       tdTag.appendChild(noneSpan);
     }
 
@@ -3624,7 +3624,7 @@
     var vLabel = grp && grp.variantLabels && grp.variantLabels[prod.sku] ? grp.variantLabels[prod.sku] : '';
     if (productDrawerTitle) {
       productDrawerTitle.textContent = (grp && grp.skus.length > 1 && vLabel)
-        ? (grp.name + ' — ' + vLabel)
+        ? (grp.name + ' · ' + vLabel)
         : prod.name;
     }
     if (productDrawerSku) {
@@ -4098,7 +4098,7 @@
       var custName = document.createElement('strong');
       custName.textContent = cust.name;
       var custEmail = document.createElement('small');
-      custEmail.textContent = cust.email || (cust.uid ? ('UID: ' + cust.uid) : '—');
+      custEmail.textContent = cust.email || (cust.uid ? ('UID: ' + cust.uid) : '-');
       custText.appendChild(custName);
       custText.appendChild(custEmail);
       custWrap.appendChild(custText);
@@ -4126,7 +4126,7 @@
       if (cust.pinCode) locText = locText ? (locText + ' · ' + cust.pinCode) : cust.pinCode;
       var primaryContact = document.createElement('span');
       primaryContact.className = 'cust-contact-primary';
-      primaryContact.textContent = cust.phone ? ('+91 ' + cust.phone) : (locText || '—');
+      primaryContact.textContent = cust.phone ? ('+91 ' + cust.phone) : (locText || '-');
       tdContact.appendChild(primaryContact);
       if (cust.phone && locText) {
         var subContact = document.createElement('span');

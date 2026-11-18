@@ -506,7 +506,7 @@
       lines.className = 'address-preview__lines';
       [
         data.address,
-        [data.city, data.state].filter(Boolean).join(', ') + (data.pinCode ? ' — ' + data.pinCode : ''),
+        [data.city, data.state].filter(Boolean).join(', ') + (data.pinCode ? ' - ' + data.pinCode : ''),
         data.phone ? 'Mobile: +91 ' + data.phone : '',
         data.email ? 'Email: ' + data.email : ''
       ].filter(Boolean).forEach(function (lineText) {
@@ -652,7 +652,7 @@
       msLabel.textContent = ms.cancelled ? 'ORDER CANCELLED' : ms.label;
       var msPct = document.createElement('strong');
       msPct.className = 'order-milestone__pct';
-      msPct.textContent = ms.cancelled ? '—' : ms.pct + '%';
+      msPct.textContent = ms.cancelled ? '-' : ms.pct + '%';
       msHead.appendChild(msLabel);
       msHead.appendChild(msPct);
       milestoneBox.appendChild(msHead);
@@ -717,7 +717,7 @@
         var pending = document.createElement('span');
         pending.className = 'order-tracking__pending';
         pending.textContent = ms.cancelled
-          ? 'Order cancelled — no shipment tracking.'
+          ? 'Order cancelled: no shipment tracking.'
           : 'Tracking code will appear here once dispatched by REDPOLY.';
         trackingInfo.appendChild(pending);
         trackingRow.appendChild(trackingInfo);
@@ -791,7 +791,7 @@
     }
     var shipLines = [
       order.address,
-      [order.city, order.state].filter(Boolean).join(', ') + (order.pin ? ' — ' + order.pin : ''),
+      [order.city, order.state].filter(Boolean).join(', ') + (order.pin ? ' - ' + order.pin : ''),
       order.phone ? '+91 ' + order.phone : ''
     ].filter(Boolean).join(' · ');
     if (shipLines) {
@@ -1079,9 +1079,9 @@
         var rowStock = document.createElement('p');
         rowStock.className = 'account-cart-row__stock ' + (isOut || exceedsStock ? 'is-out' : 'is-low');
         rowStock.textContent = isOut
-          ? 'OUT OF STOCK — remove to check out'
+          ? 'OUT OF STOCK: remove to check out'
           : exceedsStock
-            ? 'ONLY ' + availStock + ' LEFT — reduce quantity'
+            ? 'ONLY ' + availStock + ' LEFT: reduce quantity'
             : 'ONLY ' + availStock + ' LEFT!';
         info.appendChild(rowStock);
       }
@@ -1274,7 +1274,7 @@
             var offices = res && res[0] && res[0].Status === 'Success' && res[0].PostOffice;
             var office = offices && offices.find(function (entry) { return entry && entry.Country === 'India' && entry.State && (entry.District || entry.Block || entry.Name); });
             if (!office) {
-              if (pinStatus) pinStatus.textContent = 'PIN not found — enter city & state';
+              if (pinStatus) pinStatus.textContent = 'PIN not found: enter city & state';
               return;
             }
             cityInput.value = office.District || office.Block || office.Name;

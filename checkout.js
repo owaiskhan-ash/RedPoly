@@ -349,12 +349,12 @@
       if (isOut) {
         var outNote = document.createElement('p');
         outNote.className = 'checkout-line__stock checkout-line__stock--out';
-        outNote.textContent = 'OUT OF STOCK — remove to check out';
+        outNote.textContent = 'OUT OF STOCK: remove to check out';
         copy.appendChild(outNote);
       } else if (exceedsStock) {
         var overNote = document.createElement('p');
         overNote.className = 'checkout-line__stock checkout-line__stock--out';
-        overNote.textContent = 'ONLY ' + availStock + ' LEFT IN STOCK — reduce quantity';
+        overNote.textContent = 'ONLY ' + availStock + ' LEFT IN STOCK: reduce quantity';
         copy.appendChild(overNote);
       } else if (stockManaged && availStock <= rec.lowStockThreshold) {
         var lowNote = document.createElement('p');

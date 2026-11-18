@@ -15,7 +15,7 @@ Mecha Rover shifts into overdrive, and the chase takes the crew to the Sector Ze
 - `part-2/cover.webp` is cropped from Mecha Rover's transformation in the first panel of page 05.
 - `part-2/issue.json` is the separate reader manifest. Part 1 retains its original catalog ID so existing links still open the same pages.
 
-## Part 3 — Finale
+## Part 3: Finale
 
 The magnet portal drops the crew into Pixel World, where they face Mecha Rover again.
 
