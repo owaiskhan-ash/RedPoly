@@ -76,6 +76,10 @@ const rewrites = {
   '/pixel-splash': 'products/pixel-splash.html',
   '/mecha-rover': 'products/mecha-rover.html',
   '/help': 'help.html',
+  '/privacy': 'privacy.html',
+  '/privacy-policy': 'privacy.html',
+  '/terms': 'terms.html',
+  '/terms-and-conditions': 'terms.html',
   '/stories': 'stories/index.html',
   '/stories/': 'stories/index.html',
 };

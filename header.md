@@ -26,7 +26,7 @@ chrome in `accessories.css`. `main.js` adds the cart and saved buttons into
 
 ## Pages that carry it
 
-`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `stories/index.html` — 12 pages.
+`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `stories/index.html` — 14 pages.
 
 ## Notes
 

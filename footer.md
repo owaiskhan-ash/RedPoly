@@ -13,8 +13,8 @@ There is **one** footer on the site, and every page carries exactly the same mar
       <a href="/help#shipping">SHIPPING</a>
       <a href="/help#returns">RETURNS</a>
       <a href="/help#cancellation">CANCELLATION</a>
-      <a href="/help#privacy">PRIVACY</a>
-      <a href="/help#terms">TERMS</a>
+      <a href="/privacy">PRIVACY</a>
+      <a href="/terms">TERMS</a>
     </nav>
     <p class="site-footer__legal">GSTIN 27BJGPK5062E1ZB</p>
   </div>
@@ -25,11 +25,11 @@ Styles live in `styles.css` under the `Shared site footer` comment, so one style
 
 ## Pages that carry it
 
-`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `stories/index.html` — 12 pages.
+`index.html`, `products/*.html` (7), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `stories/index.html` — 14 pages.
 
 ## Editing it
 
-Change the block above in all 12 pages in the same commit. There is no build step, so the duplication is real: a `git grep 'site-footer__legal'` lists every copy. If the page count keeps growing, generate this block from one fragment at build time instead.
+Change the block above in all 14 pages in the same commit. There is no build step, so the duplication is real: a `git grep 'site-footer__legal'` lists every copy. If the page count keeps growing, generate this block from one fragment at build time instead.
 
 ## Not part of the footer
 
