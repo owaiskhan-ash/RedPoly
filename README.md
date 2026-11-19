@@ -9,8 +9,8 @@
 | Drift King (12 cm multi-mode 2.4G mini RC drift coupe with Follow Mode, Escape Mode, LED lights &amp; music, Fun Mode gamepad &amp; USB charging cable, ages 4+) | `/drift-king` (`products/drift-king.html`) | ₹799 |
 | Baby Lingo (bilingual English + Hindi first-words learning robot for babies 6 months+, 100 double-sided flashcards) | `/baby-lingo` (`products/baby-lingo.html`) | ₹799 |
 | Rise one X 4X4 (2.4 GHz spray drift F1 car with mecanum wheels, gamepad + wrist gesture controller, ages 6+) | `/rise-one-x-4x4` (`products/rise-one-x-4x4.html`) | ₹1,499 |
-| Magnetic Blocks (STEM magnetic sticks & balls; 25 PCS, 36 PCS, 42 PCS or 64 PCS packs, ages 3+) | `/magnetic-blocks` (`products/magnetic-blocks.html`) | ₹399 – ₹799 |
-| Bubble Gun (12-hole automatic bubble blaster, with 1 bottle of bubble water) | `/bubble-gun` (`products/bubble-gun.html`) | ₹499 |
+| Magnetic Blocks (STEM magnetic sticks & balls; 25 PCS, 36 PCS, 42 PCS or 64 PCS packs, ages 3+) | `/magnetic-blocks` (`products/magnetic-blocks.html`) | ₹319 – ₹799 |
+| Bubble Gun (12-hole automatic bubble blaster, with 1 bottle of bubble water) | `/bubble-gun` (`products/bubble-gun.html`) | ₹449 |
 | Stunt Pet (voice-control rolling rabbit toy with light and music; needs 3 AA batteries, not included) | `/stunt-pet` (`products/stunt-pet.html`) | ₹599 |
 | Cute Dinos (press-and-go dinosaur toy on wheels; green, red or teal) | `/cute-dinos` (`products/cute-dinos.html`) | ₹249 |
 | Cute Dinos 3-pack (one of each colour) | `/cute-dinos?pack=trio` (same page) | ₹549 |
@@ -28,6 +28,7 @@ Read CC Does a Spin (Issue 02), all three parts of Sector Zero (Issue 03), and M
 3. Put a cut-out photo (transparent WebP or PNG) in `assets/images/redpoly/products/`.
 4. Add a block or card for it on the home page (`index.html`, section `#shop`).
 5. For a second photo on the product page (for example the item in its box), add `data-alt-src`, `data-alt-label`, `data-alt-text` and `data-label` to the `.char-stage__figure` image. `main.js` then shows one button per photo.
+6. Give the page `og:image` / `twitter:image` tags pointing at a 1200x630 card in `assets/images/redpoly/social/`, then run `npm run check:prices` (also part of `npm run lint`). It compares the JSON-LD offer, `product:price:amount`, ADD TO CART `data-price` values, both catalogues, the home page cards and the share copy, and fails if any price disagrees. See [PRICING-AUDIT.md](PRICING-AUDIT.md) for the last manual image audit.
 
 The checkout is still a demo: no payment is collected and no order is created.
 

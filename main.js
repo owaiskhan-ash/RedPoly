@@ -77,7 +77,7 @@
   // The catalogue is the list of products on sale. Add a product here (and in checkout.js) when it gets a page.
   // Anything else found in a saved cart or saved list (for example an item that is no longer sold) is dropped.
   var catalogue = {
-    'BUBBLE GUN': { price:499, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
+    'BUBBLE GUN': { price:449, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
     'STUNT PET': { price:599, href:'/stunt-pet', image:'/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122' },
     'MINI COOL CAR': { price:749, href:'/mini-cool-car', image:'/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117' },
     'GEL STORM': { price:1999, href:'/gel-storm', image:'/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121' },
@@ -88,9 +88,9 @@
     'CUTE DINOS RED': { price:249, href:'/cute-dinos?colour=red', image:'/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TEAL': { price:249, href:'/cute-dinos?colour=teal', image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TRIO': { price:549, href:'/cute-dinos?pack=trio', image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' },
-    'MAGNETIC BLOCKS 25 PCS': { price:399, href:'/magnetic-blocks?pack=25pcs', image:'/assets/images/redpoly/products/magnetic-blocks-25pcs-thumb.webp?v=mag-20261122' },
-    'MAGNETIC BLOCKS 36 PCS': { price:549, href:'/magnetic-blocks?pack=36pcs', image:'/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
-    'MAGNETIC BLOCKS 42 PCS': { price:599, href:'/magnetic-blocks?pack=42pcs', image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 25 PCS': { price:319, href:'/magnetic-blocks?pack=25pcs', image:'/assets/images/redpoly/products/magnetic-blocks-25pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 36 PCS': { price:479, href:'/magnetic-blocks?pack=36pcs', image:'/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
+    'MAGNETIC BLOCKS 42 PCS': { price:549, href:'/magnetic-blocks?pack=42pcs', image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 64 PCS': { price:799, href:'/magnetic-blocks?pack=64pcs', image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' },
     'RISE ONE X 4X4': { price:1499, href:'/rise-one-x-4x4', image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
     'DRIFT KING': { price:799, href:'/drift-king', image:'/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' },
@@ -2430,7 +2430,7 @@
           }
         }
 
-        // Magnetic Blocks card aside ("25, 36, 42 or 64 pcs · ₹399–₹799") tracks min/max live prices
+        // Magnetic Blocks card aside ("25, 36, 42 or 64 pcs · ₹319–₹799") tracks min/max live prices
         if (skuName === 'MAGNETIC BLOCKS 25 PCS') {
           var rec64 = getLiveRecord('MAGNETIC BLOCKS 64 PCS');
           var magAsideEl = card.querySelector('.shop-card__aside');
