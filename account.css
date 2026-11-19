@@ -43,7 +43,7 @@
 .account-identity__status.is-ok{color:#355900}
 
 /* Sticky Section / Filter Tabs */
-.account-tabs{position:sticky;top:82px;z-index:20;display:flex;gap:8px;overflow-x:auto;margin:26px -4px 0;padding:10px 4px;background:rgba(16,16,13,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.12);scrollbar-width:thin}
+.account-tabs{position:sticky;top:var(--site-header-height,83px);z-index:20;display:flex;gap:8px;overflow-x:auto;margin:26px -4px 0;padding:10px 4px;background:rgba(16,16,13,.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.12);scrollbar-width:thin}
 .account-tabs button{flex:none;display:inline-flex;align-items:center;gap:7px;padding:11px 14px;border:1px solid rgba(255,255,255,.22);background:#1a1815;color:#f7f1e6;font:900 9.5px/1 'Archivo',sans-serif;letter-spacing:1.1px;text-transform:uppercase;cursor:pointer;transition:background .16s ease,color .16s ease,border-color .16s ease}
 .account-tabs button:hover,.account-tabs button.is-active{background:#c8ff00;border-color:#c8ff00;color:#111}
 .account-tabs button b{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:rgba(255,255,255,.14);color:#fff;font-size:9px}
@@ -51,7 +51,7 @@
 
 /* Sections Grid */
 .account-sections{display:grid;gap:26px;margin-top:26px}
-.account-card{scroll-margin-top:154px;padding:clamp(20px,3vw,30px);background:#1b1916;border:1px solid rgba(255,255,255,.16);border-top:4px solid #c8ff00;box-shadow:7px 7px 0 rgba(0,0,0,.65)}
+.account-card{scroll-margin-top:calc(var(--site-header-height,83px) + 74px);padding:clamp(20px,3vw,30px);background:#1b1916;border:1px solid rgba(255,255,255,.16);border-top:4px solid #c8ff00;box-shadow:7px 7px 0 rgba(0,0,0,.65)}
 .account-card--cream{background:#f4f0e6;color:#171512;border:2px solid #000;border-top-width:2px;box-shadow:7px 7px 0 #000}
 .account-card--orange{border-top-color:#ff6b1a}
 .account-card--indigo{border-top-color:#8f7bff}
@@ -183,10 +183,6 @@
 
 @media(max-width:940px){
   .address-grid,.account-cart-grid{grid-template-columns:1fr}
-  .account-tabs{top:82px}
-}
-@media(max-width:760px){
-  .account-tabs{top:58px}
 }
 @media(max-width:640px){
   .account-main{width:calc(100% - 28px);padding:22px 0 60px}

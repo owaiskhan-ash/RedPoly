@@ -109,6 +109,7 @@ service cloud.firestore {
         name == 'MECHA ROVER' ? 499 :
         name == 'PIXEL SPLASH' ? 1749 :
         name == 'RISE ONE X 4X4' ? 1499 :
+        name == 'BABY LINGO' ? 799 :
         name == 'DRIFT KING' ? 799 :
         name == 'CUTE DINOS GREEN' ? 249 :
         name == 'CUTE DINOS RED' ? 249 :

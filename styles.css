@@ -7,6 +7,7 @@
   --cream:#F4F0E6;
   --ink:#111111;
   --grey:#9A9A9A;
+  --site-header-height:83px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -18,7 +19,7 @@ button{font-family:inherit;cursor:pointer}
 .wrap{max-width:1280px;margin:0 auto;padding:0 28px}
 
 /* Brand-led sticky navigation for the storefront. */
-.site-header{position:sticky;top:0;z-index:80;border-bottom:1px solid rgba(244,240,230,.15);background:rgba(10,10,10,.88);backdrop-filter:blur(16px) saturate(1.15)}
+.site-header{position:sticky;top:0;z-index:80;border-bottom:1px solid rgba(244,240,230,.15);background:rgba(10,10,10,.96);backdrop-filter:blur(16px) saturate(1.15)}
 @keyframes site-menu-drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .site-header::before{content:"";position:absolute;inset:0 auto auto 0;width:100%;height:2px;background:linear-gradient(90deg,var(--lime),transparent 42%,var(--orange))}
 .site-header__inner{display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:82px}
@@ -535,6 +536,7 @@ html.redpoly-splash-seen .brand-splash{display:none}
 html.motion-ready .c-card__soon{transition:transform .2s ease}
 
 @media(max-width:760px){
+  :root{--site-header-height:65px}
   .site-header__inner{display:flex;align-items:center;gap:8px;min-height:58px;padding-top:8px;padding-bottom:8px}
   .site-header__brand{margin-right:auto;min-width:0}
   .site-header__nav,.site-header__cta,.shop-jumpbar{display:none}
@@ -558,6 +560,7 @@ html.motion-ready .c-card__soon{transition:transform .2s ease}
   #figures,#accessories,#bundle-builder,#story,#featured,#limited,#crew{scroll-margin-top:74px}
 }
 @media(max-width:640px){
+  :root{--site-header-height:59px}
   /* Boxed figures move up under the headline so they sit on the first screen */
   .hero__grid{display:flex;flex-direction:column;gap:0}
   .hero__left{display:contents}

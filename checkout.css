@@ -38,7 +38,7 @@
 .checkout-submit:hover{transform:translateY(-2px);background:#ddff55}
 .checkout-submit:focus-visible,.checkout-return:focus-visible{outline:3px solid #ff6b1a;outline-offset:3px}
 .checkout-form-status{min-height:15px;margin-top:12px;color:#a3321c;font-size:10px;font-weight:700;line-height:1.5}
-.checkout-summary{position:sticky;top:20px;background:#24201c;color:#fff4e1;border-color:#eac338;box-shadow:7px 7px 0 #eac338}
+.checkout-summary{position:sticky;top:calc(var(--site-header-height,83px) + 20px);max-height:calc(100dvh - var(--site-header-height,83px) - 32px);overflow-y:auto;scrollbar-width:thin;background:#24201c;color:#fff4e1;border-color:#eac338;box-shadow:7px 7px 0 #eac338}
 .checkout-summary .checkout-overline{color:#d5ff35}
 .checkout-summary h2{font-size:32px}
 .checkout-summary__top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:17px;border-bottom:1px solid rgba(255,255,255,.2)}
@@ -80,7 +80,7 @@
 .thankyou-actions{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .thankyou-actions a{padding:12px 14px;background:#171512;color:#fff;font-size:9px;font-weight:900;letter-spacing:1px}
 .thankyou-actions a:first-child{background:#4439b8;color:#fff}
-@media(max-width:760px){.checkout-layout{grid-template-columns:1fr}.checkout-summary{position:relative;top:auto;grid-row:1}.checkout-form-panel{grid-row:2}.checkout-main{padding-top:24px}.checkout-kicker{font-size:7px;letter-spacing:1px}.checkout-summary{padding:21px}.checkout-fields,.demo-card-fields{gap:10px}}
+@media(max-width:760px){.checkout-layout{grid-template-columns:1fr}.checkout-summary{position:relative;top:auto;max-height:none;overflow-y:visible;grid-row:1}.checkout-form-panel{grid-row:2}.checkout-main{padding-top:24px}.checkout-kicker{font-size:7px;letter-spacing:1px}.checkout-summary{padding:21px}.checkout-fields,.demo-card-fields{gap:10px}}
 @media(max-width:440px){.checkout-fields,.demo-card-fields{grid-template-columns:1fr}.field--wide{grid-column:1}.checkout-main{width:calc(100% - 28px)}.checkout-main>h1{font-size:58px}.demo-payment{padding:14px}.checkout-form-panel,.checkout-summary{padding:18px}.checkout-submit{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.checkout-submit{transition:none}}
 
