@@ -77,7 +77,7 @@
   // The catalogue is the list of products on sale. Add a product here (and in checkout.js) when it gets a page.
   // Anything else found in a saved cart or saved list (for example an item that is no longer sold) is dropped.
   var catalogue = {
-    'BUBBLE GUN': { price:499, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
+    'BUBBLE GUN': { price:449, href:'/bubble-gun', image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
     'STUNT PET': { price:599, href:'/stunt-pet', image:'/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122' },
     'MINI COOL CAR': { price:749, href:'/mini-cool-car', image:'/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117' },
     'GEL STORM': { price:1999, href:'/gel-storm', image:'/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121' },

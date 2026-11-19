@@ -16,7 +16,7 @@ npm run check:prices
 | Product | Site price (incl. GST) | Share image | Price printed in the image | Verdict |
 | --- | --- | --- | --- | --- |
 | Baby Lingo | ₹799 | `social/baby-lingo-og.png` | **ONLY ₹799 · INCL. GST** (plus "₹899 on Amazon") | ✅ correct |
-| Bubble Gun | ₹499 | `social/bubble-gun-og.png` | **ONLY ₹499** | ✅ correct |
+| Bubble Gun | ₹449 | `social/bubble-gun-og.png` | **ONLY ₹449** | ✅ corrected 19 Nov 2026 |
 | Cute Dinos | ₹249 / trio ₹549 | `social/cute-dinos-og.png` | **ONLY ₹249 · 3 FOR ₹549** | ✅ correct |
 | Drift King | ₹799 | `social/drift-king-og.png` | **ONLY ₹799 · INCL. GST** (plus "₹859 on Amazon") | ✅ correct |
 | Magnetic Blocks | ₹399 – ₹799 | `social/magnetic-blocks-og.png` | **FROM ₹399 · UP TO 64 PCS** | ✅ correct |
@@ -30,7 +30,9 @@ npm run check:prices
 Amazon comparison prices quoted on the Baby Lingo (₹899) and Drift King (₹859) cards also match
 the "on Amazon" comparison shown on those two product pages.
 
-No share image needed regenerating, so no artwork was changed in this pass.
+No artwork needed regenerating. On 19 Nov 2026 the Bubble Gun price moved from ₹499 to ₹449 on the
+live site: the badge digit was repainted inside `bubble-gun-og.png` (only pixels x 1090-1125, y 87-139
+changed) and the price was updated on the page, in both catalogues, on the home page and in the share copy.
 
 ## Also verified in the same pass
 
@@ -49,7 +51,7 @@ No share image needed regenerating, so no artwork was changed in this pass.
    1200x630 card, so a shared link shows an uncropped portrait/square photo. They could be given
    cards in the same style as the other nine.
 2. **The home page** (`index.html`) shares `social/bubble-gun-og.png`, so a shared homepage link
-   looks like a Bubble Gun (₹499) product card. A REDPOLY-branded card would represent the store
+   looks like a Bubble Gun (₹449) product card. A REDPOLY-branded card would represent the store
    better.
 
 Finally, `scripts/check-pricing.mjs` (wired into `npm run lint`) now fails the build if any of

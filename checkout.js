@@ -9,7 +9,7 @@
   var freeGiftFrom = 3500;
   // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved cart is dropped.
   var catalogue = {
-    'BUBBLE GUN': { price:499, image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
+    'BUBBLE GUN': { price:449, image:'/assets/images/redpoly/products/bubble-gun-thumb.webp?v=bubble-20261121' },
     'STUNT PET': { price:599, image:'/assets/images/redpoly/products/stunt-pet-thumb.webp?v=pet-20261122' },
     'MINI COOL CAR': { price:749, image:'/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117' },
     'GEL STORM': { price:1999, image:'/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121' },
