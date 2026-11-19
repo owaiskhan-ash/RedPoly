@@ -153,6 +153,44 @@ service cloud.firestore {
         (list.size() < 5 || isValidPriceComparisonEntry(list[4]));
     }
 
+    function isValidCategorySlug(slug) {
+      return slug is string &&
+        slug.size() >= 1 &&
+        slug.size() <= 40 &&
+        slug.matches('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+    }
+
+    function isValidCategoryThumbnail(url) {
+      return url is string && (
+        url.size() == 0 ||
+        (url.size() <= 300 && (
+          url.matches('^/[a-zA-Z0-9_\\-./?=&]+$') ||
+          url.matches('^https://[^\\s]+$')
+        ))
+      );
+    }
+
+    function isValidCategoryDoc(data, categoryId) {
+      return isValidCategorySlug(categoryId) &&
+        data.keys().hasAll([
+          'slug', 'name', 'shortDesc', 'shelfDesc', 'accentColor',
+          'sortOrder', 'visible', 'thumbnailUrl', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'slug', 'name', 'shortDesc', 'shelfDesc', 'accentColor',
+          'sortOrder', 'visible', 'thumbnailUrl', 'updatedAt'
+        ]) &&
+        data.slug is string && data.slug == categoryId &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 60 &&
+        data.shortDesc is string && data.shortDesc.size() <= 140 &&
+        data.shelfDesc is string && data.shelfDesc.size() <= 220 &&
+        data.accentColor is string && data.accentColor.matches('^#[0-9a-fA-F]{6}$') &&
+        data.sortOrder is int && data.sortOrder >= 0 && data.sortOrder <= 999 &&
+        data.visible is bool &&
+        isValidCategoryThumbnail(data.thumbnailUrl) &&
+        data.updatedAt is timestamp;
+    }
+
     function isValidProductCatalogDoc(data, skuSlug) {
       return data.keys().hasAll([
           'sku', 'name', 'price', 'compareAtPrice', 'stock', 'lowStockThreshold',
@@ -160,7 +198,7 @@ service cloud.firestore {
         ]) &&
         data.keys().hasOnly([
           'sku', 'name', 'price', 'compareAtPrice', 'stock', 'lowStockThreshold',
-          'cardTag', 'priceComparisons', 'updatedAt'
+          'cardTag', 'category', 'priceComparisons', 'updatedAt'
         ]) &&
         data.sku is string && data.sku == skuSlug && isValidSkuSlug(skuSlug) &&
         data.name is string && data.name == nameForSkuSlug(skuSlug) &&
@@ -169,6 +207,7 @@ service cloud.firestore {
         data.stock is int && data.stock >= 0 && data.stock <= 100000 &&
         data.lowStockThreshold is int && data.lowStockThreshold >= 0 && data.lowStockThreshold <= 10000 &&
         data.cardTag is string && data.cardTag.size() <= 32 &&
+        (!('category' in data) || isValidCategorySlug(data.category)) &&
         isValidPriceComparisonList(data.priceComparisons) &&
         data.updatedAt is timestamp;
     }
@@ -395,6 +434,23 @@ service cloud.firestore {
         (isVerified() && isValidStockDecrement(incoming(), existing()))
       );
       allow delete: if false;
+    }
+
+    match /categories/{categoryId} {
+      allow get: if isValidCategorySlug(categoryId);
+      allow list: if true;
+      allow create: if isAdmin() && isValidCategorySlug(categoryId) &&
+        isValidCategoryDoc(incoming(), categoryId) &&
+        incoming().updatedAt == request.time;
+      allow update: if isAdmin() && isValidCategorySlug(categoryId) &&
+        isValidCategoryDoc(incoming(), categoryId) &&
+        incoming().slug == existing().slug &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'name', 'shortDesc', 'shelfDesc', 'accentColor',
+          'sortOrder', 'visible', 'thumbnailUrl', 'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidCategorySlug(categoryId);
     }
 
     match /productCosts/{skuSlug} {

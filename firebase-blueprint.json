@@ -468,6 +468,12 @@
           "type": "string",
           "maxLength": 32
         },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
         "priceComparisons": {
           "type": "array",
           "maxItems": 5,
@@ -502,6 +508,63 @@
         "lowStockThreshold",
         "cardTag",
         "priceComparisons",
+        "updatedAt"
+      ]
+    },
+    "StoreCategory": {
+      "title": "StoreCategory",
+      "description": "Public storefront product category definition managed exclusively by the store admin.",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "shortDesc": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "shelfDesc": {
+          "type": "string",
+          "maxLength": 220
+        },
+        "accentColor": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "slug",
+        "name",
+        "shortDesc",
+        "shelfDesc",
+        "accentColor",
+        "sortOrder",
+        "visible",
+        "thumbnailUrl",
         "updatedAt"
       ]
     },
@@ -579,7 +642,11 @@
   "firestore": {
     "/products/{skuSlug}": {
       "schema": { "$ref": "#/entities/ProductCatalog" },
-      "description": "Public SKU catalog inventory, live pricing, card tags, and market comparison pills (admin-managed; atomic buyer stock decrement on checkout)."
+      "description": "Public SKU catalog inventory, category assignment, live pricing, card tags, and market comparison pills (admin-managed; atomic buyer stock decrement on checkout)."
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/StoreCategory" },
+      "description": "Public storefront categories (names, descriptions, accent colors, sort order, visibility, optional thumbnail URL) managed exclusively by the store admin."
     },
     "/productCosts/{skuSlug}": {
       "schema": { "$ref": "#/entities/ProductCost" },

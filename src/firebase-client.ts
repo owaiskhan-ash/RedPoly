@@ -205,6 +205,29 @@ export type SkuSlug =
   | 'drift-king'
   | 'baby-lingo';
 
+export interface StoreCategoryRecord {
+  slug: string;
+  name: string;
+  shortDesc: string;
+  shelfDesc: string;
+  accentColor: string;
+  sortOrder: number;
+  visible: boolean;
+  thumbnailUrl: string;
+  updatedAtMs: number;
+}
+
+export interface SaveCategoryInput {
+  slug?: string;
+  name: string;
+  shortDesc?: string;
+  shelfDesc?: string;
+  accentColor?: string;
+  sortOrder?: number;
+  visible?: boolean;
+  thumbnailUrl?: string;
+}
+
 export interface ProductCatalogRecord {
   sku: SkuSlug;
   name: string;
@@ -214,6 +237,7 @@ export interface ProductCatalogRecord {
   stock: number | null;
   lowStockThreshold: number;
   cardTag: string;
+  category: string;
   priceComparisons: PriceComparison[];
   href: string;
   image: string;
@@ -228,6 +252,7 @@ export interface UpdateProductInput {
   stock?: number;
   lowStockThreshold?: number;
   cardTag?: string;
+  category?: string;
   priceComparisons?: PriceComparison[];
 }
 
@@ -408,10 +433,60 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
 const WISH_STORAGE_KEY = 'redpoly-wishlist-v1';
 const CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v1';
+const CATEGORIES_CACHE_KEY = 'redpoly-categories-cache-v1';
+const CATEGORY_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
 const FREE_STANDARD_FROM = 2000;
 const FREE_EXPRESS_FROM = 2000;
 const FREE_GIFT_FROM = 3500;
 const GST_RATE = 12;
+
+const DEFAULT_CATEGORIES: ReadonlyArray<StoreCategoryRecord> = [
+  {
+    slug: 'guns',
+    name: 'Guns',
+    shortDesc: 'Gel, water & automatic bubble blasters',
+    shelfDesc: 'Gel blasters, automatic water guns, and backyard bubble action.',
+    accentColor: '#FF6B1A',
+    sortOrder: 0,
+    visible: true,
+    thumbnailUrl: '',
+    updatedAtMs: 0,
+  },
+  {
+    slug: 'cars',
+    name: 'Cars',
+    shortDesc: 'RC drift, mist spray & stunt racers',
+    shelfDesc: 'Remote-control drift racers, exhaust mist sprayers, and stunt machines.',
+    accentColor: '#1C7ED6',
+    sortOrder: 1,
+    visible: true,
+    thumbnailUrl: '',
+    updatedAtMs: 0,
+  },
+  {
+    slug: 'educational',
+    name: 'Educational',
+    shortDesc: 'Bilingual first words & hands-on STEM',
+    shelfDesc: 'Screen-free bilingual learning, magnetic STEM construction, and DIY builds.',
+    accentColor: '#0E9F6E',
+    sortOrder: 2,
+    visible: true,
+    thumbnailUrl: '',
+    updatedAtMs: 0,
+  },
+  {
+    slug: 'fun',
+    name: 'Fun',
+    shortDesc: 'Rolling voice pets & push-and-go dinos',
+    shelfDesc: 'Voice-activated rolling characters and chunky push-and-go dinosaurs.',
+    accentColor: '#7C3AED',
+    sortOrder: 3,
+    visible: true,
+    thumbnailUrl: '',
+    updatedAtMs: 0,
+  },
+];
 
 const SKU_ORDER: ReadonlyArray<SkuSlug> = [
   'baby-lingo',
@@ -437,6 +512,7 @@ interface DefaultSeedMeta {
   name: string;
   price: number;
   cardTag: string;
+  category: string;
   costPrice?: number;
   priceComparisons?: PriceComparison[];
 }
@@ -446,6 +522,7 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
     name: 'BABY LINGO',
     price: 799,
     cardTag: 'NEW IN STORE',
+    category: 'educational',
     costPrice: 500,
     priceComparisons: [{ platform: 'Amazon', price: 899 }],
   },
@@ -453,24 +530,25 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
     name: 'DRIFT KING',
     price: 799,
     cardTag: 'NEW IN STORE',
+    category: 'cars',
     costPrice: 485,
     priceComparisons: [{ platform: 'Amazon', price: 859 }],
   },
-  'rise-one-x-4x4': { name: 'RISE ONE X 4X4', price: 1499, cardTag: 'NEW IN STORE' },
-  'magnetic-blocks-25-pcs': { name: 'MAGNETIC BLOCKS 25 PCS', price: 399, cardTag: 'NEW IN STORE' },
-  'magnetic-blocks-36-pcs': { name: 'MAGNETIC BLOCKS 36 PCS', price: 549, cardTag: '' },
-  'magnetic-blocks-42-pcs': { name: 'MAGNETIC BLOCKS 42 PCS', price: 599, cardTag: '' },
-  'magnetic-blocks-64-pcs': { name: 'MAGNETIC BLOCKS 64 PCS', price: 799, cardTag: '' },
-  'mecha-rover': { name: 'MECHA ROVER', price: 499, cardTag: '' },
-  'bubble-gun': { name: 'BUBBLE GUN', price: 499, cardTag: 'IN STORE NOW' },
-  'stunt-pet': { name: 'STUNT PET', price: 599, cardTag: 'NEW IN STORE' },
-  'cute-dinos-green': { name: 'CUTE DINOS GREEN', price: 249, cardTag: 'NEW IN STORE' },
-  'cute-dinos-red': { name: 'CUTE DINOS RED', price: 249, cardTag: '' },
-  'cute-dinos-teal': { name: 'CUTE DINOS TEAL', price: 249, cardTag: '' },
-  'cute-dinos-trio': { name: 'CUTE DINOS TRIO', price: 549, cardTag: '' },
-  'mini-cool-car': { name: 'MINI COOL CAR', price: 749, cardTag: 'NEW IN STORE' },
-  'gel-storm': { name: 'GEL STORM', price: 1999, cardTag: 'JUST LANDED' },
-  'pixel-splash': { name: 'PIXEL SPLASH', price: 1749, cardTag: 'NEW IN STORE' },
+  'rise-one-x-4x4': { name: 'RISE ONE X 4X4', price: 1499, cardTag: 'NEW IN STORE', category: 'cars' },
+  'magnetic-blocks-25-pcs': { name: 'MAGNETIC BLOCKS 25 PCS', price: 399, cardTag: 'NEW IN STORE', category: 'educational' },
+  'magnetic-blocks-36-pcs': { name: 'MAGNETIC BLOCKS 36 PCS', price: 549, cardTag: '', category: 'educational' },
+  'magnetic-blocks-42-pcs': { name: 'MAGNETIC BLOCKS 42 PCS', price: 599, cardTag: '', category: 'educational' },
+  'magnetic-blocks-64-pcs': { name: 'MAGNETIC BLOCKS 64 PCS', price: 799, cardTag: '', category: 'educational' },
+  'mecha-rover': { name: 'MECHA ROVER', price: 499, cardTag: '', category: 'educational' },
+  'bubble-gun': { name: 'BUBBLE GUN', price: 499, cardTag: 'IN STORE NOW', category: 'guns' },
+  'stunt-pet': { name: 'STUNT PET', price: 599, cardTag: 'NEW IN STORE', category: 'fun' },
+  'cute-dinos-green': { name: 'CUTE DINOS GREEN', price: 249, cardTag: 'NEW IN STORE', category: 'fun' },
+  'cute-dinos-red': { name: 'CUTE DINOS RED', price: 249, cardTag: '', category: 'fun' },
+  'cute-dinos-teal': { name: 'CUTE DINOS TEAL', price: 249, cardTag: '', category: 'fun' },
+  'cute-dinos-trio': { name: 'CUTE DINOS TRIO', price: 549, cardTag: '', category: 'fun' },
+  'mini-cool-car': { name: 'MINI COOL CAR', price: 749, cardTag: 'NEW IN STORE', category: 'cars' },
+  'gel-storm': { name: 'GEL STORM', price: 1999, cardTag: 'JUST LANDED', category: 'guns' },
+  'pixel-splash': { name: 'PIXEL SPLASH', price: 1749, cardTag: 'NEW IN STORE', category: 'guns' },
 };
 
 const NAME_TO_SKU: Record<string, SkuSlug> = {
@@ -497,6 +575,124 @@ function isValidSkuSlug(slug: string): slug is SkuSlug {
   return Object.prototype.hasOwnProperty.call(DEFAULT_PRODUCTS_META, slug);
 }
 
+function normalizeCategorySlug(raw: unknown): string {
+  return String(raw || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+}
+
+function isValidCategorySlug(slug: string): boolean {
+  return slug.length >= 1 && slug.length <= 40 && CATEGORY_SLUG_PATTERN.test(slug);
+}
+
+function normalizeAccentColor(raw: unknown, fallback = '#FF6B1A'): string {
+  const val = String(raw || '').trim();
+  return HEX_COLOR_PATTERN.test(val) ? val.toUpperCase() : fallback;
+}
+
+function sanitizeCategoryThumbnail(raw: unknown): string {
+  const val = String(raw || '').trim().slice(0, 300);
+  if (!val) return '';
+  if (LIMITS.IMAGE_PATTERN.test(val) || /^https:\/\/[^\s]+$/.test(val)) {
+    return val;
+  }
+  return '';
+}
+
+function toStoreCategoryRecord(
+  slug: string,
+  data: Record<string, unknown>,
+  fallbackOrder = 0
+): StoreCategoryRecord {
+  const cleanSlug = normalizeCategorySlug(slug || data.slug);
+  const seed = DEFAULT_CATEGORIES.find((c) => c.slug === cleanSlug);
+  const name =
+    String(data.name ?? seed?.name ?? cleanSlug)
+      .trim()
+      .slice(0, 60) || cleanSlug;
+  const shortDesc = String(data.shortDesc ?? seed?.shortDesc ?? '').trim().slice(0, 140);
+  const shelfDesc = String(data.shelfDesc ?? seed?.shelfDesc ?? '').trim().slice(0, 220);
+  const accentColor = normalizeAccentColor(data.accentColor, seed?.accentColor || '#FF6B1A');
+  const rawOrder = Number(data.sortOrder);
+  const sortOrder = Number.isFinite(rawOrder)
+    ? Math.max(0, Math.min(999, Math.floor(rawOrder)))
+    : seed
+      ? seed.sortOrder
+      : Math.max(0, Math.min(999, Math.floor(fallbackOrder)));
+  const visible = typeof data.visible === 'boolean' ? data.visible : seed ? seed.visible : true;
+  const thumbnailUrl = sanitizeCategoryThumbnail(data.thumbnailUrl ?? seed?.thumbnailUrl ?? '');
+  const ts = data.updatedAt as Timestamp | undefined;
+  const updatedAtMs =
+    ts && typeof ts.toMillis === 'function'
+      ? ts.toMillis()
+      : Number.isFinite(Number(data.updatedAtMs))
+        ? Number(data.updatedAtMs)
+        : 0;
+  return {
+    slug: cleanSlug,
+    name,
+    shortDesc,
+    shelfDesc,
+    accentColor,
+    sortOrder,
+    visible,
+    thumbnailUrl,
+    updatedAtMs,
+  };
+}
+
+const liveCategoriesMap = new Map<string, StoreCategoryRecord>(
+  DEFAULT_CATEGORIES.map((cat) => [cat.slug, { ...cat }])
+);
+
+function getCategories(): StoreCategoryRecord[] {
+  return Array.from(liveCategoriesMap.values())
+    .map((c) => ({ ...c }))
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
+}
+
+function getCategoriesMap(): Record<string, StoreCategoryRecord> {
+  const map: Record<string, StoreCategoryRecord> = {};
+  liveCategoriesMap.forEach((cat) => {
+    map[cat.slug] = { ...cat };
+  });
+  return map;
+}
+
+function persistCategoriesSessionCache(): void {
+  try {
+    const list = getCategories();
+    window.sessionStorage.setItem(CATEGORIES_CACHE_KEY, JSON.stringify(list));
+  } catch {
+    /* ignore storage quota errors */
+  }
+}
+
+function hydrateCategoriesFromSessionCache(): void {
+  try {
+    const raw = JSON.parse(window.sessionStorage.getItem(CATEGORIES_CACHE_KEY) || '[]');
+    if (!Array.isArray(raw) || !raw.length) return;
+    const next = new Map<string, StoreCategoryRecord>();
+    raw.forEach((item, idx) => {
+      if (!item || typeof item !== 'object') return;
+      const slug = normalizeCategorySlug((item as Record<string, unknown>).slug);
+      if (!isValidCategorySlug(slug)) return;
+      next.set(slug, toStoreCategoryRecord(slug, item as Record<string, unknown>, idx));
+    });
+    if (next.size) {
+      liveCategoriesMap.clear();
+      next.forEach((v, k) => liveCategoriesMap.set(k, v));
+    }
+  } catch {
+    /* ignore invalid cache */
+  }
+}
+
+hydrateCategoriesFromSessionCache();
+
 function buildDefaultProductRecord(sku: SkuSlug): ProductCatalogRecord {
   const seed = DEFAULT_PRODUCTS_META[sku];
   const cat = CATALOGUE[seed.name];
@@ -509,6 +705,7 @@ function buildDefaultProductRecord(sku: SkuSlug): ProductCatalogRecord {
     stock: null,
     lowStockThreshold: 5,
     cardTag: seed.cardTag,
+    category: seed.category,
     priceComparisons: seed.priceComparisons ? seed.priceComparisons.map((c) => ({ ...c })) : [],
     href: cat ? cat.href : `/${sku}`,
     image: cat ? cat.image : '',
@@ -566,6 +763,8 @@ function toProductCatalogRecord(sku: SkuSlug, data: Record<string, unknown>): Pr
     : 5;
   const cardTag =
     typeof data.cardTag === 'string' ? data.cardTag.trim().slice(0, 32) : seed.cardTag;
+  const rawCat = normalizeCategorySlug(data.category);
+  const category = isValidCategorySlug(rawCat) ? rawCat : seed.category;
   const priceComparisons =
     data.priceComparisons !== undefined
       ? sanitizeComparisons(data.priceComparisons)
@@ -589,6 +788,7 @@ function toProductCatalogRecord(sku: SkuSlug, data: Record<string, unknown>): Pr
     stock,
     lowStockThreshold,
     cardTag,
+    category,
     priceComparisons,
     href: cat ? cat.href : `/${sku}`,
     image: cat ? cat.image : '',
@@ -658,6 +858,7 @@ function persistCatalogSessionCache(): void {
         stock: rec.stock,
         lowStockThreshold: rec.lowStockThreshold,
         cardTag: rec.cardTag,
+        category: rec.category,
         priceComparisons: rec.priceComparisons,
         updatedAtMs: rec.updatedAtMs,
       };
@@ -1005,6 +1206,74 @@ function startPublicCatalogSubscription(): void {
 }
 
 startPublicCatalogSubscription();
+
+function applyCategoryDocs(docsMap: Map<string, Record<string, unknown>>): void {
+  liveCategoriesMap.clear();
+  if (docsMap.size === 0) {
+    DEFAULT_CATEGORIES.forEach((cat) => {
+      liveCategoriesMap.set(cat.slug, { ...cat });
+    });
+  } else {
+    let idx = 0;
+    docsMap.forEach((docData, slug) => {
+      if (isValidCategorySlug(slug)) {
+        liveCategoriesMap.set(slug, toStoreCategoryRecord(slug, docData, idx));
+        idx += 1;
+      }
+    });
+  }
+  persistCategoriesSessionCache();
+  dispatch('redpoly:categories-updated', {
+    categories: getCategories(),
+    map: getCategoriesMap(),
+  });
+}
+
+let unsubPublicCategories: Unsubscribe | null = null;
+let categoriesLoaded = false;
+
+export async function loadPublicCategories(): Promise<StoreCategoryRecord[]> {
+  try {
+    const snap = await getDocs(collection(db, 'categories'));
+    const docsMap = new Map<string, Record<string, unknown>>();
+    snap.forEach((docSnap) => {
+      if (isValidCategorySlug(docSnap.id)) {
+        docsMap.set(docSnap.id, docSnap.data());
+      }
+    });
+    categoriesLoaded = true;
+    applyCategoryDocs(docsMap);
+  } catch (error) {
+    console.warn('Could not load live storefront categories:', error);
+  }
+  return getCategories();
+}
+
+function startPublicCategoriesSubscription(): void {
+  if (unsubPublicCategories) return;
+  try {
+    unsubPublicCategories = onSnapshot(
+      collection(db, 'categories'),
+      (snap) => {
+        const docsMap = new Map<string, Record<string, unknown>>();
+        snap.forEach((docSnap) => {
+          if (isValidCategorySlug(docSnap.id)) {
+            docsMap.set(docSnap.id, docSnap.data());
+          }
+        });
+        categoriesLoaded = true;
+        applyCategoryDocs(docsMap);
+      },
+      (error) => {
+        console.warn('Live storefront categories listener error:', error);
+      }
+    );
+  } catch (error) {
+    console.warn('Could not start public categories listener:', error);
+  }
+}
+
+startPublicCategoriesSubscription();
 
 // State managed by the Firebase bridge
 let currentUser: User | null = null;
@@ -2450,6 +2719,7 @@ export async function listAllProducts(): Promise<ProductCatalogRecord[]> {
           stock: 20,
           lowStockThreshold: 5,
           cardTag: seed.cardTag,
+          category: seed.category,
           priceComparisons: seed.priceComparisons
             ? seed.priceComparisons.map((c) => ({ ...c }))
             : ([] as PriceComparison[]),
@@ -2563,6 +2833,15 @@ export async function updateProduct(
           ? String(patch.cardTag).trim().slice(0, 32)
           : String(existing.cardTag ?? seed.cardTag).trim().slice(0, 32);
 
+      const requestedCategory =
+        patch.category !== undefined
+          ? normalizeCategorySlug(patch.category)
+          : normalizeCategorySlug(existing.category ?? seed.category);
+      const category = isValidCategorySlug(requestedCategory) ? requestedCategory : seed.category;
+      if (patch.category !== undefined && !isValidCategorySlug(requestedCategory)) {
+        throw new Error('Invalid category slug.');
+      }
+
       const priceComparisons =
         patch.priceComparisons !== undefined
           ? sanitizeComparisons(patch.priceComparisons)
@@ -2576,6 +2855,7 @@ export async function updateProduct(
         stock,
         lowStockThreshold,
         cardTag,
+        category,
         priceComparisons,
         updatedAt: serverTimestamp(),
       };
@@ -2648,6 +2928,8 @@ export async function adjustProductStock(
         Math.min(10000, Math.floor(Number(existing.lowStockThreshold ?? 5)))
       );
       const cardTag = String(existing.cardTag ?? seed.cardTag).trim().slice(0, 32);
+      const existingCat = normalizeCategorySlug(existing.category ?? seed.category);
+      const category = isValidCategorySlug(existingCat) ? existingCat : seed.category;
       const priceComparisons = sanitizeComparisons(existing.priceComparisons);
 
       const writePayload = {
@@ -2658,6 +2940,7 @@ export async function adjustProductStock(
         stock: nextStock,
         lowStockThreshold,
         cardTag,
+        category,
         priceComparisons,
         updatedAt: serverTimestamp(),
       };
@@ -2685,9 +2968,269 @@ export async function adjustProductStock(
   }
 }
 
+export async function listAllCategories(): Promise<StoreCategoryRecord[]> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to manage categories.');
+  }
+  const categoriesPath = 'categories';
+  try {
+    const snap = await getDocs(collection(db, 'categories'));
+    const docsMap = new Map<string, Record<string, unknown>>();
+    snap.forEach((docSnap) => {
+      if (isValidCategorySlug(docSnap.id)) {
+        docsMap.set(docSnap.id, docSnap.data());
+      }
+    });
+
+    if (docsMap.size === 0) {
+      const batch = writeBatch(db);
+      for (const cat of DEFAULT_CATEGORIES) {
+        const seedPayload = {
+          slug: cat.slug,
+          name: cat.name,
+          shortDesc: cat.shortDesc,
+          shelfDesc: cat.shelfDesc,
+          accentColor: cat.accentColor,
+          sortOrder: cat.sortOrder,
+          visible: cat.visible,
+          thumbnailUrl: cat.thumbnailUrl,
+        };
+        batch.set(doc(db, 'categories', cat.slug), {
+          ...seedPayload,
+          updatedAt: serverTimestamp(),
+        });
+        docsMap.set(cat.slug, {
+          ...seedPayload,
+          updatedAtMs: Date.now(),
+        });
+      }
+      await batch.commit();
+    }
+
+    categoriesLoaded = true;
+    applyCategoryDocs(docsMap);
+    return getCategories();
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, categoriesPath);
+  }
+}
+
+export async function saveCategory(
+  existingSlug: string | null,
+  input: SaveCategoryInput
+): Promise<StoreCategoryRecord> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to save categories.');
+  }
+  const cleanName = String(input.name || '').trim().slice(0, 60);
+  if (!cleanName) {
+    throw new Error('Category name is required.');
+  }
+  const cleanSlug = normalizeCategorySlug(existingSlug || input.slug || cleanName);
+  if (!isValidCategorySlug(cleanSlug)) {
+    throw new Error('Category slug must use lowercase letters, numbers, and hyphens (max 40 chars).');
+  }
+  const shortDesc = String(input.shortDesc ?? '').trim().slice(0, 140);
+  const shelfDesc = String(input.shelfDesc ?? '').trim().slice(0, 220);
+  const accentColor = normalizeAccentColor(input.accentColor, '#FF6B1A');
+  const rawOrder = Number(input.sortOrder);
+  const sortOrder = Number.isFinite(rawOrder)
+    ? Math.max(0, Math.min(999, Math.floor(rawOrder)))
+    : liveCategoriesMap.size;
+  const visible = input.visible !== false;
+  const rawThumb = String(input.thumbnailUrl ?? '').trim();
+  const thumbnailUrl = sanitizeCategoryThumbnail(rawThumb);
+  if (rawThumb && !thumbnailUrl) {
+    throw new Error('Thumbnail URL must be empty, start with /, or use https://.');
+  }
+
+  const categoryPath = `categories/${cleanSlug}`;
+  const catRef = doc(db, 'categories', cleanSlug);
+  const writePayload = {
+    slug: cleanSlug,
+    name: cleanName,
+    shortDesc,
+    shelfDesc,
+    accentColor,
+    sortOrder,
+    visible,
+    thumbnailUrl,
+    updatedAt: serverTimestamp(),
+  };
+
+  try {
+    await setDoc(catRef, writePayload);
+    const saved = toStoreCategoryRecord(cleanSlug, {
+      ...writePayload,
+      updatedAtMs: Date.now(),
+    });
+    liveCategoriesMap.set(cleanSlug, saved);
+    persistCategoriesSessionCache();
+    dispatch('redpoly:categories-updated', {
+      categories: getCategories(),
+      map: getCategoriesMap(),
+    });
+    return saved;
+  } catch (error) {
+    if (error instanceof Error && !('code' in error)) {
+      throw error;
+    }
+    handleFirestoreError(error, OperationType.WRITE, categoryPath);
+  }
+}
+
+export async function assignProductsCategory(
+  skuSlugs: string[],
+  categorySlug: string
+): Promise<ProductCatalogRecord[]> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to update product categories.');
+  }
+  const cleanCategory = normalizeCategorySlug(categorySlug);
+  if (!isValidCategorySlug(cleanCategory)) {
+    throw new Error('Invalid target category slug.');
+  }
+  const uniqueSkus = Array.from(new Set(skuSlugs)).filter((s): s is SkuSlug => isValidSkuSlug(s));
+  if (!uniqueSkus.length) return [];
+
+  const updatedList: ProductCatalogRecord[] = [];
+  for (const sku of uniqueSkus) {
+    const rec = await updateProduct(sku, { category: cleanCategory });
+    updatedList.push(rec);
+  }
+  return updatedList;
+}
+
+export async function deleteCategory(
+  slug: string,
+  reassignToSlug?: string
+): Promise<void> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to delete categories.');
+  }
+  const cleanSlug = normalizeCategorySlug(slug);
+  if (!isValidCategorySlug(cleanSlug)) {
+    throw new Error('Invalid category slug.');
+  }
+  if (liveCategoriesMap.size <= 1) {
+    throw new Error('Keep at least one category on the storefront.');
+  }
+
+  const targetSlug = reassignToSlug ? normalizeCategorySlug(reassignToSlug) : '';
+  if (targetSlug && (targetSlug === cleanSlug || !isValidCategorySlug(targetSlug))) {
+    throw new Error('Choose a different valid category to reassign products to.');
+  }
+
+  const categoryPath = `categories/${cleanSlug}`;
+  try {
+    const affectedSkus = SKU_ORDER.filter(
+      (sku) => (liveCatalogMap.get(sku)?.category || DEFAULT_PRODUCTS_META[sku].category) === cleanSlug
+    );
+    if (affectedSkus.length) {
+      const fallbackTarget =
+        targetSlug ||
+        getCategories().find((c) => c.slug !== cleanSlug)?.slug ||
+        '';
+      if (!fallbackTarget) {
+        throw new Error('Choose a destination category for the toys currently in this category.');
+      }
+      await assignProductsCategory(affectedSkus, fallbackTarget);
+    }
+
+    await deleteDoc(doc(db, 'categories', cleanSlug));
+    liveCategoriesMap.delete(cleanSlug);
+    persistCategoriesSessionCache();
+    dispatch('redpoly:categories-updated', {
+      categories: getCategories(),
+      map: getCategoriesMap(),
+    });
+  } catch (error) {
+    if (error instanceof Error && !('code' in error)) {
+      throw error;
+    }
+    handleFirestoreError(error, OperationType.DELETE, categoryPath);
+  }
+}
+
+export async function reorderCategories(orderedSlugs: string[]): Promise<StoreCategoryRecord[]> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to reorder categories.');
+  }
+  const cleanOrder = orderedSlugs
+    .map((s) => normalizeCategorySlug(s))
+    .filter((s) => isValidCategorySlug(s) && liveCategoriesMap.has(s));
+  if (!cleanOrder.length) return getCategories();
+
+  try {
+    const batch = writeBatch(db);
+    cleanOrder.forEach((slug, idx) => {
+      const cat = liveCategoriesMap.get(slug);
+      if (!cat) return;
+      const nextPayload = {
+        slug: cat.slug,
+        name: cat.name,
+        shortDesc: cat.shortDesc,
+        shelfDesc: cat.shelfDesc,
+        accentColor: cat.accentColor,
+        sortOrder: idx,
+        visible: cat.visible,
+        thumbnailUrl: cat.thumbnailUrl,
+        updatedAt: serverTimestamp(),
+      };
+      batch.set(doc(db, 'categories', slug), nextPayload);
+      liveCategoriesMap.set(slug, { ...cat, sortOrder: idx, updatedAtMs: Date.now() });
+    });
+    await batch.commit();
+    persistCategoriesSessionCache();
+    const sorted = getCategories();
+    dispatch('redpoly:categories-updated', {
+      categories: sorted,
+      map: getCategoriesMap(),
+    });
+    return sorted;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, 'categories');
+  }
+}
+
+export async function resetDefaultCategories(): Promise<StoreCategoryRecord[]> {
+  if (!isAdminUser()) {
+    throw new Error('Admin access required to restore default categories.');
+  }
+  try {
+    const batch = writeBatch(db);
+    for (const cat of DEFAULT_CATEGORIES) {
+      const payload = {
+        slug: cat.slug,
+        name: cat.name,
+        shortDesc: cat.shortDesc,
+        shelfDesc: cat.shelfDesc,
+        accentColor: cat.accentColor,
+        sortOrder: cat.sortOrder,
+        visible: cat.visible,
+        thumbnailUrl: cat.thumbnailUrl,
+        updatedAt: serverTimestamp(),
+      };
+      batch.set(doc(db, 'categories', cat.slug), payload);
+      liveCategoriesMap.set(cat.slug, { ...cat, updatedAtMs: Date.now() });
+    }
+    await batch.commit();
+    persistCategoriesSessionCache();
+    const sorted = getCategories();
+    dispatch('redpoly:categories-updated', {
+      categories: sorted,
+      map: getCategoriesMap(),
+    });
+    return sorted;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'categories');
+  }
+}
+
 const api = {
   isReady: () => authReady,
   isCatalogReady: () => catalogLoaded,
+  isCategoriesReady: () => categoriesLoaded,
   isAdmin: isAdminUser,
   getUser: () =>
     currentUser
@@ -2705,6 +3248,9 @@ const api = {
   getCatalogMap,
   getProduct,
   loadPublicCatalog,
+  getCategories,
+  getCategoriesMap,
+  loadPublicCategories,
   signInWithGoogle,
   signOut: signOutUser,
   joinCrew,
@@ -2727,6 +3273,12 @@ const api = {
   listAllProducts,
   updateProduct,
   adjustProductStock,
+  listAllCategories,
+  saveCategory,
+  deleteCategory,
+  reorderCategories,
+  assignProductsCategory,
+  resetDefaultCategories,
 };
 
 declare global {

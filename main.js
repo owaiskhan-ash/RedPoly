@@ -3932,34 +3932,76 @@
     });
   })();
 
-  // Homepage storefront category tabs & typographic category cards (Guns, Cars, Educational, Fun)
+  // Homepage storefront category tabs, directory cards & live Firestore sync
   (function initShopCategories() {
     var shelvesWrap = document.getElementById('shop-shelves');
     if (!shelvesWrap) return;
 
-    var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-shop-filter]'));
-    var catCards = Array.prototype.slice.call(document.querySelectorAll('[data-shop-cat]'));
-    var shelves = Array.prototype.slice.call(shelvesWrap.querySelectorAll('[data-category-shelf]'));
+    var tabsWrap = document.querySelector('.shop-tabs');
+    var catsWrap = document.querySelector('.shop-categories');
     var filterBar = document.getElementById('shop-filter-bar');
     var filterStatus = document.getElementById('shop-filter-status');
     var filterReset = document.getElementById('shop-filter-reset');
     var shopSection = document.getElementById('shop');
 
-    var VALID_CATEGORIES = {
-      guns: 'Guns',
-      cars: 'Cars',
-      educational: 'Educational',
-      fun: 'Fun'
+    var DEFAULT_CATS = [
+      { slug: 'guns', name: 'Guns', shortDesc: 'Gel blasters, pixel water guns & bubble shooters', shelfDesc: 'Outdoor gel blasters, motorised water sprayers & giant bubble guns.', accentColor: '#FF6B1A', sortOrder: 1, visible: true, thumbnailUrl: '' },
+      { slug: 'cars', name: 'Cars', shortDesc: '4x4 off-road crawlers, drift cars & pocket racers', shelfDesc: '4x4 off-road crawlers, high-speed drift machines & pocket racers.', accentColor: '#1C7ED6', sortOrder: 2, visible: true, thumbnailUrl: '' },
+      { slug: 'educational', name: 'Educational', shortDesc: 'Magnetic STEM blocks, Baby Lingo & robotic builds', shelfDesc: 'Screen-free STEM builders, speech flashcards & hands-on engineering kits.', accentColor: '#0E9F6E', sortOrder: 3, visible: true, thumbnailUrl: '' },
+      { slug: 'fun', name: 'Fun', shortDesc: '360° flip stunt pets & colourful wind-up dinos', shelfDesc: 'Flip-tastic stunt companions & pocket-sized pocket dinos for everyday giggles.', accentColor: '#7C3AED', sortOrder: 4, visible: true, thumbnailUrl: '' }
+    ];
+    var GROUP_PRIMARY_SKU = {
+      'magnetic-blocks': 'magnetic-blocks-25-pcs',
+      'cute-dinos': 'cute-dinos-green'
+    };
+    var DEFAULT_GROUP_CATS = {
+      'gel-storm': 'guns',
+      'pixel-splash': 'guns',
+      'bubble-gun': 'guns',
+      'rise-one-x-4x4': 'cars',
+      'drift-king': 'cars',
+      'mini-cool-car': 'cars',
+      'baby-lingo': 'educational',
+      'magnetic-blocks': 'educational',
+      'mecha-rover': 'educational',
+      'stunt-pet': 'fun',
+      'cute-dinos': 'fun'
     };
 
+    // Snapshot original 11 .shop-card DOM elements in initial order so wishlist hearts, cart listeners & live badges stay attached
+    var initialCards = [];
+    Array.prototype.forEach.call(shelvesWrap.querySelectorAll('.shop-card'), function (cardEl) {
+      var mediaLink = cardEl.querySelector('.shop-card__media');
+      var href = mediaLink ? String(mediaLink.getAttribute('href') || '') : '';
+      var groupSlug = href.replace(/^\//, '').split(/[?#]/)[0].trim().toLowerCase();
+      if (!groupSlug) return;
+      initialCards.push({
+        groupSlug: groupSlug,
+        primarySku: GROUP_PRIMARY_SKU[groupSlug] || groupSlug,
+        el: cardEl
+      });
+    });
+
+    var categoryNameBySlug = { guns: 'Guns', cars: 'Cars', educational: 'Educational', fun: 'Fun' };
     var activeCategory = 'all';
+    var hasRenderedDynamic = false;
+
+    function getTabs() {
+      return tabsWrap ? Array.prototype.slice.call(tabsWrap.querySelectorAll('[data-shop-filter]')) : [];
+    }
+    function getCatCards() {
+      return catsWrap ? Array.prototype.slice.call(catsWrap.querySelectorAll('[data-shop-cat]')) : [];
+    }
+    function getShelves() {
+      return Array.prototype.slice.call(shelvesWrap.querySelectorAll('[data-category-shelf]'));
+    }
 
     function applyCategory(category, opts) {
-      var next = VALID_CATEGORIES[category] ? category : 'all';
+      var next = categoryNameBySlug[category] ? category : 'all';
       activeCategory = next;
       var visibleCount = 0;
 
-      shelves.forEach(function (shelf) {
+      getShelves().forEach(function (shelf) {
         var shelfCat = shelf.getAttribute('data-category-shelf');
         var show = next === 'all' || shelfCat === next;
         shelf.hidden = !show;
@@ -3969,7 +4011,7 @@
         }
       });
 
-      tabs.forEach(function (tab) {
+      getTabs().forEach(function (tab) {
         var isActive = tab.getAttribute('data-shop-filter') === next;
         tab.classList.toggle('is-active', isActive);
         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
@@ -3980,16 +4022,17 @@
         }
       });
 
-      catCards.forEach(function (card) {
+      getCatCards().forEach(function (card) {
         var catKey = card.getAttribute('data-shop-cat');
+        var catName = (categoryNameBySlug[catKey] || catKey || '').toUpperCase();
         var isActive = catKey === next;
         card.classList.toggle('is-active', isActive);
         card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         var cta = card.querySelector('.shop-cat-card__cta');
         if (cta) {
           cta.textContent = isActive
-            ? 'VIEWING ' + VALID_CATEGORIES[catKey].toUpperCase() + ' · SHOW ALL'
-            : 'BROWSE ' + VALID_CATEGORIES[catKey].toUpperCase() + ' →';
+            ? 'VIEWING ' + catName + ' · SHOW ALL'
+            : 'BROWSE ' + catName + ' →';
         }
       });
 
@@ -3999,7 +4042,7 @@
           filterStatus.textContent = '';
         } else {
           filterBar.hidden = false;
-          filterStatus.textContent = 'SHOWING ' + VALID_CATEGORIES[next].toUpperCase() + ' · ' + visibleCount + (visibleCount === 1 ? ' TOY' : ' TOYS');
+          filterStatus.textContent = 'SHOWING ' + (categoryNameBySlug[next] || next).toUpperCase() + ' · ' + visibleCount + (visibleCount === 1 ? ' TOY' : ' TOYS');
         }
       }
 
@@ -4009,20 +4052,239 @@
       }
     }
 
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
+    function buildSkuCategoryLookup() {
+      var bySku = {};
+      var fb = window.RedpolyFirebase;
+      if (fb && typeof fb.getCatalogMap === 'function') {
+        var map = fb.getCatalogMap() || {};
+        Object.keys(map).forEach(function (k) {
+          var rec = map[k];
+          if (rec && rec.sku && typeof rec.category === 'string' && rec.category.trim()) {
+            bySku[rec.sku] = rec.category.trim().toLowerCase();
+          }
+        });
+      }
+      return bySku;
+    }
+
+    function syncStorefrontCategories() {
+      if (!initialCards.length) return;
+      var fb = window.RedpolyFirebase;
+      var rawCats = (fb && typeof fb.getCategories === 'function' && fb.getCategories().length)
+        ? fb.getCategories()
+        : DEFAULT_CATS;
+
+      var allCats = rawCats.slice().sort(function (a, b) {
+        return (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0) || String(a.name || '').localeCompare(String(b.name || ''));
+      });
+      var allCatMap = {};
+      allCats.forEach(function (c) { allCatMap[c.slug] = c; });
+
+      var visibleCats = allCats.filter(function (c) { return c.visible !== false; });
+      if (!visibleCats.length) visibleCats = allCats.slice();
+      if (!visibleCats.length) visibleCats = DEFAULT_CATS.slice();
+
+      var visibleCatMap = {};
+      categoryNameBySlug = {};
+      visibleCats.forEach(function (c) {
+        visibleCatMap[c.slug] = c;
+        categoryNameBySlug[c.slug] = c.name;
+      });
+
+      var skuCatLookup = buildSkuCategoryLookup();
+      var cardsByCat = {};
+      visibleCats.forEach(function (c) { cardsByCat[c.slug] = []; });
+
+      var totalVisibleToys = 0;
+      initialCards.forEach(function (entry) {
+        var assignedSlug = skuCatLookup[entry.primarySku] || DEFAULT_GROUP_CATS[entry.groupSlug] || visibleCats[0].slug;
+        if (visibleCatMap[assignedSlug]) {
+          cardsByCat[assignedSlug].push(entry.el);
+          totalVisibleToys += 1;
+        } else if (allCatMap[assignedSlug] && allCatMap[assignedSlug].visible === false) {
+          // Assigned category is explicitly hidden by admin; do not display card on homepage
+        } else {
+          cardsByCat[visibleCats[0].slug].push(entry.el);
+          totalVisibleToys += 1;
+        }
+      });
+
+      // Rebuild tabs
+      if (tabsWrap) {
+        tabsWrap.textContent = '';
+        var allBtn = document.createElement('button');
+        allBtn.type = 'button';
+        allBtn.className = 'shop-tab';
+        allBtn.setAttribute('role', 'tab');
+        allBtn.setAttribute('data-shop-filter', 'all');
+        allBtn.appendChild(document.createTextNode('ALL TOYS '));
+        var allCnt = document.createElement('span');
+        allCnt.className = 'shop-tab__count';
+        allCnt.textContent = '(' + totalVisibleToys + ')';
+        allBtn.appendChild(allCnt);
+        tabsWrap.appendChild(allBtn);
+
+        visibleCats.forEach(function (c) {
+          var cnt = (cardsByCat[c.slug] || []).length;
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'shop-tab';
+          btn.setAttribute('role', 'tab');
+          btn.setAttribute('data-shop-filter', c.slug);
+          btn.appendChild(document.createTextNode(String(c.name || c.slug).toUpperCase() + ' '));
+          var spanCnt = document.createElement('span');
+          spanCnt.className = 'shop-tab__count';
+          spanCnt.textContent = '(' + cnt + ')';
+          btn.appendChild(spanCnt);
+          tabsWrap.appendChild(btn);
+        });
+      }
+
+      // Rebuild category directory cards
+      if (catsWrap) {
+        catsWrap.textContent = '';
+        visibleCats.forEach(function (c, idx) {
+          var cnt = (cardsByCat[c.slug] || []).length;
+          var cardBtn = document.createElement('button');
+          cardBtn.type = 'button';
+          cardBtn.className = 'shop-cat-card';
+          cardBtn.setAttribute('data-shop-cat', c.slug);
+          cardBtn.setAttribute('aria-pressed', 'false');
+          if (c.accentColor) {
+            cardBtn.style.setProperty('--cat-accent', c.accentColor);
+          }
+
+          if (c.thumbnailUrl && (/^(\/|https?:\/\/)/.test(c.thumbnailUrl))) {
+            var thumb = document.createElement('img');
+            thumb.className = 'shop-cat-card__thumb';
+            thumb.src = c.thumbnailUrl;
+            thumb.alt = c.name + ' collection';
+            thumb.loading = 'lazy';
+            thumb.decoding = 'async';
+            cardBtn.appendChild(thumb);
+          }
+
+          var meta = document.createElement('span');
+          meta.className = 'shop-cat-card__meta';
+          var idxSpan = document.createElement('span');
+          idxSpan.textContent = String(idx + 1).padStart(2, '0');
+          var cntSpan = document.createElement('span');
+          cntSpan.textContent = cnt + (cnt === 1 ? ' TOY' : ' TOYS');
+          meta.appendChild(idxSpan);
+          meta.appendChild(cntSpan);
+          cardBtn.appendChild(meta);
+
+          var title = document.createElement('strong');
+          title.className = 'shop-cat-card__title';
+          title.textContent = String(c.name || c.slug).toUpperCase();
+          cardBtn.appendChild(title);
+
+          if (c.shortDesc) {
+            var desc = document.createElement('p');
+            desc.className = 'shop-cat-card__desc';
+            desc.textContent = c.shortDesc;
+            cardBtn.appendChild(desc);
+          }
+
+          var cta = document.createElement('span');
+          cta.className = 'shop-cat-card__cta';
+          cta.textContent = 'BROWSE ' + String(c.name || c.slug).toUpperCase() + ' →';
+          cardBtn.appendChild(cta);
+
+          catsWrap.appendChild(cardBtn);
+        });
+      }
+
+      // Rebuild shelves moving existing .shop-card DOM nodes intact
+      shelvesWrap.textContent = '';
+      visibleCats.forEach(function (c, idx) {
+        var catCardsList = cardsByCat[c.slug] || [];
+        var shelf = document.createElement('section');
+        shelf.className = 'shop-shelf';
+        shelf.id = 'shop-' + c.slug;
+        shelf.setAttribute('data-category-shelf', c.slug);
+        shelf.setAttribute('aria-labelledby', 'shelf-' + c.slug + '-heading');
+
+        var head = document.createElement('div');
+        head.className = 'shop-shelf__head';
+
+        var titleWrap = document.createElement('div');
+        titleWrap.className = 'shop-shelf__title-wrap';
+        var indexEl = document.createElement('span');
+        indexEl.className = 'shop-shelf__index';
+        indexEl.setAttribute('aria-hidden', 'true');
+        indexEl.textContent = String(idx + 1).padStart(2, '0');
+        titleWrap.appendChild(indexEl);
+
+        var titleCopy = document.createElement('div');
+        var h3 = document.createElement('h3');
+        h3.id = 'shelf-' + c.slug + '-heading';
+        h3.textContent = String(c.name || c.slug).toUpperCase();
+        titleCopy.appendChild(h3);
+        if (c.shelfDesc) {
+          var pDesc = document.createElement('p');
+          pDesc.className = 'shop-shelf__desc';
+          pDesc.textContent = c.shelfDesc;
+          titleCopy.appendChild(pDesc);
+        }
+        titleWrap.appendChild(titleCopy);
+        head.appendChild(titleWrap);
+
+        var countEl = document.createElement('span');
+        countEl.className = 'shop-shelf__count';
+        countEl.textContent = catCardsList.length + (catCardsList.length === 1 ? ' PRODUCT' : ' PRODUCTS');
+        head.appendChild(countEl);
+        shelf.appendChild(head);
+
+        if (catCardsList.length) {
+          var grid = document.createElement('div');
+          grid.className = 'shop-shelf__grid';
+          catCardsList.forEach(function (cardNode) {
+            grid.appendChild(cardNode);
+          });
+          shelf.appendChild(grid);
+        } else {
+          var emptyNote = document.createElement('p');
+          emptyNote.className = 'shop-shelf__empty';
+          emptyNote.textContent = 'New toys coming soon to ' + c.name + '.';
+          shelf.appendChild(emptyNote);
+        }
+
+        shelvesWrap.appendChild(shelf);
+      });
+
+      if (filterReset) {
+        filterReset.textContent = 'SHOW ALL ' + totalVisibleToys + (totalVisibleToys === 1 ? ' TOY' : ' TOYS');
+      }
+
+      var isFirstSync = !hasRenderedDynamic;
+      hasRenderedDynamic = true;
+      var targetCat = activeCategory;
+      if (targetCat === 'all' && isFirstSync) {
+        var fromUrl = readCategoryFromUrl();
+        if (fromUrl !== 'all') targetCat = fromUrl;
+      }
+      applyCategory(targetCat, { scrollToShelves: false });
+    }
+
+    if (tabsWrap) {
+      tabsWrap.addEventListener('click', function (ev) {
+        var tab = ev.target && ev.target.closest ? ev.target.closest('[data-shop-filter]') : null;
+        if (!tab) return;
         var cat = tab.getAttribute('data-shop-filter') || 'all';
         applyCategory(cat, { scrollToShelves: false });
       });
-    });
+    }
 
-    catCards.forEach(function (card) {
-      card.addEventListener('click', function () {
+    if (catsWrap) {
+      catsWrap.addEventListener('click', function (ev) {
+        var card = ev.target && ev.target.closest ? ev.target.closest('[data-shop-cat]') : null;
+        if (!card) return;
         var cat = card.getAttribute('data-shop-cat') || 'all';
         var next = activeCategory === cat ? 'all' : cat;
         applyCategory(next, { scrollToShelves: next !== 'all' });
       });
-    });
+    }
 
     if (filterReset) {
       filterReset.addEventListener('click', function () {
@@ -4034,14 +4296,22 @@
       var hash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
       if (hash.indexOf('shop-') === 0) {
         var fromHash = hash.slice(5);
-        if (VALID_CATEGORIES[fromHash]) return fromHash;
+        if (categoryNameBySlug[fromHash]) return fromHash;
       }
       try {
         var params = new URLSearchParams(window.location.search);
         var fromQuery = (params.get('category') || '').toLowerCase();
-        if (VALID_CATEGORIES[fromQuery]) return fromQuery;
+        if (categoryNameBySlug[fromQuery]) return fromQuery;
       } catch (_ignoreUrlErr) {}
       return 'all';
+    }
+
+    window.addEventListener('redpoly:categories-updated', syncStorefrontCategories);
+    window.addEventListener('redpoly:catalog-updated', syncStorefrontCategories);
+    window.addEventListener('redpoly:firebase-ready', syncStorefrontCategories);
+
+    if (window.RedpolyFirebase && typeof window.RedpolyFirebase.getCategories === 'function' && window.RedpolyFirebase.getCategories().length) {
+      syncStorefrontCategories();
     }
 
     var initialCat = readCategoryFromUrl();

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/dashboard.css?v=customers-cost-20261123" />
+  <link rel="stylesheet" href="/dashboard.css?v=cats-20261124" />
 </head>
 <body>
   <header class="top-bar">
@@ -62,6 +62,16 @@
           </svg>
           <span>Products</span>
           <span class="sidebar__count" id="sidebar-products-count">17</span>
+        </a>
+        <a class="sidebar__link" href="#categories" id="nav-categories" data-view="categories">
+          <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="6" height="6" rx="1.2" />
+            <rect x="11" y="3" width="6" height="6" rx="1.2" />
+            <rect x="3" y="11" width="6" height="6" rx="1.2" />
+            <rect x="11" y="11" width="6" height="6" rx="1.2" />
+          </svg>
+          <span>Categories</span>
+          <span class="sidebar__count" id="sidebar-categories-count">4</span>
         </a>
         <a class="sidebar__link" href="#customers" id="nav-customers" data-view="customers">
           <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -437,6 +447,12 @@
                   <button type="button" class="search-field__clear" id="products-search-clear" hidden aria-label="Clear product search">×</button>
                 </div>
                 <div class="toolbar-controls">
+                  <label class="sort-control" for="products-category-filter">
+                    <span class="sr-only">Filter products by category</span>
+                    <select id="products-category-filter" aria-label="Filter products by category">
+                      <option value="all">All categories</option>
+                    </select>
+                  </label>
                   <label class="sort-control" for="products-sort">
                     <span class="sr-only">Sort products</span>
                     <select id="products-sort" aria-label="Sort products">
@@ -477,6 +493,7 @@
                   <thead>
                     <tr>
                       <th scope="col">Product</th>
+                      <th scope="col">Category</th>
                       <th scope="col">Price &amp; MRP</th>
                       <th scope="col">Cost &amp; margin</th>
                       <th scope="col">Card tag</th>
@@ -492,6 +509,100 @@
               <div class="table-footer" id="products-footer" hidden>
                 <span id="products-showing-text">Showing 0 products</span>
                 <span>Changes update the live storefront immediately; cost price stays private to Admin</span>
+              </div>
+            </section>
+          </div>
+
+          <!-- Categories Management View -->
+          <div id="categories-view" hidden>
+            <section class="metrics-strip" aria-label="Category summary">
+              <div class="metric-cell">
+                <span class="metric-cell__label">Total categories</span>
+                <strong class="metric-cell__value" id="metric-total-categories">4</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Visible on storefront</span>
+                <strong class="metric-cell__value" id="metric-visible-categories">4</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Hidden categories</span>
+                <strong class="metric-cell__value" id="metric-hidden-categories">0</strong>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-cell__label">Categorized toys</span>
+                <strong class="metric-cell__value" id="metric-categorized-toys">11 / 11</strong>
+              </div>
+            </section>
+
+            <div class="inline-alert" id="categories-error-banner" hidden role="alert">
+              <p id="categories-error-text"></p>
+              <button type="button" class="btn btn--secondary btn--sm" id="categories-retry-btn">Try again</button>
+            </div>
+
+            <section class="orders-card" aria-label="Storefront categories">
+              <div class="orders-tabs" id="categories-filter-tabs" role="tablist" aria-label="Filter categories">
+                <button type="button" class="orders-tab is-active" role="tab" aria-selected="true" data-cat-filter="all">All <span id="cat-tab-all">4</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-cat-filter="visible">Visible <span id="cat-tab-visible">4</span></button>
+                <button type="button" class="orders-tab" role="tab" aria-selected="false" data-cat-filter="hidden">Hidden <span id="cat-tab-hidden">0</span></button>
+              </div>
+
+              <div class="orders-toolbar">
+                <div class="search-field">
+                  <svg class="search-field__icon" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="7" cy="7" r="4.5" />
+                    <path d="M10.5 10.5L14 14" />
+                  </svg>
+                  <input type="search" id="categories-search" placeholder="Search categories by name, slug, description, or assigned toy" aria-label="Search categories" />
+                  <button type="button" class="search-field__clear" id="categories-search-clear" hidden aria-label="Clear category search">×</button>
+                </div>
+                <div class="toolbar-controls">
+                  <button type="button" class="btn btn--secondary btn--sm" id="categories-reset-defaults-btn">Restore defaults</button>
+                  <button type="button" class="btn btn--primary btn--sm" id="categories-new-btn">+ New category</button>
+                </div>
+              </div>
+
+              <div class="table-skeleton" id="categories-skeleton" hidden aria-hidden="true">
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+              </div>
+
+              <div class="empty-state" id="categories-empty" hidden>
+                <div class="empty-state__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                  </svg>
+                </div>
+                <h2 class="empty-state__title" id="categories-empty-title">No matching categories</h2>
+                <p class="empty-state__copy" id="categories-empty-copy">Create a new storefront category or clear your search filter.</p>
+                <div class="empty-state__actions">
+                  <button type="button" class="btn btn--secondary btn--sm" id="categories-clear-filter-btn">Clear filters</button>
+                </div>
+              </div>
+
+              <div class="table-scroll" id="categories-table-wrap">
+                <table class="orders-table categories-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Order</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Storefront copy</th>
+                      <th scope="col">Assigned toys</th>
+                      <th scope="col">Visibility</th>
+                      <th scope="col" class="col-num">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="categories-tbody"></tbody>
+                </table>
+              </div>
+
+              <div class="table-footer" id="categories-footer" hidden>
+                <span id="categories-showing-text">Showing 0 categories</span>
+                <span>Order, names, descriptions, accents, thumbnails, and assigned toys sync live to the homepage</span>
               </div>
             </section>
           </div>
@@ -841,6 +952,18 @@
 
           <section class="drawer-section">
             <div class="drawer-section__head">
+              <h3>Storefront category</h3>
+              <span class="drawer-section__meta">Homepage shelf</span>
+            </div>
+            <label class="dash-field">
+              <span>Assigned category</span>
+              <select id="prod-edit-category" aria-label="Assigned storefront category"></select>
+            </label>
+            <p class="edit-totals-note" id="prod-edit-category-note">Controls which category tab and shelf this toy appears under on the homepage. Multi-variant toys move together.</p>
+          </section>
+
+          <section class="drawer-section">
+            <div class="drawer-section__head">
               <h3>Homepage card tag (sticker)</h3>
               <span class="drawer-section__meta">Max 32 chars</span>
             </div>
@@ -878,9 +1001,136 @@
     </aside>
   </div>
 
+  <!-- Category Edit / Create Slide-Over Drawer -->
+  <div class="drawer-layer" id="category-drawer-layer" hidden>
+    <div class="drawer-backdrop" id="category-drawer-backdrop"></div>
+    <aside class="drawer" id="category-drawer" role="dialog" aria-modal="true" aria-labelledby="category-drawer-title" tabindex="-1">
+      <header class="drawer__header">
+        <div>
+          <div class="drawer__title-row">
+            <h2 class="drawer__title" id="category-drawer-title">Edit category</h2>
+            <span class="status-badge status-badge--fulfilled" id="category-drawer-vis-badge">Visible</span>
+          </div>
+          <p class="drawer__sub" id="category-drawer-slug-sub">category-slug</p>
+        </div>
+        <div class="drawer__head-actions">
+          <button type="button" class="drawer__close" id="category-drawer-close" aria-label="Close category editor">×</button>
+        </div>
+      </header>
+
+      <div class="drawer__body">
+        <form id="category-edit-form" class="drawer-edit-form" novalidate>
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Identity &amp; accent</h3>
+              <span class="drawer-section__meta">Homepage tabs &amp; cards</span>
+            </div>
+            <div class="edit-grid">
+              <label class="dash-field">
+                <span>Category name</span>
+                <input type="text" id="cat-edit-name" maxlength="60" placeholder="e.g. Guns" required />
+              </label>
+              <label class="dash-field">
+                <span>URL slug</span>
+                <input type="text" id="cat-edit-slug" maxlength="40" placeholder="e.g. guns" required />
+              </label>
+              <div class="dash-field edit-grid__full">
+                <span>Accent color</span>
+                <div class="cat-color-row">
+                  <input type="color" id="cat-edit-color-picker" class="cat-color-picker" value="#FF6B1A" aria-label="Pick accent color" />
+                  <input type="text" id="cat-edit-color" class="cat-color-hex" maxlength="7" placeholder="#FF6B1A" aria-label="Accent color hex code" />
+                  <div class="cat-color-swatches" id="cat-color-swatches" aria-label="Preset accent colors">
+                    <button type="button" class="cat-swatch" data-cat-color="#FF6B1A" style="background:#FF6B1A" aria-label="Orange #FF6B1A"></button>
+                    <button type="button" class="cat-swatch" data-cat-color="#1C7ED6" style="background:#1C7ED6" aria-label="Blue #1C7ED6"></button>
+                    <button type="button" class="cat-swatch" data-cat-color="#0E9F6E" style="background:#0E9F6E" aria-label="Emerald #0E9F6E"></button>
+                    <button type="button" class="cat-swatch" data-cat-color="#7C3AED" style="background:#7C3AED" aria-label="Violet #7C3AED"></button>
+                    <button type="button" class="cat-swatch" data-cat-color="#E11D48" style="background:#E11D48" aria-label="Rose #E11D48"></button>
+                    <button type="button" class="cat-swatch" data-cat-color="#171512" style="background:#171512" aria-label="Charcoal #171512"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="edit-totals-note" id="cat-slug-help">Lowercase letters, numbers, and hyphens. Slug cannot be changed after creation.</p>
+          </section>
+
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Storefront copy</h3>
+              <span class="drawer-section__meta">Card &amp; shelf subtitles</span>
+            </div>
+            <div class="edit-grid">
+              <label class="dash-field edit-grid__full">
+                <span>Directory card short description (max 140 chars)</span>
+                <input type="text" id="cat-edit-short-desc" maxlength="140" placeholder="e.g. Gel blasters, pixel water guns &amp; bubble shooters" />
+              </label>
+              <label class="dash-field edit-grid__full">
+                <span>Shelf header description (max 220 chars)</span>
+                <textarea id="cat-edit-shelf-desc" rows="2" maxlength="220" placeholder="e.g. Outdoor gel blasters, motorised water sprayers &amp; giant bubble guns."></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Display &amp; optional thumbnail</h3>
+              <span class="drawer-section__meta">Leave image blank for clean tile</span>
+            </div>
+            <div class="edit-grid">
+              <label class="dash-field">
+                <span>Sort order (0–999)</span>
+                <input type="number" id="cat-edit-order" min="0" max="999" step="1" value="1" required />
+              </label>
+              <div class="dash-field">
+                <span>Storefront visibility</span>
+                <label class="cat-toggle-row" for="cat-edit-visible">
+                  <input type="checkbox" id="cat-edit-visible" checked />
+                  <span>Visible on homepage</span>
+                </label>
+              </div>
+              <label class="dash-field edit-grid__full">
+                <span>Collection thumbnail URL (optional)</span>
+                <input type="text" id="cat-edit-thumb" maxlength="300" placeholder="Leave blank until ready (e.g. /assets/images/...)" />
+              </label>
+            </div>
+          </section>
+
+          <section class="drawer-section">
+            <div class="drawer-section__head">
+              <h3>Assigned toys</h3>
+              <span class="drawer-section__meta" id="cat-edit-assigned-count">0 selected</span>
+            </div>
+            <p class="edit-totals-note" style="margin-top:0;margin-bottom:10px;">Select which toys belong to this category. Multi-variant toys (Magnetic Blocks, Cute Dinos) assign all variants together.</p>
+            <div class="cat-assign-list" id="cat-edit-products-list"></div>
+          </section>
+
+          <section class="drawer-section drawer-section--danger" id="cat-danger-section" hidden>
+            <div class="drawer-section__head">
+              <h3>Delete category</h3>
+              <span class="drawer-section__meta">Safe reassignment</span>
+            </div>
+            <div class="cat-danger-row">
+              <label class="dash-field">
+                <span>Move assigned toys to</span>
+                <select id="cat-delete-reassign" aria-label="Reassign toys before deleting category"></select>
+              </label>
+              <button type="button" class="btn btn--danger-ghost btn--sm" id="cat-delete-btn">Delete category</button>
+            </div>
+          </section>
+
+          <p class="drawer-status-error" id="cat-edit-error" hidden></p>
+
+          <div class="drawer-edit-actions">
+            <button type="button" class="btn btn--secondary" id="category-drawer-cancel">Cancel</button>
+            <button type="submit" class="btn btn--primary" id="category-drawer-save">Save category</button>
+          </div>
+        </form>
+      </div>
+    </aside>
+  </div>
+
   <div class="dash-toast" id="dash-toast" role="status" aria-live="polite"></div>
 
-  <script src="/firebase-client.js?v=lingo-20261119" defer></script>
-  <script src="/dashboard.js?v=lingo-20261119" defer></script>
+  <script src="/firebase-client.js?v=cats-20261124" defer></script>
+  <script src="/dashboard.js?v=cats-20261124" defer></script>
 </body>
 </html>
