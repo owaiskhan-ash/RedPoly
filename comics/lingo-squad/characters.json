@@ -6,7 +6,7 @@
   "purpose": "Product-locked character data for generating REDPOLY comic pages. The real product cut-out is always the master reference; this file is its written specification.",
   "master_rule": "Feed the reference images into the generation as image references. Never generate a character from text alone. If art and photo disagree, the photo wins.",
   "art_style": {
-    "format": "2048 x 2048 page, strict 2 x 2 panel grid",
+    "format": "1536 x 2048 page (3:4 portrait), strict 2 x 2 panel grid",
     "page_field": "#F9F1D2",
     "panel_border": "#141310",
     "scene_sky": "#2E3A44",
@@ -236,7 +236,7 @@
   "story": {
     "working_title": "CLICKBAIT",
     "issue": "04",
-    "format": "6 pages x 4 panels",
+    "format": "8 pages x 4 panels",
     "script": "comics/lingo-squad/STORY.md",
     "shop_tags": ["Baby Lingo", "Cute Dinos", "Magnetic Blocks"]
   }

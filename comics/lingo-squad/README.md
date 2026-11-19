@@ -7,7 +7,7 @@ The product-locked cast guide for the next REDPOLY comic: **Baby Lingo**, the th
 | `cast-sheet.webp` | One-page visual lock sheet. Five cells, real product cut-outs, palette chips, art rules. Show this to anyone (or any model) before drawing. |
 | `CHARACTERS.md` | The full guide: silhouette, exact feature counts, hex palettes, faces, motion, comedy function, copy-paste prompt blocks, never-lists, page style, scale table, continuity and a pre-flight checklist. |
 | `characters.json` | Same specs in machine-readable form — references, palettes, prompts, negative prompts — ready for a generation pipeline. |
-| `STORY.md` | Issue 04 pitch **CLICKBAIT**: logline, a full six-page, 24-panel script with dialogue and puns, a spare joke bank, two alternate pitches, twelve title options and production notes. |
+| `STORY.md` | Issue 04 pitch **CLICKBAIT**: logline, a full eight-page, 32-panel script with dialogue and puns, a spare joke bank, two alternate pitches, twelve title options and production notes. |
 
 ## The cast in one line each
 

@@ -1,8 +1,8 @@
-# CLICKBAIT — Issue 04 story pitch
+# CLICKBAIT — Issue 04 story
 
-**Working title:** CLICKBAIT
+**Title:** CLICKBAIT
 **Series:** Sector Zero Files · Lingo Squad
-**Format:** 6 pages × 4 panels (24 panels), 2048 × 2048 webp pages, same reader manifest pattern as Issues 02–03
+**Format:** **8 pages × 4 panels** (32 panels), **3:4 portrait pages** (1536 × 2048 webp), empty balloons lettered after the art is approved
 **Cast:** Lingo, Rino, Tino, Gino, the Magnetic Blocks (inanimate)
 **Logline:** Lingo tries to teach the crew about magnets, the crew tries to build a bridge, and the bridge has other plans.
 
@@ -63,7 +63,29 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 - TINO: Great. Two fridges. One crisis.
 - CAPTION: The blocks remained inanimate. Somehow that was the scary part.
 
-### PAGE 3 — "THE GAP"
+### PAGE 3 — "THE COUNT"
+
+**Panel 1.** Blocks counted into neat rows on the tunnel floor. GINO nudges the last one into place with his snout.
+- GINO: Sixty-three. We are missing one.
+- TINO (small): It's behind us. It's always behind us.
+
+**Panel 2.** Close on TINO, cheek bulging, a magenta ball visible in his mouth.
+- GINO: It's in your mouth.
+- TINO: ...I've been holding that for an hour.
+- LINGO: That is not a mouth. That is a storage solution.
+
+**Panel 3.** LINGO unrolls a laminated list, comically long; GINO reads the top of it.
+- LINGO: Inventory first. I have listed all sixty-four ways this goes wrong.
+- GINO: Page one says "do not stack".
+- LINGO: Page two says "I told you so". I wrote it early. Confidence.
+
+**Panel 4.** The crate tips and the whole set slides gently toward the chasm edge, rods and balls skittering.
+- SFX: CLATTER
+- TINO: WHO PUSHED THAT?!
+- GINO: Gravity.
+- TINO: WHO IS GRAVITY?
+
+### PAGE 4 — "THE GAP"
 
 **Panel 1.** Wide: a chasm splits the tunnel. Across it, the Magnet Core hums.
 - GINO: Correction. The gap is 3.4 metres. Our legs: zero. Rino's plan: also zero.
@@ -83,28 +105,50 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 - RINO (tiny): ...someone press me.
 - TINO: That is the most terrifying sentence I have ever heard.
 
-### PAGE 4 — "BUILD"
+### PAGE 5 — "PRESS ME"
 
-**Panel 1.** GINO counting blocks into rows. TINO chewing nervously — there is a ball in his mouth.
-- GINO: Sixty-three. We're missing one.
-- TINO: IT'S BEHIND US. IT'S ALWAYS BEHIND US.
-- GINO: It's in your mouth.
-- TINO: ...I've been holding that for an hour.
+**Panel 1.** Low shot at the chasm edge. RINO leaning forward, every plate pointed at the far side. Behind him, GINO lines himself up.
+- RINO: Press me. Press me press me press me.
+- GINO: I will press. I have calculated the angle. Forty degrees.
+- LINGO: Angle of what?
+- GINO: Optimism.
 
-**Panel 2.** Build montage. TINO places a block with unbearable care; LINGO points at a triangle.
+**Panel 2.** Extreme close-up: GINO's snout comes down on RINO's back. Contact.
+- SFX: PRESS
+- GINO: Committing.
+- TINO (from off-panel): I object!
+
+**Panel 3.** RINO launched off the edge, airborne, blocks and dust flying, the chasm below him.
+- RINO: YOLOOOO—
+- SFX: FWOOSH
+
+**Panel 4.** RINO flat against a crate on the near side of the gap, wheels still spinning, facing backwards. Everyone stares.
+- SFX: THUD
+- RINO: Again.
+- TINO: Absolutely not.
+- GINO: Trajectory confirmed. It was bad.
+- LINGO: Fun fact: that is exactly what I said on page nine.
+
+### PAGE 6 — "BUILD"
+
+**Panel 1.** Build montage. TINO places a block with unbearable care; LINGO points at a triangle.
 - LINGO: TRIANGLE. The strongest shape, and the sassiest.
 - GINO: Forty degrees. Not forty-one. I can hear forty-one.
 
-**Panel 3.** RINO headbutts a loose pile. It snaps into a perfect bridge with one last CLACK.
+**Panel 2.** RINO headbutts a loose pile. It snaps into a perfect bridge with one last CLACK.
 - GINO: That shouldn't work.
 - RINO: And yet.
 
-**Panel 4.** LINGO steps onto the bridge to demonstrate load-bearing. Every block in the tunnel flies to his body. He is now the middle of the bridge.
+**Panel 3.** LINGO steps onto the bridge to demonstrate load-bearing. Every block in the tunnel flies to his body and clicks on.
+- LINGO: Observe! The load is distributed—
+- SFX: CLICK CLICK CLICK
+
+**Panel 4.** LINGO is now the middle of the bridge, arms out, fully block-armoured. The dinos stare.
 - LINGO (muffled): Structurally, I am load-bearing.
 - TINO: He's the bridge now.
 - GINO: He's the bridge now.
 
-### PAGE 5 — "THE CORE"
+### PAGE 7 — "THE CORE"
 
 **Panel 1.** The Magnet Core wakes: rings of blue light, everything in the room leaning toward it. The crew slides.
 - SFX: WHUMMM
@@ -125,7 +169,7 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 - (Silence. One block clicks somewhere in the dark.)
 - CAPTION: The core said nothing either. It was a very quiet apocalypse.
 
-### PAGE 6 — "STICK WITH ME"
+### PAGE 8 — "STICK WITH ME"
 
 **Panel 1.** LINGO, fully block-armoured, walks across the gap as a living span. The dinos roll over his back.
 - RINO: You're the best bridge I've ever met.
@@ -164,7 +208,7 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 - "Jugaad" — engineering, but with vibes.
 
 **Running gags**
-- The blocks never speak; every page ends on their silence.
+- The blocks never speak; at least one page ends on their silence.
 - Rino asks to be pressed at least once per page. Somebody always presses him at the worst moment.
 - Tino's mouth is always holding one piece of the set.
 - Lingo defines a word one beat before it happens to them.
@@ -184,7 +228,7 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 
 | # | Title | Tagline under it |
 | --- | --- | --- |
-| 1 | **CLICKBAIT** | Two magnets. One bridge. Zero plan. *(recommended)* |
+| 1 | **CLICKBAIT** | Two magnets. One bridge. Zero plan. *(chosen)* |
 | 2 | **BLOCK PARTY** | Sixty-four pieces. Three dinos. Nobody invited the core. |
 | 3 | **POLAR OPPOSITES** | Rino says go. Tino says no. Physics says both. |
 | 4 | **STICK WITH ME** | A story about magnets, and also about friendship, which is worse. |
@@ -197,13 +241,12 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 | 11 | **DRAWN TOGETHER** | Nobody chose this team. Magnetism did. |
 | 12 | **REPULSIVE** | Tino's been saying it for three issues. |
 
-**Recommendation:** **CLICKBAIT** for the banner — it reads as internet-funny to parents, it is literally about clicking blocks, and the cover writes itself: Lingo mid-air, covered in blocks, one card still in his clamp.
-
 ---
 
 ## Production notes
 
 - Page style, palette and panel grid: see `CHARACTERS.md` §1.
 - Character locks and prompt blocks: `CHARACTERS.md` §2–6, `characters.json`.
-- When art is approved, copy the pages into `comics/issue-004-clickbait/pages/`, add an `issue.json` manifest with a `shop` list per page (Cute Dinos, Magnetic Blocks, Baby Lingo), a `cover.webp` crop, and a `catalog.json` entry with `number: "04"`.
+- Pages live in `comics/issue-004-clickbait/pages/page-01.webp` … `page-08.webp` at 1536 × 2048 (3:4 portrait), lettered in the house style: cream balloons with black outlines, bold all-caps, emphasis words in orange / teal / red / olive, cream caption boxes.
+- Reader wiring comes last: `issue.json` with a `shop` list per page, a `cover.webp` crop, and a `catalog.json` entry with `"number": "04"` once all eight pages exist.
 - Products to tag on these pages: **Baby Lingo** (`/baby-lingo`), **Cute Dinos** (`/cute-dinos`), **Magnetic Blocks** (`/magnetic-blocks`). Optional background tags: **Mecha Rover** (`/mecha-rover`) if it cameos.

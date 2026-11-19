@@ -27,7 +27,7 @@
 
 ## 1. The world these characters live in
 
-**Look:** the existing Sector Zero page style. A cream page field (`#F9F1D2`), a strict 2 × 2 panel grid with thick hand-inked black borders, deep night-navy scene panels (sky `#2E3A44`, shadow `#141A20`), cyan tech glow (`#35C8D8`) as the only light source, halftone dot shading, rough ink contours, and cream speech balloons with black outlines. Emphasis words in dialogue are set in orange (`#E8712A`), teal (`#2E9CA6`), red-ish (`#C8342B`) or olive (`#4E7A2E`) caps.
+**Page format:** 3:4 portrait, 1536 × 2048. **Look:** the existing Sector Zero page style. A cream page field (`#F9F1D2`), a strict 2 × 2 panel grid with thick hand-inked black borders, deep night-navy scene panels (sky `#2E3A44`, shadow `#141A20`), cyan tech glow (`#35C8D8`) as the only light source, halftone dot shading, rough ink contours, and cream speech balloons with black outlines. Emphasis words in dialogue are set in orange (`#E8712A`), teal (`#2E9CA6`), red-ish (`#C8342B`) or olive (`#4E7A2E`) caps.
 
 **Camera:** low, toy-eye camera. These are desk toys in a huge dark lab, so the world should feel enormous: crate walls like cliffs, a chasm wider than three dinos, a Magnet Core tall as a building. Scale is a joke engine, not a detail.
 
