@@ -1,0 +1,243 @@
+{
+  "collection": "Lingo Squad",
+  "series": "Sector Zero Files",
+  "version": "1.0",
+  "updated": "2026-11-19",
+  "purpose": "Product-locked character data for generating REDPOLY comic pages. The real product cut-out is always the master reference; this file is its written specification.",
+  "master_rule": "Feed the reference images into the generation as image references. Never generate a character from text alone. If art and photo disagree, the photo wins.",
+  "art_style": {
+    "format": "2048 x 2048 page, strict 2 x 2 panel grid",
+    "page_field": "#F9F1D2",
+    "panel_border": "#141310",
+    "scene_sky": "#2E3A44",
+    "scene_shadow": "#141A20",
+    "tech_glow": "#35C8D8",
+    "accents": {
+      "orange": "#E8712A",
+      "teal": "#2E9CA6",
+      "red": "#C8342B",
+      "olive": "#4E7A2E"
+    },
+    "rendering": "thick rough black ink contours, limited flat palette, halftone dot shading, high-gloss plastic specular highlights, cream speech balloons with black outlines, hand-lettered all-caps dialogue",
+    "camera": "low toy-eye view; the lab should feel enormous compared with the toys",
+    "sound_effects": ["CLACK", "CLICK", "WHUMMM", "SKRRRT", "THUD"]
+  },
+  "global_negative_prompt": "human hands, fingers, gloves, shoes, extra limbs, eyebrows, eyelashes, irises, teeth, text on body, logo, watermark, redesign, alternate colourway, faces on blocks, walking blocks, floating unheld blocks, antenna, clothes, armour, weapons, photoreal human",
+  "scale": {
+    "dino": "1.0 (reference height)",
+    "lingo": "0.6",
+    "blocks": "props; one ball is roughly one dino eye"
+  },
+  "characters": [
+    {
+      "id": "lingo",
+      "name": "LINGO",
+      "role": "The guide",
+      "product": {
+        "name": "Baby Lingo",
+        "href": "/baby-lingo",
+        "price_inr": 799,
+        "description": "bilingual English + Hindi first-words learning robot, 6 months+, 100 double-sided flashcards with barcode strips"
+      },
+      "personality": "Knowledgeable, warm, and thoroughly extra. Answers a yes/no question with a lecture. Teaches at all times, including during emergencies.",
+      "voice": "Teacher-bright with a smug flourish; fact first, then a little performance.",
+      "catchphrases": ["Namaste, doston!", "Fun fact:", "As your guide, I should mention…", "Vocabulary word!", "I have a card for this."],
+      "comedy_function": "The explainer who makes danger worse by explaining it; the accidental hero.",
+      "movement": "Waddles side to side, top-heavy, tips over and rights himself. Cannot jump. Uses gear clamps to pinch and drag small props.",
+      "silhouette": "One rounded capsule — a friendly backpack with legs. No neck, no separate head, no ears. Widest at the hips.",
+      "palette": {
+        "hood": "#6E9FBB",
+        "body": "#2FC5D4",
+        "bezel": "#EFE7D6",
+        "screen": "#EDEDED",
+        "tongue": "#EC5A7C",
+        "glow": "#7FE4EC"
+      },
+      "locked_features": {
+        "bezel_screws": 6,
+        "screws_top_edge": 3,
+        "screws_bottom_edge": 3,
+        "chest_buttons": 2,
+        "chest_glyphs": 3,
+        "ear_pods": 2,
+        "eyes": 2,
+        "arms": "ribbed cylinders ending in gear-shaped clamps, no hands"
+      },
+      "face_rules": "Expression lives only on the screen: two solid black oval eyes with white glints plus a black mouth with pink tongue when open. Approved states: happy, smug, panic, thinking, flat, scanning.",
+      "story_licence": "Speaker magnet attracts Magnetic Blocks. Comic only — never add visible magnets, cables or antennae.",
+      "references": [
+        "assets/images/redpoly/products/baby-lingo.png",
+        "assets/images/redpoly/products/baby-lingo-studio.jpg",
+        "assets/images/redpoly/products/baby-lingo-cards.jpg"
+      ],
+      "prompt": "LINGO: a small rounded capsule-shaped baby learning robot in glossy moulded plastic, two-tone shell — muted steel-blue hood #6E9FBB over a bright cyan body #2FC5D4. Large rounded-square pale screen face #EDEDED with a thick ivory bezel #EFE7D6 and six tiny recessed screws, three on the top edge and three on the bottom. On the screen: two solid black oval eyes with white glints and a black open smile with a pink tongue. One round cyan ear disc on each side of the head. Ivory chest panel with two raised cyan square buttons and three tiny square/triangle/dot marks between them. Short ribbed cylinder arms ending in gear-shaped clamps, no hands. Two stubby cyan legs with flared cuffs, no toes. No neck, no antenna, no text, no logo.",
+      "never": ["hands", "fingers", "eyebrows", "irises on screen", "antenna", "separate head", "wheels", "text on shell"]
+    },
+    {
+      "id": "rino",
+      "name": "RINO",
+      "role": "The YOLO one",
+      "product": {
+        "name": "Cute Dinos, red",
+        "href": "/cute-dinos",
+        "price_inr": 249,
+        "description": "press-and-go brachiosaurus toy on hidden wheels, 18 months+, no batteries"
+      },
+      "personality": "Forward is a personality. First to volunteer, last to land. Invents competitions nobody agreed to and treats every object as a ramp.",
+      "voice": "Loud, fast, all-caps bursts.",
+      "catchphrases": ["YOLO!", "Press me!", "Last one there's a fossil!", "Send it!"],
+      "comedy_function": "The character whose whole personality is 'send it' who physically cannot start himself.",
+      "movement": "Press the back, release, rolls straight forward. Cannot steer, brake, reverse or climb. Wheelies, skids, gets launched.",
+      "silhouette": "Chunky brachiosaurus: round head, long upright neck, egg body, short tail. No arms, no hands, no toes. Four small wheels mostly hidden.",
+      "palette": {
+        "body": "#FA5A57",
+        "plates": "#4F6FA8",
+        "dark_markings": "#3F5C8C",
+        "light_markings": "#A8E0EA",
+        "cheek": "#F9A8C0",
+        "nostril": "#2A2A33"
+      },
+      "locked_features": {
+        "head_neck_plates": 3,
+        "back_plates": 4,
+        "wheels": 4,
+        "eyes": 2,
+        "arms": 0
+      },
+      "references": [
+        "assets/images/redpoly/products/cute-dinos-red.webp",
+        "assets/images/redpoly/products/cute-dinos-red-scene.jpg"
+      ],
+      "prompt": "RINO: a chunky glossy plastic brachiosaurus toy in coral red #FA5A57, upright long neck, round head, egg body, short tail, no arms and no hands. Three rounded half-oval plates on the head and neck and four along the back, all periwinkle blue #4F6FA8. One big white eye per side with a black pupil, white glint and thin black brow arc; small dark nostril; pink cheek dot #F9A8C0. Irregular dark-navy #3F5C8C and pale-cyan #A8E0EA paint patches on the flank. Ring seam at the base of the neck. Four small dark-blue wheels partly hidden under the body. High-gloss moulded plastic.",
+      "never": ["arms", "hands", "toes", "another dino's plate colour", "saddle", "clothes"]
+    },
+    {
+      "id": "tino",
+      "name": "TINO",
+      "role": "The overthinker",
+      "product": {
+        "name": "Cute Dinos, teal",
+        "href": "/cute-dinos",
+        "price_inr": 249,
+        "description": "press-and-go brachiosaurus toy on hidden wheels, teal colourway"
+      },
+      "personality": "Every plan is a risk assessment. Has already imagined the worst outcome, narrated it, and packed a snack for it. Frightened of ordinary objects.",
+      "voice": "Quiet, precise, escalating.",
+      "catchphrases": ["What if—", "I've made a list.", "Say it with me: no.", "I'm not scared. I'm prepared. Loudly."],
+      "comedy_function": "The anxiety engine; the only one who notices the blocks are inanimate, which makes it worse.",
+      "movement": "Press and go; same limits as Rino. Rolls carefully, then panics and skids.",
+      "silhouette": "Same mould as Rino. No arms, no hands, no toes.",
+      "palette": {
+        "body": "#02C2C6",
+        "plates": "#5B5A9E",
+        "markings": "#C9E34A",
+        "cheek": "#F9A8C0"
+      },
+      "locked_features": {
+        "head_neck_plates": 3,
+        "back_plates": 4,
+        "wheels": 4,
+        "eyes": 2,
+        "arms": 0,
+        "note": "the only dino with violet plates; never swap to blue"
+      },
+      "references": [
+        "assets/images/redpoly/products/cute-dinos-teal.webp",
+        "assets/images/redpoly/products/cute-dinos-teal-scene.jpg"
+      ],
+      "prompt": "TINO: the same chunky glossy plastic brachiosaurus toy mould as RINO but in bright teal #02C2C6, with indigo-violet #5B5A9E plates — three on head and neck, four on the back — and matching indigo wheels. Lime-yellow #C9E34A paint streaks and spots on the flank. One big white eye per side with black pupil, white glint and thin black brow arc; dark nostril; pink cheek dot. No arms, no hands, no toes.",
+      "never": ["arms", "hands", "toes", "blue plates", "clothes"]
+    },
+    {
+      "id": "gino",
+      "name": "GINO",
+      "role": "The nerd",
+      "product": {
+        "name": "Cute Dinos, green",
+        "href": "/cute-dinos",
+        "price_inr": 249,
+        "description": "press-and-go brachiosaurus toy on hidden wheels, green colourway"
+      },
+      "personality": "Corrects the numbers, not the people. Speaks in exact counts, angles and probabilities, and is personally offended by rounding.",
+      "voice": "Flat, factual, faintly disappointed.",
+      "catchphrases": ["Technically—", "I counted.", "That's not a plan, that's a fridge.", "Correction:"],
+      "comedy_function": "The straight man who keeps the crew alive by being unbearable about units.",
+      "movement": "Press and go; presses others with his snout, which is his main contribution to teamwork.",
+      "silhouette": "Same mould as Rino. No arms, no hands, no toes.",
+      "palette": {
+        "body": "#C9E600",
+        "plates": "#4A6FC4",
+        "markings": "#6E7C1E",
+        "cheek": "#F9A8C0"
+      },
+      "locked_features": {
+        "head_neck_plates": 3,
+        "back_plates": 4,
+        "wheels": 4,
+        "eyes": 2,
+        "arms": 0,
+        "note": "identifying difference from Rino is dark olive markings with no pale streaks"
+      },
+      "references": [
+        "assets/images/redpoly/products/cute-dinos-green.webp",
+        "assets/images/redpoly/products/cute-dinos-green-scene.jpg"
+      ],
+      "prompt": "GINO: the same chunky glossy plastic brachiosaurus toy mould in lime green #C9E600, with blue #4A6FC4 plates — three on head and neck, four on the back — and matching blue wheels. Dark olive #6E7C1E paint patches on the flank. One big white eye per side with black pupil, white glint and thin black brow arc; dark nostril; pink cheek dot. No arms, no hands, no toes.",
+      "never": ["arms", "hands", "toes", "pale streaks", "clothes"]
+    },
+    {
+      "id": "magnetic-blocks",
+      "name": "MAGNETIC BLOCKS",
+      "role": "Inanimate guest stars",
+      "product": {
+        "name": "Magnetic Blocks (magnetic sticks & balls)",
+        "href": "/magnetic-blocks",
+        "price_inr": "399-799",
+        "description": "STEM magnetic sticks, arches and balls; 25, 36, 42 or 64 piece packs; ages 3+"
+      },
+      "personality": "None. They are objects. All acting is physics.",
+      "voice": "Silence, and clicking.",
+      "comedy_function": "Running-gag props that click together, hold, lean, and collapse at the worst possible moment.",
+      "movement": "Only when moved: attracted by the Magnet Core or by Lingo; otherwise still.",
+      "parts": ["straight rod", "curved arch rod", "smooth sphere"],
+      "palette": {
+        "coral": "#F4564F",
+        "yellow": "#F2CE1C",
+        "blue": "#0E77A8",
+        "mint": "#8AC4B6",
+        "olive": "#BCCD43",
+        "magenta": "#C2379B",
+        "peach": "#F79E7E"
+      },
+      "locked_features": {
+        "faces": 0,
+        "limbs": 0,
+        "rod_tips": "faceted octagonal ends with a small visible magnet pin hole",
+        "builds": ["cube", "dome", "pyramid", "windmill", "bridge"]
+      },
+      "references": [
+        "assets/images/redpoly/products/magnetic-blocks.png",
+        "assets/images/redpoly/products/magnetic-blocks-scene.jpg"
+      ],
+      "prompt": "MAGNETIC BLOCKS: glossy plastic magnetic construction pieces — straight rods, curved arch rods and smooth spheres. Rods have faceted octagonal ends with a small visible magnet pin hole; spheres are seamless. Colours: coral red #F4564F, sunshine yellow #F2CE1C, ocean blue #0E77A8, mint #8AC4B6, olive-lime #BCCD43, magenta #C2379B, peach #F79E7E. Hard white specular highlights on every part.",
+      "never": ["faces", "eyes", "mouths", "arms", "speech balloons", "thought bubbles", "self-powered movement", "glowing magic", "glue", "fusion"]
+    }
+  ],
+  "approved_animation_liberties": [
+    "dinos may get a thin black mouth line for dialogue, no teeth and no lips",
+    "blinks, squash-and-stretch, wheel spin, skid marks, motion lines",
+    "Lingo's screen face may change expression using eyes and mouth only"
+  ],
+  "continuity": {
+    "rino_spelling": "Issues 01-03 say 'Reno'; canon from this guide is RINO. Treat Reno as his track nickname until old pages are relettered.",
+    "legacy_cast": ["Poko (Stunt Pet)", "CC-01 (Mini Cool Car)", "Mecha Rover"],
+    "legacy_cast_rule": "Available, but do not add them to Lingo Squad pages unless the script calls for them."
+  },
+  "story": {
+    "working_title": "CLICKBAIT",
+    "issue": "04",
+    "format": "6 pages x 4 panels",
+    "script": "comics/lingo-squad/STORY.md",
+    "shop_tags": ["Baby Lingo", "Cute Dinos", "Magnetic Blocks"]
+  }
+}
