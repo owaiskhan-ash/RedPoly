@@ -107,7 +107,8 @@ export type ProductSlug =
   | 'cute-dinos'
   | 'magnetic-blocks'
   | 'rise-one-x-4x4'
-  | 'drift-king';
+  | 'drift-king'
+  | 'baby-lingo';
 
 export interface OrderRecord {
   id: string;
@@ -201,7 +202,8 @@ export type SkuSlug =
   | 'magnetic-blocks-42-pcs'
   | 'magnetic-blocks-64-pcs'
   | 'rise-one-x-4x4'
-  | 'drift-king';
+  | 'drift-king'
+  | 'baby-lingo';
 
 export interface ProductCatalogRecord {
   sku: SkuSlug;
@@ -396,6 +398,11 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
     href: '/drift-king',
     image: '/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124',
   },
+  'BABY LINGO': {
+    price: 799,
+    href: '/baby-lingo',
+    image: '/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119',
+  },
 };
 
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
@@ -407,6 +414,7 @@ const FREE_GIFT_FROM = 3500;
 const GST_RATE = 12;
 
 const SKU_ORDER: ReadonlyArray<SkuSlug> = [
+  'baby-lingo',
   'drift-king',
   'rise-one-x-4x4',
   'magnetic-blocks-25-pcs',
@@ -434,6 +442,13 @@ interface DefaultSeedMeta {
 }
 
 const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
+  'baby-lingo': {
+    name: 'BABY LINGO',
+    price: 799,
+    cardTag: 'NEW IN STORE',
+    costPrice: 500,
+    priceComparisons: [{ platform: 'Amazon', price: 899 }],
+  },
   'drift-king': {
     name: 'DRIFT KING',
     price: 799,
@@ -459,6 +474,7 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
 };
 
 const NAME_TO_SKU: Record<string, SkuSlug> = {
+  'BABY LINGO': 'baby-lingo',
   'DRIFT KING': 'drift-king',
   'RISE ONE X 4X4': 'rise-one-x-4x4',
   'MAGNETIC BLOCKS 25 PCS': 'magnetic-blocks-25-pcs',
@@ -692,6 +708,7 @@ const VALID_PRODUCT_SLUGS: ReadonlyArray<ProductSlug> = [
   'magnetic-blocks',
   'rise-one-x-4x4',
   'drift-king',
+  'baby-lingo',
 ];
 
 function normalizeOrderStatus(raw: unknown): OrderStatus {

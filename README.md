@@ -7,6 +7,7 @@
 | Product | Page | Price (incl. GST) |
 | --- | --- | --- |
 | Drift King (12 cm multi-mode 2.4G mini RC drift coupe with Follow Mode, Escape Mode, LED lights &amp; music, Fun Mode gamepad &amp; USB charging cable, ages 4+) | `/drift-king` (`products/drift-king.html`) | ₹799 |
+| Baby Lingo (bilingual English + Hindi first-words learning robot for babies 6 months+, 100 double-sided flashcards) | `/baby-lingo` (`products/baby-lingo.html`) | ₹799 |
 | Rise one X 4X4 (2.4 GHz spray drift F1 car with mecanum wheels, gamepad + wrist gesture controller, ages 6+) | `/rise-one-x-4x4` (`products/rise-one-x-4x4.html`) | ₹1,499 |
 | Magnetic Blocks (STEM magnetic sticks & balls; 25 PCS, 36 PCS, 42 PCS or 64 PCS packs, ages 3+) | `/magnetic-blocks` (`products/magnetic-blocks.html`) | ₹399 – ₹799 |
 | Bubble Gun (12-hole automatic bubble blaster, with 1 bottle of bubble water) | `/bubble-gun` (`products/bubble-gun.html`) | ₹499 |

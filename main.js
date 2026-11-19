@@ -93,7 +93,8 @@
     'MAGNETIC BLOCKS 42 PCS': { price:599, href:'/magnetic-blocks?pack=42pcs', image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 64 PCS': { price:799, href:'/magnetic-blocks?pack=64pcs', image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' },
     'RISE ONE X 4X4': { price:1499, href:'/rise-one-x-4x4', image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
-    'DRIFT KING': { price:799, href:'/drift-king', image:'/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' }
+    'DRIFT KING': { price:799, href:'/drift-king', image:'/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' },
+    'BABY LINGO': { price:799, href:'/baby-lingo', image:'/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119' }
   };
   function isCatalogueProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
   function inCatalogue(name, price) { return isCatalogueProduct(name) && catalogue[name].price === Number(price); }
@@ -114,12 +115,15 @@
     'CUTE DINOS TRIO': '',
     'MINI COOL CAR': 'NEW IN STORE',
     'GEL STORM': 'JUST LANDED',
-    'PIXEL SPLASH': 'NEW IN STORE'
+    'PIXEL SPLASH': 'NEW IN STORE',
+    'BABY LINGO': 'NEW IN STORE'
   };
   var DEFAULT_PRICE_COMPARISONS = {
-    'drift-king': [{ platform: 'Amazon', price: 859 }]
+    'drift-king': [{ platform: 'Amazon', price: 859 }],
+    'baby-lingo': [{ platform: 'Amazon', price: 899 }]
   };
   var SKU_ORDER = [
+    'baby-lingo',
     'drift-king',
     'rise-one-x-4x4',
     'magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs',
@@ -128,6 +132,7 @@
     'mini-cool-car', 'gel-storm', 'pixel-splash'
   ];
   var SKU_TO_NAME = {
+    'baby-lingo': 'BABY LINGO',
     'drift-king': 'DRIFT KING',
     'rise-one-x-4x4': 'RISE ONE X 4X4',
     'magnetic-blocks-25-pcs': 'MAGNETIC BLOCKS 25 PCS',
@@ -275,7 +280,7 @@
       var FREE_GIFT_FROM = 3500;
       var GST_RATE = 12;
       var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king'];
+      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo'];
 
       function normalizeOrderStatus(raw) {
         var str = String(raw || '');
@@ -2359,6 +2364,17 @@
           }
         }
 
+        // Baby Lingo card aside tracks live marketplace comparison price if configured
+        if (skuName === 'BABY LINGO') {
+          var blAsideEl = card.querySelector('.shop-card__aside');
+          if (blAsideEl) {
+            var blComp = Array.isArray(rec.priceComparisons) && rec.priceComparisons.length ? rec.priceComparisons[0] : null;
+            blAsideEl.textContent = blComp
+              ? '100 cards · English + Hindi · ' + money(blComp.price) + ' on ' + blComp.platform
+              : '100 double-sided cards · English + Hindi';
+          }
+        }
+
         // B4 Stock pill on shop card
         var stockText = formatStockText(rec);
         var cardStock = card.querySelector('.shop-card__stock');
@@ -3056,7 +3072,8 @@
       'magnetic-blocks-42-pcs': '/magnetic-blocks',
       'magnetic-blocks-64-pcs': '/magnetic-blocks',
       'rise-one-x-4x4': '/rise-one-x-4x4',
-      'drift-king': '/drift-king'
+      'drift-king': '/drift-king',
+      'baby-lingo': '/baby-lingo'
     };
 
     function itemToSlug(name) {
@@ -3366,7 +3383,8 @@
       'cute-dinos': ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio'],
       'magnetic-blocks': ['magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs'],
       'rise-one-x-4x4': ['rise-one-x-4x4'],
-      'drift-king': ['drift-king']
+      'drift-king': ['drift-king'],
+      'baby-lingo': ['baby-lingo']
     };
     var matchingItemSlugs = ELIGIBLE_ITEM_SLUGS[productSlug] || [productSlug];
 
