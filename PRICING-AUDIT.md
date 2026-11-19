@@ -19,7 +19,7 @@ npm run check:prices
 | Bubble Gun | ₹449 | `social/bubble-gun-og.png` | **ONLY ₹449** | ✅ corrected 19 Nov 2026 |
 | Cute Dinos | ₹249 / trio ₹549 | `social/cute-dinos-og.png` | **ONLY ₹249 · 3 FOR ₹549** | ✅ correct |
 | Drift King | ₹799 | `social/drift-king-og.png` | **ONLY ₹799 · INCL. GST** (plus "₹859 on Amazon") | ✅ correct |
-| Magnetic Blocks | ₹399 – ₹799 | `social/magnetic-blocks-og.png` | **FROM ₹399 · UP TO 64 PCS** | ✅ correct |
+| Magnetic Blocks | ₹319 – ₹799 | `social/magnetic-blocks-og.png` | **FROM ₹319 · UP TO 64 PCS** | ✅ corrected 19 Nov 2026 |
 | Mini Cool Car | ₹749 | `social/mini-cool-car-og.png` | **ONLY ₹749 · INCL. GST** | ✅ correct |
 | Pixel Splash | ₹1,749 | `social/pixel-splash-og.png` | **AUTOMATIC WATER BLASTER · ₹1,749 INCL. GST** | ✅ correct |
 | Rise one X 4X4 | ₹1,499 | `social/rise-one-x-4x4-og.png` | **ONLY ₹1,499 · INCL. GST** | ✅ correct |
@@ -30,9 +30,16 @@ npm run check:prices
 Amazon comparison prices quoted on the Baby Lingo (₹899) and Drift King (₹859) cards also match
 the "on Amazon" comparison shown on those two product pages.
 
-No artwork needed regenerating. On 19 Nov 2026 the Bubble Gun price moved from ₹499 to ₹449 on the
-live site: the badge digit was repainted inside `bubble-gun-og.png` (only pixels x 1090-1125, y 87-139
-changed) and the price was updated on the page, in both catalogues, on the home page and in the share copy.
+No artwork needed regenerating. On 19 Nov 2026 the live store changed two product prices and both
+badges were repainted directly on the existing cards, leaving the logo, product photos and headlines
+pixel-identical:
+
+- **Bubble Gun** ₹499 → ₹449: one digit of `bubble-gun-og.png` (only pixels x 1090-1125, y 87-139 changed).
+- **Magnetic Blocks** 25 PCS ₹399 → ₹319, 36 PCS ₹549 → ₹479, 42 PCS ₹599 → ₹549, 64 PCS ₹799 unchanged:
+  the middle digit of the "FROM ₹319" badge in `magnetic-blocks-og.png` (only pixels x 1067-1091,
+  y 486-518 changed).
+
+Each price was also updated on the page, in all catalogues, on the home page and in the share copy.
 
 ## Also verified in the same pass
 
