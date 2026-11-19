@@ -442,6 +442,7 @@ body.creature-page--car .char-file__portrait::after{content:"";position:absolute
 body.creature-page--car .char-file__no{top:14px;left:16px;z-index:3}
 body.creature-page--car .char-file__stamp{z-index:3;bottom:16px;right:16px;background:rgba(23,12,6,.42)}
 body.creature-page--dino .char-box__photo img{filter:drop-shadow(0 12px 10px rgba(0,0,0,.35))}
+body.creature-page--gel .char-hero h1{font-size:clamp(74px,11.4vw,156px);line-height:.8}
 body.creature-page--gel .char-file__portrait{display:block;min-height:472px;padding:0;background:#0b1620}
 body.creature-page--gel .char-file__photo{position:absolute;inset:0;z-index:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:50% 54%;border:0;box-shadow:none;transform:none;filter:none}
 body.creature-page--gel .char-file__portrait::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(7,16,26,.62),rgba(7,16,26,0) 26%),linear-gradient(0deg,rgba(7,16,26,.66),rgba(7,16,26,0) 30%)}
@@ -456,6 +457,7 @@ body.creature-page--dino .char-file__brandmark img{width:100%;height:auto;max-wi
 body.creature-page--dino .char-file__no{top:auto;bottom:14px;left:16px;z-index:3}
 body.creature-page--dino .char-file__stamp{z-index:3;bottom:16px;right:16px}
 @media(max-width:680px){
+  body.creature-page--gel .char-hero h1{font-size:clamp(54px,16.5vw,106px)}
   body.creature-page--car .char-file__portrait{min-height:400px}
   body.creature-page--car .char-file__no{font-size:44px}
   body.creature-page--dino .char-hero h1{font-size:clamp(72px,22vw,124px)}
