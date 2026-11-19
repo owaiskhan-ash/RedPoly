@@ -104,6 +104,43 @@
           "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116"
         }
       ]
+    },
+    {
+      "image": "/comics/issue-004-magnet-mayhem/pages/page-07.webp?v=issue04-webp-20261119",
+      "alt": "Page 7: Rumble in the blocks. The green dino warns that the centre of mass just shifted, the guide runs from a toppling tower of magnetic blocks, and the crew builds a ramp out of the pieces. Everyone ends up flying and still terrified.",
+      "shop": [
+        {
+          "name": "MAGNETIC BLOCKS 64 PCS",
+          "href": "/magnetic-blocks",
+          "image": "/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122"
+        },
+        {
+          "name": "MAGNETIC BLOCKS 42 PCS",
+          "href": "/magnetic-blocks",
+          "image": "/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122"
+        },
+        {
+          "name": "CUTE DINOS",
+          "href": "/cute-dinos",
+          "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116"
+        }
+      ]
+    },
+    {
+      "image": "/comics/issue-004-magnet-mayhem/pages/page-08.webp?v=issue04-webp-20261119",
+      "alt": "Page 8: One epic landing later, Reno declares that it is sticking the landing. The guide secures the golden Flashcard on a magnetic stand, the green dino celebrates 100 percent chaos and zero regrets, the teal dino suggests overthinking takes a nap, and the crew poses under the block arch for the end.",
+      "shop": [
+        {
+          "name": "MAGNETIC BLOCKS 42 PCS",
+          "href": "/magnetic-blocks",
+          "image": "/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122"
+        },
+        {
+          "name": "CUTE DINOS",
+          "href": "/cute-dinos",
+          "image": "/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116"
+        }
+      ]
     }
   ]
 }
