@@ -36,7 +36,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=sticky-fix-20261119" />
+<link rel="stylesheet" href="styles.css?v=categories-20261119" />
 <link rel="stylesheet" href="/accessories.css?v=header-cleanup-20261120" />
 </head>
 <body>
@@ -118,185 +118,287 @@
         <p class="shop-all__eyebrow">THE SHOP</p>
         <h2 id="shop-title">PICK YOUR <span>TOY.</span></h2>
       </div>
-      <p class="shop-all__hint">SWIPE <span aria-hidden="true">&rarr;</span></p>
+      <div class="shop-tabs" role="tablist" aria-label="Filter toys by category">
+        <button class="shop-tab is-active" type="button" role="tab" aria-selected="true" data-shop-filter="all">ALL TOYS <span class="shop-tab__count">11</span></button>
+        <button class="shop-tab" type="button" role="tab" aria-selected="false" data-shop-filter="guns">GUNS <span class="shop-tab__count">3</span></button>
+        <button class="shop-tab" type="button" role="tab" aria-selected="false" data-shop-filter="cars">CARS <span class="shop-tab__count">3</span></button>
+        <button class="shop-tab" type="button" role="tab" aria-selected="false" data-shop-filter="educational">EDUCATIONAL <span class="shop-tab__count">3</span></button>
+        <button class="shop-tab" type="button" role="tab" aria-selected="false" data-shop-filter="fun">FUN <span class="shop-tab__count">2</span></button>
+      </div>
     </header>
-  </div>
-  <div class="shop-all__grid" role="list">
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/baby-lingo" style="--card-tint:#062a30" aria-label="Open the Baby Lingo page">
-          <span class="shop-card__tag">NEW IN STORE</span>
-          <img src="/assets/images/redpoly/products/baby-lingo-studio.jpg?v=lingo-20261119" alt="Baby Lingo turquoise learning robot on a deep teal cloth with a fan of bilingual English-Hindi flashcards, its retail box and wooden alphabet blocks." width="2048" height="2048" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">BABY LINGO</h3>
-          <p class="shop-card__sub">ENGLISH + HINDI FIRST-WORDS ROBOT</p>
-          <p class="shop-card__price"><strong>₹799</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">100 cards · 6 months+ · ₹899 on Amazon</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="BABY LINGO" data-price="799" aria-label="Add Baby Lingo to the cart for 799 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/baby-lingo">SEE DETAILS <span aria-hidden="true">→</span></a>
+
+    <div class="shop-categories" aria-label="Browse by category">
+      <button class="shop-cat-card" type="button" data-shop-cat="guns" aria-pressed="false">
+        <div class="shop-cat-card__meta"><span>01</span><span>3 TOYS</span></div>
+        <strong class="shop-cat-card__title">GUNS</strong>
+        <p class="shop-cat-card__desc">Gel, water &amp; automatic bubble blasters</p>
+        <span class="shop-cat-card__cta">BROWSE GUNS <span aria-hidden="true">&rarr;</span></span>
+      </button>
+      <button class="shop-cat-card" type="button" data-shop-cat="cars" aria-pressed="false">
+        <div class="shop-cat-card__meta"><span>02</span><span>3 TOYS</span></div>
+        <strong class="shop-cat-card__title">CARS</strong>
+        <p class="shop-cat-card__desc">RC drift, mist spray &amp; stunt racers</p>
+        <span class="shop-cat-card__cta">BROWSE CARS <span aria-hidden="true">&rarr;</span></span>
+      </button>
+      <button class="shop-cat-card" type="button" data-shop-cat="educational" aria-pressed="false">
+        <div class="shop-cat-card__meta"><span>03</span><span>3 TOYS</span></div>
+        <strong class="shop-cat-card__title">EDUCATIONAL</strong>
+        <p class="shop-cat-card__desc">Bilingual first words &amp; hands-on STEM</p>
+        <span class="shop-cat-card__cta">BROWSE EDUCATIONAL <span aria-hidden="true">&rarr;</span></span>
+      </button>
+      <button class="shop-cat-card" type="button" data-shop-cat="fun" aria-pressed="false">
+        <div class="shop-cat-card__meta"><span>04</span><span>2 TOYS</span></div>
+        <strong class="shop-cat-card__title">FUN</strong>
+        <p class="shop-cat-card__desc">Rolling voice pets &amp; push-and-go dinos</p>
+        <span class="shop-cat-card__cta">BROWSE FUN <span aria-hidden="true">&rarr;</span></span>
+      </button>
+    </div>
+
+    <div class="shop-filter-bar" id="shop-filter-bar" hidden>
+      <p id="shop-filter-status" role="status" aria-live="polite"></p>
+      <button class="shop-filter-reset" type="button" id="shop-filter-reset">SHOW ALL 11 TOYS</button>
+    </div>
+
+    <div class="shop-shelves" id="shop-shelves">
+      <!-- 01. GUNS -->
+      <section class="shop-shelf" id="shop-guns" data-category-shelf="guns" aria-labelledby="shelf-title-guns">
+        <header class="shop-shelf__head">
+          <div class="shop-shelf__title-wrap">
+            <span class="shop-shelf__index">01</span>
+            <div>
+              <h3 id="shelf-title-guns">GUNS</h3>
+              <p class="shop-shelf__desc">Gel blasters, automatic water guns, and backyard bubble action.</p>
+            </div>
           </div>
+          <span class="shop-shelf__count">3 TOYS</span>
+        </header>
+        <div class="shop-shelf__grid" role="list">
+          <article class="shop-card" role="listitem" data-category="guns">
+            <a class="shop-card__media" href="/gel-storm" style="--card-tint:#101c28" aria-label="Open the Gel Storm page">
+              <span class="shop-card__tag">JUST LANDED</span>
+              <img src="/assets/images/redpoly/products/gel-storm-scene-1.jpg?v=gel-20261121" alt="Gel Storm black M4 gel blaster with drum magazine, blue water-bead hopper and USB cable outdoors." width="900" height="1350" style="object-position:50% 58%" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">GEL STORM</h4>
+              <p class="shop-card__sub">3-IN-1 M4 GEL BLASTER</p>
+              <p class="shop-card__price"><strong>₹1,999</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">58 cm · ages 14+</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="GEL STORM" data-price="1999" aria-label="Add Gel Storm to the cart for 1,999 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/gel-storm">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="shop-card" role="listitem" data-category="guns">
+            <a class="shop-card__media" href="/pixel-splash" style="--card-tint:#2c6a4f" aria-label="Open the Pixel Splash page">
+              <span class="shop-card__tag">NEW IN STORE</span>
+              <img src="/assets/images/redpoly/products/pixel-splash-action.webp?v=pixel-20261117-v3" alt="Pixel Splash green and tan block-style water blaster firing a glowing stream across a pixel landscape." width="2048" height="2048" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">PIXEL SPLASH</h4>
+              <p class="shop-card__sub">AUTOMATIC PIXEL WATER BLASTER</p>
+              <p class="shop-card__price"><strong>₹1,749</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">RGB lights · rechargeable · 40 cm</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="PIXEL SPLASH" data-price="1749" aria-label="Add Pixel Splash to the cart for 1,749 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/pixel-splash">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="shop-card" role="listitem" data-category="guns">
+            <a class="shop-card__media" href="/bubble-gun" style="--card-tint:#1479c9" aria-label="Open the Bubble Gun page">
+              <span class="shop-card__tag">IN STORE NOW</span>
+              <img src="/assets/images/redpoly/products/bubble-gun-scene-1.jpg?v=bubble-20261121" alt="Bubble Gun in blue and yellow with its Bubble Water bottle clipped underneath on sunlit water with floating bubbles." width="900" height="1350" style="object-position:50% 48%" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">BUBBLE GUN</h4>
+              <p class="shop-card__sub">12-HOLE AUTOMATIC BUBBLE BLASTER</p>
+              <p class="shop-card__price"><strong>₹499</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">Bubble water in the box</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="BUBBLE GUN" data-price="499" aria-label="Add the Bubble Gun to the cart for 499 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/bubble-gun">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
         </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/drift-king" style="--card-tint:#0b1830" aria-label="Open the Drift King page">
-          <span class="shop-card__tag">NEW IN STORE</span>
-          <img src="/assets/images/redpoly/products/drift-king-scene.jpg?v=dk-20261124" alt="Drift King glossy white mini RC coupe drifting across dark floor tiles with glowing headlights and red-and-blue underglow." width="1024" height="1024" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">DRIFT KING</h3>
-          <p class="shop-card__sub">2.4G FOLLOW + ESCAPE DRIFT CAR</p>
-          <p class="shop-card__price"><strong>₹799</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">12 cm · USB charge · ₹859 on Amazon</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="DRIFT KING" data-price="799" aria-label="Add Drift King to the cart for 799 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/drift-king">SEE DETAILS <span aria-hidden="true">→</span></a>
+      </section>
+
+      <!-- 02. CARS -->
+      <section class="shop-shelf" id="shop-cars" data-category-shelf="cars" aria-labelledby="shelf-title-cars">
+        <header class="shop-shelf__head">
+          <div class="shop-shelf__title-wrap">
+            <span class="shop-shelf__index">02</span>
+            <div>
+              <h3 id="shelf-title-cars">CARS</h3>
+              <p class="shop-shelf__desc">Remote-control drift racers, exhaust mist sprayers, and stunt machines.</p>
+            </div>
           </div>
+          <span class="shop-shelf__count">3 TOYS</span>
+        </header>
+        <div class="shop-shelf__grid" role="list">
+          <article class="shop-card" role="listitem" data-category="cars">
+            <a class="shop-card__media" href="/rise-one-x-4x4" style="--card-tint:#0c1c36" aria-label="Open the Rise one X 4X4 page">
+              <span class="shop-card__tag">NEW IN STORE</span>
+              <img src="/assets/images/redpoly/products/rise-one-x-4x4-scene.jpg?v=rise-20261122" alt="Rise one X 4X4 navy, cyan and yellow F1 remote-control spray drift car powersliding through blue exhaust mist." width="1254" height="1254" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">RISE ONE X 4X4</h4>
+              <p class="shop-card__sub">2.4 GHz SPRAY DRIFT · DUAL CONTROL</p>
+              <p class="shop-card__price"><strong>₹1,499</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">28 cm · gamepad + wrist strap · 6+</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="RISE ONE X 4X4" data-price="1499" aria-label="Add Rise one X 4X4 to the cart for 1,499 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/rise-one-x-4x4">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="shop-card" role="listitem" data-category="cars">
+            <a class="shop-card__media" href="/drift-king" style="--card-tint:#0b1830" aria-label="Open the Drift King page">
+              <span class="shop-card__tag">NEW IN STORE</span>
+              <img src="/assets/images/redpoly/products/drift-king-scene.jpg?v=dk-20261124" alt="Drift King glossy white mini RC coupe drifting across dark floor tiles with glowing headlights and red-and-blue underglow." width="1024" height="1024" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">DRIFT KING</h4>
+              <p class="shop-card__sub">2.4G FOLLOW + ESCAPE DRIFT CAR</p>
+              <p class="shop-card__price"><strong>₹799</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">12 cm · USB charge · ₹859 on Amazon</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="DRIFT KING" data-price="799" aria-label="Add Drift King to the cart for 799 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/drift-king">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="shop-card" role="listitem" data-category="cars">
+            <a class="shop-card__media" href="/mini-cool-car" style="--card-tint:#26292e" aria-label="Open the Mini Cool Car page">
+              <span class="shop-card__tag">NEW IN STORE</span>
+              <img src="/assets/images/redpoly/products/mini-cool-car-scene-5.jpg?v=car-20261117" alt="Mini Cool Car R/C white stunt car with chunky orange tyres splashing golden water spray over a sunlit puddle." width="900" height="1350" style="object-position:50% 55%" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">MINI COOL CAR</h4>
+              <p class="shop-card__sub">1:20 REMOTE CONTROL STUNT CAR</p>
+              <p class="shop-card__price"><strong>₹749</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">1:20 scale · ages 4+</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="MINI COOL CAR" data-price="749" aria-label="Add the Mini Cool Car to the cart for 749 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/mini-cool-car">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
         </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/rise-one-x-4x4" style="--card-tint:#0c1c36" aria-label="Open the Rise one X 4X4 page">
-          <span class="shop-card__tag">NEW IN STORE</span>
-          <img src="/assets/images/redpoly/products/rise-one-x-4x4-scene.jpg?v=rise-20261122" alt="Rise one X 4X4 navy, cyan and yellow F1 remote-control spray drift car powersliding through blue exhaust mist." width="1254" height="1254" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">RISE ONE X 4X4</h3>
-          <p class="shop-card__sub">2.4 GHz SPRAY DRIFT · DUAL CONTROL</p>
-          <p class="shop-card__price"><strong>₹1,499</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">28 cm · gamepad + wrist strap · 6+</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="RISE ONE X 4X4" data-price="1499" aria-label="Add Rise one X 4X4 to the cart for 1,499 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/rise-one-x-4x4">SEE DETAILS <span aria-hidden="true">→</span></a>
+      </section>
+
+      <!-- 03. EDUCATIONAL -->
+      <section class="shop-shelf" id="shop-educational" data-category-shelf="educational" aria-labelledby="shelf-title-educational">
+        <header class="shop-shelf__head">
+          <div class="shop-shelf__title-wrap">
+            <span class="shop-shelf__index">03</span>
+            <div>
+              <h3 id="shelf-title-educational">EDUCATIONAL</h3>
+              <p class="shop-shelf__desc">Screen-free bilingual learning, magnetic STEM construction, and DIY builds.</p>
+            </div>
           </div>
+          <span class="shop-shelf__count">3 TOYS</span>
+        </header>
+        <div class="shop-shelf__grid" role="list">
+          <article class="shop-card" role="listitem" data-category="educational">
+            <a class="shop-card__media" href="/baby-lingo" style="--card-tint:#062a30" aria-label="Open the Baby Lingo page">
+              <span class="shop-card__tag">NEW IN STORE</span>
+              <img src="/assets/images/redpoly/products/baby-lingo-studio.jpg?v=lingo-20261119" alt="Baby Lingo turquoise learning robot on a deep teal cloth with a fan of bilingual English-Hindi flashcards, its retail box and wooden alphabet blocks." width="2048" height="2048" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">BABY LINGO</h4>
+              <p class="shop-card__sub">ENGLISH + HINDI FIRST-WORDS ROBOT</p>
+              <p class="shop-card__price"><strong>₹799</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">100 cards · 6 months+ · ₹899 on Amazon</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="BABY LINGO" data-price="799" aria-label="Add Baby Lingo to the cart for 799 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/baby-lingo">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="shop-card" role="listitem" data-category="educational">
+            <a class="shop-card__media" href="/magnetic-blocks" style="--card-tint:#f5ebe0" aria-label="Open the Magnetic Blocks page">
+              <span class="shop-card__tag">NEW IN STORE</span>
+              <img src="/assets/images/redpoly/products/magnetic-blocks-scene.jpg?v=mag-20261122" alt="Magnetic Blocks built into colorful 3D towers, stars and geometric frames on a sunlit wood table." width="1254" height="1254" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">MAGNETIC BLOCKS</h4>
+              <p class="shop-card__sub">MAGNETIC STICKS &amp; BALLS · STEM</p>
+              <p class="shop-card__price"><strong>₹399</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">25, 36, 42 or 64 pcs · up to ₹799</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="MAGNETIC BLOCKS 25 PCS" data-price="399" aria-label="Add Magnetic Blocks 25 PCS to the cart for 399 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/magnetic-blocks">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="shop-card" role="listitem" data-category="educational">
+            <a class="shop-card__media" href="/mecha-rover" style="--card-tint:#ffffff" aria-label="Open the Mecha Rover page">
+              <img src="/assets/images/redpoly/products/mecha-rover-box.jpg?v=mecha-20261120" alt="Mecha Rover red fire rescue build-and-transform truck packed in its Power Warrior Mecha display box." width="2048" height="2048" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">MECHA ROVER</h4>
+              <p class="shop-card__sub">2-IN-1 BUILD AND TRANSFORM ROBOT</p>
+              <p class="shop-card__price"><strong>₹499</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">27 pieces, screwdriver included</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="MECHA ROVER" data-price="499" aria-label="Add the Mecha Rover to the cart for 499 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/mecha-rover">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
         </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/magnetic-blocks" style="--card-tint:#f5ebe0" aria-label="Open the Magnetic Blocks page">
-          <span class="shop-card__tag">NEW IN STORE</span>
-          <img src="/assets/images/redpoly/products/magnetic-blocks-scene.jpg?v=mag-20261122" alt="Magnetic Blocks built into colorful 3D towers, stars and geometric frames on a sunlit wood table." width="1254" height="1254" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">MAGNETIC BLOCKS</h3>
-          <p class="shop-card__sub">MAGNETIC STICKS &amp; BALLS · STEM</p>
-          <p class="shop-card__price"><strong>₹399</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">25, 36, 42 or 64 pcs · up to ₹799</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="MAGNETIC BLOCKS 25 PCS" data-price="399" aria-label="Add Magnetic Blocks 25 PCS to the cart for 399 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/magnetic-blocks">SEE DETAILS <span aria-hidden="true">→</span></a>
+      </section>
+
+      <!-- 04. FUN -->
+      <section class="shop-shelf" id="shop-fun" data-category-shelf="fun" aria-labelledby="shelf-title-fun">
+        <header class="shop-shelf__head">
+          <div class="shop-shelf__title-wrap">
+            <span class="shop-shelf__index">04</span>
+            <div>
+              <h3 id="shelf-title-fun">FUN</h3>
+              <p class="shop-shelf__desc">Voice-activated rolling characters and chunky push-and-go dinosaurs.</p>
+            </div>
           </div>
+          <span class="shop-shelf__count">2 TOYS</span>
+        </header>
+        <div class="shop-shelf__grid" role="list">
+          <article class="shop-card" role="listitem" data-category="fun">
+            <a class="shop-card__media" href="/stunt-pet" style="--card-tint:#e4c9ab" aria-label="Open the Stunt Pet page">
+              <span class="shop-card__tag">NEW IN STORE</span>
+              <img src="/assets/images/redpoly/products/stunt-pet-scene-1.jpg?v=pet-20261122" alt="Stunt Pet coral bunny toy with two orange carrot wheels sitting on warm sand in front of a lime circle." width="900" height="900" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">STUNT PET</h4>
+              <p class="shop-card__sub">VOICE CONTROL ROLLING TOY</p>
+              <p class="shop-card__price"><strong>₹599</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">Needs 3 AA batteries</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="STUNT PET" data-price="599" aria-label="Add the Stunt Pet to the cart for 599 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/stunt-pet">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="shop-card" role="listitem" data-category="fun">
+            <a class="shop-card__media" href="/cute-dinos" style="--card-tint:#e4d3b0" aria-label="Open the Cute Dinos page">
+              <span class="shop-card__tag">NEW IN STORE</span>
+              <img src="/assets/images/redpoly/products/cute-dinos-sand.jpg?v=dinos-20261116" alt="Cute Dinos push-and-go dinosaurs in green, red and teal standing on warm sand." width="900" height="1206" style="object-position:50% 76%" loading="lazy" />
+            </a>
+            <div class="shop-card__body">
+              <h4 class="shop-card__name">CUTE DINOS</h4>
+              <p class="shop-card__sub">PUSH AND GO DINOSAUR · 3 COLOURS</p>
+              <p class="shop-card__price"><strong>₹249</strong><span>incl. GST</span></p>
+              <span class="shop-card__aside">₹549 for all three</span>
+              <div class="shop-card__actions">
+                <button class="add-btn shop-card__add" type="button" data-name="CUTE DINOS GREEN" data-price="249" aria-label="Add Cute Dinos in green to the cart for 249 rupees">ADD TO CART</button>
+                <a class="shop-card__link" href="/cute-dinos">SEE DETAILS <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
         </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/mecha-rover" style="--card-tint:#ffffff" aria-label="Open the Mecha Rover page">
-          <img src="/assets/images/redpoly/products/mecha-rover-box.jpg?v=mecha-20261120" alt="Mecha Rover red fire rescue build-and-transform truck packed in its Power Warrior Mecha display box." width="2048" height="2048" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">MECHA ROVER</h3>
-          <p class="shop-card__sub">2-IN-1 BUILD AND TRANSFORM ROBOT</p>
-          <p class="shop-card__price"><strong>₹499</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">27 pieces, screwdriver included</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="MECHA ROVER" data-price="499" aria-label="Add the Mecha Rover to the cart for 499 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/mecha-rover">SEE DETAILS <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/bubble-gun" style="--card-tint:#1479c9" aria-label="Open the Bubble Gun page">
-          <span class="shop-card__tag">IN STORE NOW</span>
-          <img src="/assets/images/redpoly/products/bubble-gun-scene-1.jpg?v=bubble-20261121" alt="Bubble Gun in blue and yellow with its Bubble Water bottle clipped underneath on sunlit water with floating bubbles." width="900" height="1350" style="object-position:50% 48%" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">BUBBLE GUN</h3>
-          <p class="shop-card__sub">12-HOLE AUTOMATIC BUBBLE BLASTER</p>
-          <p class="shop-card__price"><strong>₹499</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">Bubble water in the box</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="BUBBLE GUN" data-price="499" aria-label="Add the Bubble Gun to the cart for 499 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/bubble-gun">SEE DETAILS <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/stunt-pet" style="--card-tint:#e4c9ab" aria-label="Open the Stunt Pet page">
-          <span class="shop-card__tag">NEW IN STORE</span>
-          <img src="/assets/images/redpoly/products/stunt-pet-scene-1.jpg?v=pet-20261122" alt="Stunt Pet coral bunny toy with two orange carrot wheels sitting on warm sand in front of a lime circle." width="900" height="900" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">STUNT PET</h3>
-          <p class="shop-card__sub">VOICE CONTROL ROLLING TOY</p>
-          <p class="shop-card__price"><strong>₹599</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">Needs 3 AA batteries</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="STUNT PET" data-price="599" aria-label="Add the Stunt Pet to the cart for 599 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/stunt-pet">SEE DETAILS <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/cute-dinos" style="--card-tint:#e4d3b0" aria-label="Open the Cute Dinos page">
-          <span class="shop-card__tag">NEW IN STORE</span>
-          <img src="/assets/images/redpoly/products/cute-dinos-sand.jpg?v=dinos-20261116" alt="Cute Dinos push-and-go dinosaurs in green, red and teal standing on warm sand." width="900" height="1206" style="object-position:50% 76%" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">CUTE DINOS</h3>
-          <p class="shop-card__sub">PUSH AND GO DINOSAUR · 3 COLOURS</p>
-          <p class="shop-card__price"><strong>₹249</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">₹549 for all three</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="CUTE DINOS GREEN" data-price="249" aria-label="Add Cute Dinos in green to the cart for 249 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/cute-dinos">SEE DETAILS <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/mini-cool-car" style="--card-tint:#26292e" aria-label="Open the Mini Cool Car page">
-          <span class="shop-card__tag">NEW IN STORE</span>
-          <img src="/assets/images/redpoly/products/mini-cool-car-scene-5.jpg?v=car-20261117" alt="Mini Cool Car R/C white stunt car with chunky orange tyres splashing golden water spray over a sunlit puddle." width="900" height="1350" style="object-position:50% 55%" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">MINI COOL CAR</h3>
-          <p class="shop-card__sub">1:20 REMOTE CONTROL STUNT CAR</p>
-          <p class="shop-card__price"><strong>₹749</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">1:20 scale · ages 4+</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="MINI COOL CAR" data-price="749" aria-label="Add the Mini Cool Car to the cart for 749 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/mini-cool-car">SEE DETAILS <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/gel-storm" style="--card-tint:#101c28" aria-label="Open the Gel Storm page">
-          <span class="shop-card__tag">JUST LANDED</span>
-          <img src="/assets/images/redpoly/products/gel-storm-scene-1.jpg?v=gel-20261121" alt="Gel Storm black M4 gel blaster with drum magazine, blue water-bead hopper and USB cable outdoors." width="900" height="1350" style="object-position:50% 58%" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">GEL STORM</h3>
-          <p class="shop-card__sub">3-IN-1 M4 GEL BLASTER</p>
-          <p class="shop-card__price"><strong>₹1,999</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">58 cm · ages 14+</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="GEL STORM" data-price="1999" aria-label="Add Gel Storm to the cart for 1,999 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/gel-storm">SEE DETAILS <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </article>
-      <article class="shop-card" role="listitem">
-        <a class="shop-card__media" href="/pixel-splash" style="--card-tint:#2c6a4f" aria-label="Open the Pixel Splash page">
-          <span class="shop-card__tag">NEW IN STORE</span>
-          <img src="/assets/images/redpoly/products/pixel-splash-action.webp?v=pixel-20261117-v3" alt="Pixel Splash green and tan block-style water blaster firing a glowing stream across a pixel landscape." width="2048" height="2048" loading="lazy" />
-        </a>
-        <div class="shop-card__body">
-          <h3 class="shop-card__name">PIXEL SPLASH</h3>
-          <p class="shop-card__sub">AUTOMATIC PIXEL WATER BLASTER</p>
-          <p class="shop-card__price"><strong>₹1,749</strong><span>incl. GST</span></p>
-          <span class="shop-card__aside">RGB lights · rechargeable · 40 cm</span>
-          <div class="shop-card__actions">
-            <button class="add-btn shop-card__add" type="button" data-name="PIXEL SPLASH" data-price="1749" aria-label="Add Pixel Splash to the cart for 1,749 rupees">ADD TO CART</button>
-            <a class="shop-card__link" href="/pixel-splash">SEE DETAILS <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </article>
+      </section>
+    </div>
   </div>
 </section>
 
@@ -380,6 +482,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="/firebase-client.js?v=lingo-20261119" defer></script>
-<script src="main.js?v=lingo-20261119" defer></script>
+<script src="main.js?v=categories-20261119" defer></script>
 </body>
 </html>

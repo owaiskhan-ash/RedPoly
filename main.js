@@ -3842,4 +3842,124 @@
       section.hidden = true;
     });
   })();
+
+  // Homepage storefront category tabs & typographic category cards (Guns, Cars, Educational, Fun)
+  (function initShopCategories() {
+    var shelvesWrap = document.getElementById('shop-shelves');
+    if (!shelvesWrap) return;
+
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-shop-filter]'));
+    var catCards = Array.prototype.slice.call(document.querySelectorAll('[data-shop-cat]'));
+    var shelves = Array.prototype.slice.call(shelvesWrap.querySelectorAll('[data-category-shelf]'));
+    var filterBar = document.getElementById('shop-filter-bar');
+    var filterStatus = document.getElementById('shop-filter-status');
+    var filterReset = document.getElementById('shop-filter-reset');
+    var shopSection = document.getElementById('shop');
+
+    var VALID_CATEGORIES = {
+      guns: 'Guns',
+      cars: 'Cars',
+      educational: 'Educational',
+      fun: 'Fun'
+    };
+
+    var activeCategory = 'all';
+
+    function applyCategory(category, opts) {
+      var next = VALID_CATEGORIES[category] ? category : 'all';
+      activeCategory = next;
+      var visibleCount = 0;
+
+      shelves.forEach(function (shelf) {
+        var shelfCat = shelf.getAttribute('data-category-shelf');
+        var show = next === 'all' || shelfCat === next;
+        shelf.hidden = !show;
+        shelf.classList.toggle('is-solo', next !== 'all' && show);
+        if (show) {
+          visibleCount += shelf.querySelectorAll('.shop-card').length;
+        }
+      });
+
+      tabs.forEach(function (tab) {
+        var isActive = tab.getAttribute('data-shop-filter') === next;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      catCards.forEach(function (card) {
+        var catKey = card.getAttribute('data-shop-cat');
+        var isActive = catKey === next;
+        card.classList.toggle('is-active', isActive);
+        card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        var cta = card.querySelector('.shop-cat-card__cta');
+        if (cta) {
+          cta.textContent = isActive
+            ? 'VIEWING ' + VALID_CATEGORIES[catKey].toUpperCase() + ' · SHOW ALL'
+            : 'BROWSE ' + VALID_CATEGORIES[catKey].toUpperCase() + ' →';
+        }
+      });
+
+      if (filterBar && filterStatus) {
+        if (next === 'all') {
+          filterBar.hidden = true;
+          filterStatus.textContent = '';
+        } else {
+          filterBar.hidden = false;
+          filterStatus.textContent = 'SHOWING ' + VALID_CATEGORIES[next].toUpperCase() + ' · ' + visibleCount + (visibleCount === 1 ? ' TOY' : ' TOYS');
+        }
+      }
+
+      if (opts && opts.scrollToShelves && shelvesWrap) {
+        var target = next === 'all' ? (shopSection || shelvesWrap) : shelvesWrap;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var cat = tab.getAttribute('data-shop-filter') || 'all';
+        applyCategory(cat, { scrollToShelves: false });
+      });
+    });
+
+    catCards.forEach(function (card) {
+      card.addEventListener('click', function () {
+        var cat = card.getAttribute('data-shop-cat') || 'all';
+        var next = activeCategory === cat ? 'all' : cat;
+        applyCategory(next, { scrollToShelves: next !== 'all' });
+      });
+    });
+
+    if (filterReset) {
+      filterReset.addEventListener('click', function () {
+        applyCategory('all', { scrollToShelves: false });
+      });
+    }
+
+    function readCategoryFromUrl() {
+      var hash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
+      if (hash.indexOf('shop-') === 0) {
+        var fromHash = hash.slice(5);
+        if (VALID_CATEGORIES[fromHash]) return fromHash;
+      }
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var fromQuery = (params.get('category') || '').toLowerCase();
+        if (VALID_CATEGORIES[fromQuery]) return fromQuery;
+      } catch (_ignoreUrlErr) {}
+      return 'all';
+    }
+
+    var initialCat = readCategoryFromUrl();
+    if (initialCat !== 'all') {
+      applyCategory(initialCat, { scrollToShelves: false });
+    }
+
+    window.addEventListener('hashchange', function () {
+      var fromHash = readCategoryFromUrl();
+      if (fromHash !== 'all') {
+        applyCategory(fromHash, { scrollToShelves: true });
+      }
+    });
+  })();
 })();
