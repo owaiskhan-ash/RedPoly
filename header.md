@@ -43,7 +43,7 @@ Product pages carry a single extra element in the header, between the nav and th
 <a class="site-header__next" href="/NEXT-SLUG">NEXT: PRODUCT NAME <span aria-hidden="true">→</span></a>
 ```
 
-It is a seven-toy rotation, so every toy is reachable from every other without returning to the shop:
+It is a single closed rotation through every toy, so every toy is reachable from every other without returning to the shop:
 
 | Page | Links to |
 | --- | --- |
@@ -52,7 +52,11 @@ It is a seven-toy rotation, so every toy is reachable from every other without r
 | cute-dinos | mini-cool-car |
 | mini-cool-car | gel-storm |
 | gel-storm | pixel-splash |
-| pixel-splash | mecha-rover |
+| pixel-splash | drift-king |
+| drift-king | baby-lingo |
+| baby-lingo | rise-one-x-4x4 |
+| rise-one-x-4x4 | magnetic-blocks |
+| magnetic-blocks | mecha-rover |
 | mecha-rover | bubble-gun |
 
 The same link also appears as a row inside the phone menu on those pages. No other page carries it.

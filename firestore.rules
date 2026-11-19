@@ -56,7 +56,8 @@ service cloud.firestore {
         'magnetic-blocks-42-pcs',
         'magnetic-blocks-64-pcs',
         'rise-one-x-4x4',
-        'drift-king'
+        'drift-king',
+        'baby-lingo'
       ];
     }
 
@@ -68,6 +69,7 @@ service cloud.firestore {
         name == 'MECHA ROVER' ? 'mecha-rover' :
         name == 'PIXEL SPLASH' ? 'pixel-splash' :
         name == 'RISE ONE X 4X4' ? 'rise-one-x-4x4' :
+        name == 'BABY LINGO' ? 'baby-lingo' :
         name == 'DRIFT KING' ? 'drift-king' :
         name == 'CUTE DINOS GREEN' ? 'cute-dinos-green' :
         name == 'CUTE DINOS RED' ? 'cute-dinos-red' :
@@ -87,6 +89,7 @@ service cloud.firestore {
         slug == 'mecha-rover' ? 'MECHA ROVER' :
         slug == 'pixel-splash' ? 'PIXEL SPLASH' :
         slug == 'rise-one-x-4x4' ? 'RISE ONE X 4X4' :
+        slug == 'baby-lingo' ? 'BABY LINGO' :
         slug == 'drift-king' ? 'DRIFT KING' :
         slug == 'cute-dinos-green' ? 'CUTE DINOS GREEN' :
         slug == 'cute-dinos-red' ? 'CUTE DINOS RED' :
@@ -257,7 +260,8 @@ service cloud.firestore {
         'cute-dinos',
         'magnetic-blocks',
         'rise-one-x-4x4',
-        'drift-king'
+        'drift-king',
+        'baby-lingo'
       ];
     }
 
