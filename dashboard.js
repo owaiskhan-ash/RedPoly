@@ -2,7 +2,7 @@
 (function () {
   var ADMIN_EMAIL = 'ashketchupkeke@gmail.com';
   var FREE_STANDARD_FROM = 2000;
-  var FREE_EXPRESS_FROM = 5000;
+  var FREE_EXPRESS_FROM = 2000;
   var FREE_GIFT_FROM = 3500;
   var GST_RATE = 12;
 

@@ -402,7 +402,7 @@ const CART_STORAGE_KEY = 'redpoly-cart-v1';
 const WISH_STORAGE_KEY = 'redpoly-wishlist-v1';
 const CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v1';
 const FREE_STANDARD_FROM = 2000;
-const FREE_EXPRESS_FROM = 5000;
+const FREE_EXPRESS_FROM = 2000;
 const FREE_GIFT_FROM = 3500;
 const GST_RATE = 12;
 

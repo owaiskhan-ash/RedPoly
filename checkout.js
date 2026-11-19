@@ -5,7 +5,7 @@
   var shippingMethodKey = 'redpoly-shipping-method-v1';
   // Free-shipping and free-gift thresholds on the item subtotal. Keep these in step with the cart drawer in main.js.
   var freeStandardFrom = 2000;
-  var freeExpressFrom = 5000;
+  var freeExpressFrom = 2000;
   var freeGiftFrom = 3500;
   // Products on sale. Keep in step with the catalogue in main.js. Anything else in a saved cart is dropped.
   var catalogue = {
@@ -419,10 +419,10 @@
       var input = option.querySelector('input');
       option.classList.toggle('is-selected', !!input && input.checked);
     });
-    if (!items.length) shippingStatus.textContent = 'Standard shipping is free on orders of ' + money(freeStandardFrom) + ' or more, and orders over ' + money(freeGiftFrom) + ' get a free gift.';
-    else if (expressFree) shippingStatus.textContent = 'Free shipping unlocked on both Standard and Express.';
+    if (!items.length) shippingStatus.textContent = 'Both Standard and Express shipping are free on orders of ' + money(freeStandardFrom) + ' or more, and orders over ' + money(freeGiftFrom) + ' get a free gift.';
+    else if (expressFree && standardFree) shippingStatus.textContent = 'Free shipping unlocked on both Standard and Express.';
     else if (standardFree) shippingStatus.textContent = 'Free Standard shipping unlocked. Express is free from ' + money(freeExpressFrom) + '.';
-    else shippingStatus.textContent = 'Add ' + money(freeStandardFrom - subtotal) + ' more for free Standard shipping.';
+    else shippingStatus.textContent = 'Add ' + money(freeStandardFrom - subtotal) + ' more for free Standard & Express shipping.';
     return { method:method, freeShipping:freeShipping, gst:gst, shipping:shipping, deliveryDays:deliveryDays, total:subtotal + shipping };
   }
   shippingOptions.forEach(function (input) { input.addEventListener('change', function () {
