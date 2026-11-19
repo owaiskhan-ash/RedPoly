@@ -7,7 +7,7 @@ Eight pages, four panels each, 1536 × 2048 (3:4 portrait). Cast and locks live 
 | Page | Title | Art | Notes |
 | --- | --- | --- | --- |
 | 01 | The Crate | `pages/page-01.webp` | Lettered. Caption + four balloons from the script. |
-| 02 | The Lesson | — | Scripted only. |
+| 02 | The Lesson | `pages/page-02.webp` | Lettered. Lecture, the press, and two fridges. |
 | 03 | The Count | — | Scripted only. |
 | 04 | The Gap | — | Scripted only. |
 | 05 | Press Me | — | Scripted only. |
@@ -27,7 +27,18 @@ Eight pages, four panels each, 1536 × 2048 (3:4 portrait). Cast and locks live 
 - TINO: THEY'RE NOT MOVING. WHAT IF THEY'RE WAITING?
 - Caption: THE BLOCKS SAID NOTHING. THEY NEVER DO.
 
+## Page 2 lettering as printed
+
+- LINGO: OPPOSITES ATTRACT! LIKE POLES REPEL! SAY IT WITH ME!
+- GINO: LIKE POLES REPEL. LIKE TINO AND FUN.
+- TINO: I FUN VERY CAREFULLY.
+- SFX: CLACK CLACK CLACK · RINO: YOLOOOO—
+- LINGO: CONGRATULATIONS. YOU ARE NOW 40% REFRIGERATOR.
+- RINO: I'M MAGNETIC. · GINO: YOU'RE DECORATIVE.
+- TINO: GREAT. TWO FRIDGES. ONE CRISIS.
+- Caption: THE BLOCKS REMAINED INANIMATE. SOMEHOW THAT WAS THE SCARY PART.
+
 ## Still to do
 
-- Pages 02–08 at the same ratio and lettering style.
+- Pages 03–08 at the same ratio and lettering style.
 - Reader wiring once all eight pages exist: `issue.json` with a `shop` list per page, a `cover.webp` crop, and a `catalog.json` entry with `"number": "04"`.
