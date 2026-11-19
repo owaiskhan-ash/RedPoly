@@ -337,7 +337,8 @@ body.creature-page--bubble .char-spark--two{width:38px;height:38px}
 body.creature-page--bubble .char-spark--three{width:16px;height:16px}
 body.creature-page--bubble .char-spark--four{width:20px;height:20px}
 body.creature-page--bubble .char-spark--five{width:13px;height:13px}
-body.creature-page--bubble .char-hero h1{font-size:clamp(82px,12.4vw,168px)}
+body.creature-page--bubble .char-hero h1{font-size:clamp(82px,11vw,150px);line-height:1.06}
+body.creature-page--bubble .char-hero h1 .char-title__name{transform:none}
 body.creature-page--bubble .char-stage__figure{width:min(104%,580px);max-height:520px;transform:none}
 body.creature-page--bubble .figure-gallery__viewport[data-view="detail"] .char-stage__figure{transform:scale(1.45)}
 body.creature-page--bubble .char-file__portrait img{filter:drop-shadow(0 12px 10px rgba(0,0,0,.35))}
@@ -348,7 +349,6 @@ body.creature-page--bubble .char-file__portrait img{filter:drop-shadow(0 12px 10
 html.motion-ready body.creature-page--bubble .char-stage__figure{animation-name:bubble-gun-float}
 html.motion-ready body.creature-page--bubble .figure-gallery__viewport[data-view="detail"] .char-stage__figure{animation:none}
 @keyframes bubble-gun-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
-body.creature-page--bubble .char-hero h1{line-height:.8}
 body.creature-page--bubble .char-final-cta h2 span{color:#1034c4}
 
 /* Stunt Pet page: a wide two-photo stage and a "how it arrives" block with the boxed photo */
