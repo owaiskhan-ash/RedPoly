@@ -28,6 +28,7 @@ Read CC Does a Spin (Issue 02), all three parts of Sector Zero (Issue 03), and M
 3. Put a cut-out photo (transparent WebP or PNG) in `assets/images/redpoly/products/`.
 4. Add a block or card for it on the home page (`index.html`, section `#shop`).
 5. For a second photo on the product page (for example the item in its box), add `data-alt-src`, `data-alt-label`, `data-alt-text` and `data-label` to the `.char-stage__figure` image. `main.js` then shows one button per photo.
+6. Give the page `og:image` / `twitter:image` tags pointing at a 1200x630 card in `assets/images/redpoly/social/`, then run `npm run check:prices` (also part of `npm run lint`). It compares the JSON-LD offer, `product:price:amount`, ADD TO CART `data-price` values, both catalogues, the home page cards and the share copy, and fails if any price disagrees. See [PRICING-AUDIT.md](PRICING-AUDIT.md) for the last manual image audit.
 
 The checkout is still a demo: no payment is collected and no order is created.
 
