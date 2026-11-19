@@ -1,5 +1,17 @@
 [
   {
+    "id": "issue-004-magnet-mayhem",
+    "number": "04",
+    "title": "Magnet Mayhem",
+    "subtitle": "Magnet Canyon has a guided tour, a magnetic bridge, and one dino with zero brakes.",
+    "cover": "/comics/issue-004-magnet-mayhem/cover.webp?v=issue04-webp-20261119",
+    "manifest": "/comics/issue-004-magnet-mayhem/issue.json",
+    "pageCount": 6,
+    "panelCount": 24,
+    "status": "READ ISSUE 04",
+    "label": "MAGNET MAYHEM"
+  },
+  {
     "id": "issue-003-sector-zero-part-3",
     "number": "03",
     "part": 3,
