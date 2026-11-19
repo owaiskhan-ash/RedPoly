@@ -1628,6 +1628,45 @@
     var giftRewardTrack = cartLayer.querySelector('#gift-reward-track');
     var cartReturnFocus = null;
     var lastRemovedItem = null;
+    var mobileCartBar = null;
+    var mobileCartPerk = null;
+    var mobileCartTotal = null;
+    var mobileCartSummaryBtn = null;
+    var mobileCartCta = null;
+    var mobileCartBlocked = false;
+    if (document.getElementById('shop') && !document.querySelector('.char-buy-row .add-btn')) {
+      mobileCartBar = document.createElement('div');
+      mobileCartBar.className = 'mobile-cart-bar';
+      mobileCartBar.setAttribute('role', 'region');
+      mobileCartBar.setAttribute('aria-label', 'Shopping cart quick bar');
+      mobileCartBar.setAttribute('aria-hidden', 'true');
+      mobileCartSummaryBtn = document.createElement('button');
+      mobileCartSummaryBtn.type = 'button';
+      mobileCartSummaryBtn.className = 'mobile-cart-bar__summary';
+      mobileCartSummaryBtn.tabIndex = -1;
+      mobileCartPerk = document.createElement('span');
+      mobileCartPerk.className = 'mobile-cart-bar__perk';
+      mobileCartTotal = document.createElement('strong');
+      mobileCartTotal.className = 'mobile-cart-bar__total';
+      mobileCartSummaryBtn.appendChild(mobileCartPerk);
+      mobileCartSummaryBtn.appendChild(mobileCartTotal);
+      mobileCartCta = document.createElement('button');
+      mobileCartCta.type = 'button';
+      mobileCartCta.className = 'mobile-cart-bar__cta';
+      mobileCartCta.tabIndex = -1;
+      mobileCartCta.innerHTML = 'CHECKOUT <span aria-hidden="true">→</span>';
+      mobileCartSummaryBtn.addEventListener('click', function () { openCart(); });
+      mobileCartCta.addEventListener('click', function () {
+        if (mobileCartBlocked || !cartItems.length) {
+          openCart();
+        } else {
+          window.location.href = '/checkout';
+        }
+      });
+      mobileCartBar.appendChild(mobileCartSummaryBtn);
+      mobileCartBar.appendChild(mobileCartCta);
+      document.body.appendChild(mobileCartBar);
+    }
     var liveCatalogState = initialCatalogSnapshot;
     function getLiveCatalogMap() {
       var fb = window.RedpolyFirebase;
@@ -1748,6 +1787,26 @@
           row.appendChild(link); row.appendChild(add); suggestionPanel.appendChild(row);
         });
         cartItemsNode.appendChild(suggestionPanel);
+      }
+      if (mobileCartBar) {
+        mobileCartBlocked = anyStockBlocked;
+        var hasCartItems = quantity > 0;
+        mobileCartBar.classList.toggle('is-visible', hasCartItems);
+        mobileCartBar.setAttribute('aria-hidden', hasCartItems ? 'false' : 'true');
+        mobileCartSummaryBtn.tabIndex = hasCartItems ? 0 : -1;
+        if (mobileCartCta) mobileCartCta.tabIndex = hasCartItems ? 0 : -1;
+        document.body.classList.toggle('has-mobile-cart-bar', hasCartItems);
+        if (hasCartItems) {
+          if (subtotal < 2000) {
+            mobileCartPerk.textContent = 'ADD ' + money(2000 - subtotal) + ' FOR FREE EXPRESS';
+          } else if (subtotal < 3500) {
+            mobileCartPerk.textContent = '✓ FREE EXPRESS · +' + money(3500 - subtotal) + ' FOR GIFT';
+          } else {
+            mobileCartPerk.textContent = '✓ FREE EXPRESS + FREE GIFT UNLOCKED';
+          }
+          mobileCartTotal.textContent = quantity + (quantity === 1 ? ' ITEM · ' : ' ITEMS · ') + money(subtotal);
+          mobileCartSummaryBtn.setAttribute('aria-label', 'Open cart, ' + quantity + (quantity === 1 ? ' item, ' : ' items, ') + money(subtotal));
+        }
       }
     }
     function openCart() {
@@ -2151,6 +2210,29 @@
         heart.setAttribute('aria-label', 'Save ' + name + ' for later');
         registerWishButton(heart, { name:name, href:localPath(link.getAttribute('href')), image:image ? localPath(image.getAttribute('src')) : '', price:Number(buy.getAttribute('data-price')) });
       });
+      // Homepage categorized shop cards (.shop-card): add a wishlist heart to every card.
+      document.querySelectorAll('.shop-card').forEach(function (card) {
+        var buy = card.querySelector('.shop-card__add[data-name][data-price], .add-btn[data-name][data-price]');
+        var mediaLink = card.querySelector('.shop-card__media');
+        var image = mediaLink ? mediaLink.querySelector('img') : null;
+        if (!buy || !mediaLink) return;
+        var heart = card.querySelector('.shop-card__heart');
+        if (!heart) {
+          heart = document.createElement('button');
+          heart.type = 'button';
+          heart.className = 'heart shop-card__heart';
+          heart.innerHTML = heartMarkup;
+          card.appendChild(heart);
+        }
+        var name = buy.getAttribute('data-name');
+        heart.setAttribute('aria-label', 'Save ' + name + ' for later');
+        registerWishButton(heart, {
+          name: name,
+          href: localPath(mediaLink.getAttribute('href')),
+          image: image ? localPath(image.getAttribute('src')) : '',
+          price: Number(buy.getAttribute('data-price'))
+        });
+      });
       // Product pages: a save button under the buy row.
       pageBuyRow = document.querySelector('.char-buy-row');
       pageBuy = pageBuyRow ? pageBuyRow.querySelector('.add-btn[data-name][data-price]') : null;
@@ -2271,6 +2353,10 @@
         if (heroPriceBold && heroRec) {
           heroPriceBold.textContent = money(heroRec.price);
         }
+        var heroSecondaryPrice = document.querySelector('[data-hero-bubble-price]');
+        if (heroSecondaryPrice && heroRec) {
+          heroSecondaryPrice.textContent = money(heroRec.price);
+        }
         var heroStockEl = heroProduct.querySelector('.hero-product__stock');
         var heroStockMsg = formatStockText(heroRec);
         if (heroStockMsg) {
@@ -2370,8 +2456,8 @@
           if (blAsideEl) {
             var blComp = Array.isArray(rec.priceComparisons) && rec.priceComparisons.length ? rec.priceComparisons[0] : null;
             blAsideEl.textContent = blComp
-              ? '100 cards · English + Hindi · ' + money(blComp.price) + ' on ' + blComp.platform
-              : '100 double-sided cards · English + Hindi';
+              ? 'Indian accent · 100 cards · ' + money(blComp.price) + ' on ' + blComp.platform
+              : 'Indian accent · 100 bilingual cards';
           }
         }
 
@@ -3118,8 +3204,9 @@
     function syncLiftedState() {
       if (!root) return;
       var mobileBarVisible = Boolean(document.querySelector('.mobile-buy-bar.mobile-buy-bar--visible'));
+      var mobileCartVisible = Boolean(document.querySelector('.mobile-cart-bar.is-visible'));
       var checkoutBarVisible = Boolean(document.querySelector('.checkout-paybar.is-visible'));
-      root.classList.toggle('is-lifted', mobileBarVisible || checkoutBarVisible);
+      root.classList.toggle('is-lifted', mobileBarVisible || mobileCartVisible || checkoutBarVisible);
     }
 
     function ensureShell() {
@@ -3238,10 +3325,12 @@
       document.body.appendChild(root);
 
       var mobileBar = document.querySelector('.mobile-buy-bar');
+      var mobileCartBarEl = document.querySelector('.mobile-cart-bar');
       var checkoutBar = document.querySelector('.checkout-paybar');
-      if (window.MutationObserver && (mobileBar || checkoutBar)) {
+      if (window.MutationObserver && (mobileBar || mobileCartBarEl || checkoutBar)) {
         barObserver = new MutationObserver(syncLiftedState);
         if (mobileBar) barObserver.observe(mobileBar, { attributes: true, attributeFilter: ['class'] });
+        if (mobileCartBarEl) barObserver.observe(mobileCartBarEl, { attributes: true, attributeFilter: ['class'] });
         if (checkoutBar) barObserver.observe(checkoutBar, { attributes: true, attributeFilter: ['class'] });
       }
       window.addEventListener('scroll', syncLiftedState, { passive: true });
@@ -3884,6 +3973,11 @@
         var isActive = tab.getAttribute('data-shop-filter') === next;
         tab.classList.toggle('is-active', isActive);
         tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        if (isActive && tab.parentElement && tab.parentElement.scrollWidth > tab.parentElement.clientWidth) {
+          var parent = tab.parentElement;
+          var targetScroll = tab.offsetLeft - (parent.clientWidth - tab.offsetWidth) / 2;
+          parent.scrollTo({ left: Math.max(0, targetScroll), behavior: 'smooth' });
+        }
       });
 
       catCards.forEach(function (card) {
