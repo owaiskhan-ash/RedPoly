@@ -8,12 +8,12 @@ Eight pages, four panels each, 1536 × 2048 (3:4 portrait). Cast and locks live 
 | --- | --- | --- | --- |
 | 01 | The Crate | `pages/page-01.webp` | Lettered. Caption + four balloons from the script. |
 | 02 | The Lesson | `pages/page-02.webp` | Lettered. Lecture, the press, and two fridges. |
-| 03 | The Count | — | Scripted only. |
-| 04 | The Gap | — | Scripted only. |
-| 05 | Press Me | — | Scripted only. |
-| 06 | Build | — | Scripted only. |
-| 07 | The Core | — | Scripted only. |
-| 08 | Stick With Me | — | Scripted only. |
+| 03 | The Count | `pages/page-03.webp` | Lettered. Rows, Tino's mouth, the laminated list, CLATTER. |
+| 04 | The Gap | `pages/page-04.webp` | Lettered. Chasm, scroll, JUGAAD, the press request. |
+| 05 | Press Me | `pages/page-05.webp` | Lettered. Forty degrees of optimism, FWOOSH, the crate landing. |
+| 06 | Build | `pages/page-06.webp` | Lettered. Triangle, headbutt bridge, Lingo becomes the span. |
+| 07 | The Core | — | Re-roll needed: a dino renders with arms and two lines duplicate. |
+| 08 | Stick With Me | — | Not generated yet (per-turn image cap reached). |
 
 ## Page 1 lettering as printed
 
@@ -38,7 +38,12 @@ Eight pages, four panels each, 1536 × 2048 (3:4 portrait). Cast and locks live 
 - TINO: GREAT. TWO FRIDGES. ONE CRISIS.
 - Caption: THE BLOCKS REMAINED INANIMATE. SOMEHOW THAT WAS THE SCARY PART.
 
+## Known fixes before the reader goes live
+
+- Pages 03–06: the dinos read as standing on little feet in several panels instead of sitting on their hidden wheels, and Lingo's face drifts slightly off-model. The toys' colours, plates, buttons and block shapes are correct; the rolling chassis needs a re-roll pass. Re-roll these panels with the `reference/dino-wheels.png` crop attached.
+- Pages 03 and 06 carry a few lettered lines added during clean-up: Rino's "FINALLY. SOMETHING MOVES.", the page 4 caption "THE GAP: 3.4 METRES. THE PLAN: NONE.", Tino's "I DON'T TRUST TRIANGLES." and Rino's "HE'S FINE."
+
 ## Still to do
 
-- Pages 03–08 at the same ratio and lettering style.
+- Page 07 (re-roll) and page 08 (new).
 - Reader wiring once all eight pages exist: `issue.json` with a `shop` list per page, a `cover.webp` crop, and a `catalog.json` entry with `"number": "04"`.

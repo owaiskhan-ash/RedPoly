@@ -104,6 +104,7 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 **Panel 4.** RINO braced at the edge, wheels buzzing. He does not move.
 - RINO (tiny): ...someone press me.
 - TINO: That is the most terrifying sentence I have ever heard.
+- CAPTION: THE GAP: 3.4 METRES. THE PLAN: NONE.
 
 ### PAGE 5 — "PRESS ME"
 
@@ -134,6 +135,7 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 **Panel 1.** Build montage. TINO places a block with unbearable care; LINGO points at a triangle.
 - LINGO: TRIANGLE. The strongest shape, and the sassiest.
 - GINO: Forty degrees. Not forty-one. I can hear forty-one.
+- TINO: I don't trust triangles.
 
 **Panel 2.** RINO headbutts a loose pile. It snaps into a perfect bridge with one last CLACK.
 - GINO: That shouldn't work.
@@ -147,6 +149,7 @@ The emotional spine is small and warm: four toys who cannot do much alone, getti
 - LINGO (muffled): Structurally, I am load-bearing.
 - TINO: He's the bridge now.
 - GINO: He's the bridge now.
+- RINO: He's fine.
 
 ### PAGE 7 — "THE CORE"
 
