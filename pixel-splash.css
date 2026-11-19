@@ -128,7 +128,8 @@ body.creature-page--pixel .char-story{background:var(--character-story);border-t
 body.creature-page--pixel .char-story__eyebrow,
 body.creature-page--pixel .char-overline,
 body.creature-page--pixel .char-file__eyebrow{font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:.5px;line-height:1.7}
-body.creature-page--pixel .char-story h2,
+body.creature-page--pixel .char-story h2{line-height:1.08}
+body.creature-page--pixel .char-story h2 span{color:var(--pixel-water)}
 body.creature-page--pixel .char-box h2,
 body.creature-page--pixel .char-file__body h2{text-shadow:5px 5px 0 rgba(11,26,12,.7)}
 body.creature-page--pixel .char-story__text{font-size:15px;font-weight:600;color:#e9ffd9}
