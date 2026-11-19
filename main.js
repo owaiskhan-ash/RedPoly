@@ -3945,10 +3945,10 @@
     var shopSection = document.getElementById('shop');
 
     var DEFAULT_CATS = [
-      { slug: 'guns', name: 'Guns', shortDesc: 'Gel blasters, pixel water guns & bubble shooters', shelfDesc: 'Outdoor gel blasters, motorised water sprayers & giant bubble guns.', accentColor: '#FF6B1A', sortOrder: 1, visible: true, thumbnailUrl: '' },
-      { slug: 'cars', name: 'Cars', shortDesc: '4x4 off-road crawlers, drift cars & pocket racers', shelfDesc: '4x4 off-road crawlers, high-speed drift machines & pocket racers.', accentColor: '#1C7ED6', sortOrder: 2, visible: true, thumbnailUrl: '' },
-      { slug: 'educational', name: 'Educational', shortDesc: 'Magnetic STEM blocks, Baby Lingo & robotic builds', shelfDesc: 'Screen-free STEM builders, speech flashcards & hands-on engineering kits.', accentColor: '#0E9F6E', sortOrder: 3, visible: true, thumbnailUrl: '' },
-      { slug: 'fun', name: 'Fun', shortDesc: '360° flip stunt pets & colourful wind-up dinos', shelfDesc: 'Flip-tastic stunt companions & pocket-sized pocket dinos for everyday giggles.', accentColor: '#7C3AED', sortOrder: 4, visible: true, thumbnailUrl: '' }
+      { slug: 'guns', name: 'Guns', shortDesc: 'Gel, water & automatic bubble blasters', shelfDesc: 'Gel blasters, automatic water guns, and backyard bubble action.', accentColor: '#FF6B1A', sortOrder: 1, visible: true, thumbnailUrl: '' },
+      { slug: 'cars', name: 'Cars', shortDesc: 'RC drift, spray, stunt & transform cars', shelfDesc: 'Remote-control drift racers, exhaust mist sprayers, stunt cars & transformable rescue trucks.', accentColor: '#1C7ED6', sortOrder: 2, visible: true, thumbnailUrl: '' },
+      { slug: 'educational', name: 'Educational', shortDesc: 'Bilingual first words & magnetic STEM', shelfDesc: 'Screen-free bilingual learning and magnetic STEM construction sets.', accentColor: '#0E9F6E', sortOrder: 3, visible: true, thumbnailUrl: '' },
+      { slug: 'fun', name: 'Fun', shortDesc: 'Rolling voice pets & push-and-go dinos', shelfDesc: 'Voice-activated rolling characters and chunky push-and-go dinosaurs.', accentColor: '#7C3AED', sortOrder: 4, visible: true, thumbnailUrl: '' }
     ];
     var GROUP_PRIMARY_SKU = {
       'magnetic-blocks': 'magnetic-blocks-25-pcs',
@@ -3961,9 +3961,9 @@
       'rise-one-x-4x4': 'cars',
       'drift-king': 'cars',
       'mini-cool-car': 'cars',
+      'mecha-rover': 'cars',
       'baby-lingo': 'educational',
       'magnetic-blocks': 'educational',
-      'mecha-rover': 'educational',
       'stunt-pet': 'fun',
       'cute-dinos': 'fun'
     };

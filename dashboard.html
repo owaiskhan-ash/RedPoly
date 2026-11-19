@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/dashboard.css?v=cats-20261124" />
+  <link rel="stylesheet" href="/dashboard.css?v=cats-20261125" />
 </head>
 <body>
   <header class="top-bar">
@@ -605,6 +605,17 @@
                 <span>Order, names, descriptions, accents, thumbnails, and assigned toys sync live to the homepage</span>
               </div>
             </section>
+
+            <section class="orders-card cat-quick-card" id="cat-assignments-card" aria-label="Quick toy category assignments">
+              <div class="cat-quick-card__head">
+                <div>
+                  <h2 class="cat-quick-card__title">Toy category assignments</h2>
+                  <p class="cat-quick-card__sub">Move any toy to another category in one click. Changes sync live to the storefront immediately.</p>
+                </div>
+                <span class="cat-quick-card__count" id="cat-assignments-count">11 toys</span>
+              </div>
+              <div class="cat-quick-grid" id="cat-assignments-grid"></div>
+            </section>
           </div>
 
           <!-- Customers View -->
@@ -1130,7 +1141,7 @@
 
   <div class="dash-toast" id="dash-toast" role="status" aria-live="polite"></div>
 
-  <script src="/firebase-client.js?v=cats-20261124" defer></script>
-  <script src="/dashboard.js?v=cats-20261124" defer></script>
+  <script src="/firebase-client.js?v=cats-20261125" defer></script>
+  <script src="/dashboard.js?v=cats-20261125" defer></script>
 </body>
 </html>

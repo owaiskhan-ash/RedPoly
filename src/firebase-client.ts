@@ -432,8 +432,8 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
 
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
 const WISH_STORAGE_KEY = 'redpoly-wishlist-v1';
-const CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v1';
-const CATEGORIES_CACHE_KEY = 'redpoly-categories-cache-v1';
+const CATALOG_CACHE_KEY = 'redpoly-catalog-cache-v2';
+const CATEGORIES_CACHE_KEY = 'redpoly-categories-cache-v2';
 const CATEGORY_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
 const FREE_STANDARD_FROM = 2000;
@@ -456,8 +456,8 @@ const DEFAULT_CATEGORIES: ReadonlyArray<StoreCategoryRecord> = [
   {
     slug: 'cars',
     name: 'Cars',
-    shortDesc: 'RC drift, mist spray & stunt racers',
-    shelfDesc: 'Remote-control drift racers, exhaust mist sprayers, and stunt machines.',
+    shortDesc: 'RC drift, spray, stunt & transform cars',
+    shelfDesc: 'Remote-control drift racers, exhaust mist sprayers, stunt cars & transformable rescue trucks.',
     accentColor: '#1C7ED6',
     sortOrder: 1,
     visible: true,
@@ -467,8 +467,8 @@ const DEFAULT_CATEGORIES: ReadonlyArray<StoreCategoryRecord> = [
   {
     slug: 'educational',
     name: 'Educational',
-    shortDesc: 'Bilingual first words & hands-on STEM',
-    shelfDesc: 'Screen-free bilingual learning, magnetic STEM construction, and DIY builds.',
+    shortDesc: 'Bilingual first words & magnetic STEM',
+    shelfDesc: 'Screen-free bilingual learning and magnetic STEM construction sets.',
     accentColor: '#0E9F6E',
     sortOrder: 2,
     visible: true,
@@ -539,7 +539,7 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
   'magnetic-blocks-36-pcs': { name: 'MAGNETIC BLOCKS 36 PCS', price: 549, cardTag: '', category: 'educational' },
   'magnetic-blocks-42-pcs': { name: 'MAGNETIC BLOCKS 42 PCS', price: 599, cardTag: '', category: 'educational' },
   'magnetic-blocks-64-pcs': { name: 'MAGNETIC BLOCKS 64 PCS', price: 799, cardTag: '', category: 'educational' },
-  'mecha-rover': { name: 'MECHA ROVER', price: 499, cardTag: '', category: 'educational' },
+  'mecha-rover': { name: 'MECHA ROVER', price: 499, cardTag: '', category: 'cars' },
   'bubble-gun': { name: 'BUBBLE GUN', price: 499, cardTag: 'IN STORE NOW', category: 'guns' },
   'stunt-pet': { name: 'STUNT PET', price: 599, cardTag: 'NEW IN STORE', category: 'fun' },
   'cute-dinos-green': { name: 'CUTE DINOS GREEN', price: 249, cardTag: 'NEW IN STORE', category: 'fun' },
@@ -3016,11 +3016,19 @@ export async function listAllCategories(): Promise<StoreCategoryRecord[]> {
 }
 
 export async function saveCategory(
-  existingSlug: string | null,
-  input: SaveCategoryInput
+  existingSlugOrInput: string | null | SaveCategoryInput,
+  maybeInput?: SaveCategoryInput
 ): Promise<StoreCategoryRecord> {
   if (!isAdminUser()) {
     throw new Error('Admin access required to save categories.');
+  }
+  const existingSlug = typeof existingSlugOrInput === 'string' ? existingSlugOrInput : null;
+  const input: SaveCategoryInput | undefined =
+    existingSlugOrInput && typeof existingSlugOrInput === 'object'
+      ? existingSlugOrInput
+      : maybeInput;
+  if (!input || typeof input !== 'object') {
+    throw new Error('Category details are required.');
   }
   const cleanName = String(input.name || '').trim().slice(0, 60);
   if (!cleanName) {

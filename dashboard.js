@@ -141,8 +141,8 @@
     {
       slug: 'cars',
       name: 'Cars',
-      shortDesc: '4x4 off-road crawlers, drift cars & pocket racers',
-      shelfDesc: '4x4 off-road crawlers, high-speed drift machines & pocket racers.',
+      shortDesc: 'RC drift, spray, stunt & transform cars',
+      shelfDesc: 'Remote-control drift racers, exhaust mist sprayers, stunt cars & transformable rescue trucks.',
       accentColor: '#1C7ED6',
       sortOrder: 2,
       visible: true,
@@ -152,8 +152,8 @@
     {
       slug: 'educational',
       name: 'Educational',
-      shortDesc: 'Magnetic STEM blocks, Baby Lingo & robotic builds',
-      shelfDesc: 'Screen-free STEM builders, speech flashcards & hands-on engineering kits.',
+      shortDesc: 'Bilingual first words & magnetic STEM',
+      shelfDesc: 'Screen-free bilingual learning and magnetic STEM construction sets.',
       accentColor: '#0E9F6E',
       sortOrder: 3,
       visible: true,
@@ -163,8 +163,8 @@
     {
       slug: 'fun',
       name: 'Fun',
-      shortDesc: '360° flip stunt pets & colourful wind-up dinos',
-      shelfDesc: 'Flip-tastic stunt companions & pocket-sized pocket dinos for everyday giggles.',
+      shortDesc: 'Rolling voice pets & push-and-go dinos',
+      shelfDesc: 'Voice-activated rolling characters and chunky push-and-go dinosaurs.',
       accentColor: '#7C3AED',
       sortOrder: 4,
       visible: true,
@@ -180,7 +180,7 @@
     'magnetic-blocks-36-pcs': 'educational',
     'magnetic-blocks-42-pcs': 'educational',
     'magnetic-blocks-64-pcs': 'educational',
-    'mecha-rover': 'educational',
+    'mecha-rover': 'cars',
     'bubble-gun': 'guns',
     'stunt-pet': 'fun',
     'cute-dinos-green': 'fun',
@@ -972,9 +972,11 @@
             handleFirestoreError(error, 'list', 'categories');
           }
         },
-        saveCategory: async function (input) {
+        saveCategory: async function (existingSlugOrInput, maybeInput) {
           if (!isAdminUser()) throw new Error('Admin access required to save categories.');
-          var slug = String(input && input.slug || '').trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+          var existingSlug = typeof existingSlugOrInput === 'string' ? existingSlugOrInput : '';
+          var input = (existingSlugOrInput && typeof existingSlugOrInput === 'object') ? existingSlugOrInput : maybeInput;
+          var slug = String(existingSlug || (input && input.slug) || '').trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
           if (!slug || !CATEGORY_SLUG_RE.test(slug)) throw new Error('Enter a valid category slug.');
           var name = String(input && input.name || '').trim().slice(0, 60);
           if (!name) throw new Error('Category name is required.');
@@ -1446,6 +1448,9 @@
   var categoriesTbody = document.getElementById('categories-tbody');
   var categoriesFooter = document.getElementById('categories-footer');
   var categoriesShowingText = document.getElementById('categories-showing-text');
+  var catAssignmentsCard = document.getElementById('cat-assignments-card');
+  var catAssignmentsCount = document.getElementById('cat-assignments-count');
+  var catAssignmentsGrid = document.getElementById('cat-assignments-grid');
 
   var categoryDrawerLayer = document.getElementById('category-drawer-layer');
   var categoryDrawerBackdrop = document.getElementById('category-drawer-backdrop');
@@ -4499,7 +4504,7 @@
     if (btnEl) btnEl.disabled = true;
     try {
       var fb = await ensureDashboardFirebase();
-      var saved = await fb.saveCategory({
+      var saved = await fb.saveCategory(cat.slug, {
         slug: cat.slug,
         name: cat.name,
         shortDesc: cat.shortDesc || '',
@@ -4527,6 +4532,7 @@
   function renderCategoriesTable() {
     if (!categoriesTbody || !categoriesTableWrap || !categoriesEmpty || !categoriesSkeleton || !categoriesFooter) return;
     categoriesSkeleton.hidden = !categoriesLoading;
+    if (catAssignmentsCard) catAssignmentsCard.hidden = categoriesLoading;
     if (categoriesLoading) {
       categoriesTableWrap.hidden = true;
       categoriesEmpty.hidden = true;
@@ -4535,6 +4541,7 @@
     }
 
     sortCategoriesInPlace();
+    renderQuickToyAssignments();
     var rows = filteredCategories();
     categoriesTbody.textContent = '';
 
@@ -4679,6 +4686,43 @@
       tr.appendChild(tdVis);
       tr.appendChild(tdAct);
       categoriesTbody.appendChild(tr);
+    });
+  }
+
+  function renderQuickToyAssignments() {
+    if (!catAssignmentsGrid) return;
+    if (catAssignmentsCard) catAssignmentsCard.hidden = categoriesLoading;
+    if (categoriesLoading) return;
+    catAssignmentsGrid.textContent = '';
+    if (catAssignmentsCount) {
+      catAssignmentsCount.textContent = PRODUCT_GROUPS.length + (PRODUCT_GROUPS.length === 1 ? ' toy' : ' toys');
+    }
+    PRODUCT_GROUPS.forEach(function (grp) {
+      var curSlug = getGroupCategorySlug(grp);
+      var item = document.createElement('div');
+      item.className = 'cat-quick-item';
+
+      if (grp.image) {
+        var img = document.createElement('img');
+        img.className = 'cat-quick-item__img';
+        img.src = grp.image;
+        img.alt = '';
+        img.loading = 'lazy';
+        item.appendChild(img);
+      }
+
+      var copy = document.createElement('div');
+      copy.className = 'cat-quick-item__copy';
+      var strong = document.createElement('strong');
+      strong.textContent = grp.name;
+      var small = document.createElement('small');
+      small.textContent = grp.skus.length > 1 ? (grp.skus.length + ' variants move together') : grp.id;
+      copy.appendChild(strong);
+      copy.appendChild(small);
+      item.appendChild(copy);
+
+      item.appendChild(buildInlineCategorySelect(curSlug, grp.skus, grp.name));
+      catAssignmentsGrid.appendChild(item);
     });
   }
 
@@ -4937,7 +4981,7 @@
 
       try {
         var fb = await ensureDashboardFirebase();
-        var saved = await fb.saveCategory({
+        var saved = await fb.saveCategory(isCreatingCategory ? null : editingCategorySlug, {
           slug: slugVal,
           name: nameVal,
           shortDesc: shortDescVal,
