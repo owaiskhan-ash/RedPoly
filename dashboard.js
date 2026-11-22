@@ -106,7 +106,7 @@
       id: 'sip-buddies',
       name: 'SIP BUDDIES',
       href: '/sip-buddies',
-      image: '/assets/images/redpoly/products/sip-buddies-group-thumb.webp?v=sip-20261122',
+      image: '/assets/images/redpoly/products/sip-buddies-group-thumb.webp?v=sip-20261123',
       skus: ['sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple'],
       variantLabels: {
         'sip-buddies-cow': 'Cow',
