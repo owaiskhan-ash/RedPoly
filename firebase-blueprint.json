@@ -347,7 +347,8 @@
             "magnetic-blocks",
             "rise-one-x-4x4",
             "drift-king",
-            "baby-lingo"
+            "baby-lingo",
+            "sip-buddies"
           ]
         },
         "itemSlug": {
@@ -436,7 +437,11 @@
             "magnetic-blocks-64-pcs",
             "rise-one-x-4x4",
             "drift-king",
-            "baby-lingo"
+            "baby-lingo",
+            "sip-buddies-cow",
+            "sip-buddies-cat",
+            "sip-buddies-puppy",
+            "sip-buddies-apple"
           ]
         },
         "name": {
@@ -592,7 +597,11 @@
             "magnetic-blocks-64-pcs",
             "rise-one-x-4x4",
             "drift-king",
-            "baby-lingo"
+            "baby-lingo",
+            "sip-buddies-cow",
+            "sip-buddies-cat",
+            "sip-buddies-puppy",
+            "sip-buddies-apple"
           ]
         },
         "costPrice": {

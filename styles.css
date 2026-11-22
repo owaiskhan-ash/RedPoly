@@ -715,6 +715,7 @@ html.motion-ready .hero-product img{animation:hero-product-bob 4.8s ease-in-out 
 .shop-cat-card[data-shop-cat="cars"]{--cat-accent:#1c7ed6}
 .shop-cat-card[data-shop-cat="educational"]{--cat-accent:#0e9f6e}
 .shop-cat-card[data-shop-cat="fun"]{--cat-accent:#7c3aed}
+.shop-cat-card[data-shop-cat="essentials"]{--cat-accent:#d6336c}
 .shop-cat-card__thumb{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;margin-bottom:4px;border:2px solid var(--black);background:#ece5d6}
 .shop-cat-card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--black)}
 .shop-cat-card.is-active{background:var(--black);color:#fffdf7;box-shadow:5px 5px 0 var(--lime)}

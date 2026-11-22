@@ -108,7 +108,8 @@ export type ProductSlug =
   | 'magnetic-blocks'
   | 'rise-one-x-4x4'
   | 'drift-king'
-  | 'baby-lingo';
+  | 'baby-lingo'
+  | 'sip-buddies';
 
 export interface OrderRecord {
   id: string;
@@ -203,7 +204,11 @@ export type SkuSlug =
   | 'magnetic-blocks-64-pcs'
   | 'rise-one-x-4x4'
   | 'drift-king'
-  | 'baby-lingo';
+  | 'baby-lingo'
+  | 'sip-buddies-cow'
+  | 'sip-buddies-cat'
+  | 'sip-buddies-puppy'
+  | 'sip-buddies-apple';
 
 export interface StoreCategoryRecord {
   slug: string;
@@ -428,6 +433,26 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
     href: '/baby-lingo',
     image: '/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119',
   },
+  'SIP BUDDIES COW': {
+    price: 899,
+    href: '/sip-buddies?buddy=cow',
+    image: '/assets/images/redpoly/products/sip-buddies-cow-thumb.webp?v=sip-20261122',
+  },
+  'SIP BUDDIES CAT': {
+    price: 899,
+    href: '/sip-buddies?buddy=cat',
+    image: '/assets/images/redpoly/products/sip-buddies-cat-thumb.webp?v=sip-20261122',
+  },
+  'SIP BUDDIES PUPPY': {
+    price: 899,
+    href: '/sip-buddies?buddy=puppy',
+    image: '/assets/images/redpoly/products/sip-buddies-puppy-thumb.webp?v=sip-20261122',
+  },
+  'SIP BUDDIES APPLE': {
+    price: 899,
+    href: '/sip-buddies?buddy=apple',
+    image: '/assets/images/redpoly/products/sip-buddies-apple-thumb.webp?v=sip-20261122',
+  },
 };
 
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
@@ -486,6 +511,17 @@ const DEFAULT_CATEGORIES: ReadonlyArray<StoreCategoryRecord> = [
     thumbnailUrl: '',
     updatedAtMs: 0,
   },
+  {
+    slug: 'essentials',
+    name: 'Essentials',
+    shortDesc: 'Bottles & everyday kids gear',
+    shelfDesc: 'Insulated bottles and everyday gear for school, travel and play.',
+    accentColor: '#D6336C',
+    sortOrder: 4,
+    visible: true,
+    thumbnailUrl: '',
+    updatedAtMs: 0,
+  },
 ];
 
 const SKU_ORDER: ReadonlyArray<SkuSlug> = [
@@ -506,6 +542,10 @@ const SKU_ORDER: ReadonlyArray<SkuSlug> = [
   'mini-cool-car',
   'gel-storm',
   'pixel-splash',
+  'sip-buddies-cow',
+  'sip-buddies-cat',
+  'sip-buddies-puppy',
+  'sip-buddies-apple',
 ];
 
 interface DefaultSeedMeta {
@@ -549,6 +589,10 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
   'mini-cool-car': { name: 'MINI COOL CAR', price: 749, cardTag: 'NEW IN STORE', category: 'cars' },
   'gel-storm': { name: 'GEL STORM', price: 1999, cardTag: 'JUST LANDED', category: 'guns' },
   'pixel-splash': { name: 'PIXEL SPLASH', price: 1749, cardTag: 'NEW IN STORE', category: 'guns' },
+  'sip-buddies-cow': { name: 'SIP BUDDIES COW', price: 899, cardTag: 'NEW IN STORE', category: 'essentials', costPrice: 479 },
+  'sip-buddies-cat': { name: 'SIP BUDDIES CAT', price: 899, cardTag: '', category: 'essentials', costPrice: 479 },
+  'sip-buddies-puppy': { name: 'SIP BUDDIES PUPPY', price: 899, cardTag: '', category: 'essentials', costPrice: 479 },
+  'sip-buddies-apple': { name: 'SIP BUDDIES APPLE', price: 899, cardTag: '', category: 'essentials', costPrice: 479 },
 };
 
 const NAME_TO_SKU: Record<string, SkuSlug> = {
@@ -569,6 +613,10 @@ const NAME_TO_SKU: Record<string, SkuSlug> = {
   'MINI COOL CAR': 'mini-cool-car',
   'GEL STORM': 'gel-storm',
   'PIXEL SPLASH': 'pixel-splash',
+  'SIP BUDDIES COW': 'sip-buddies-cow',
+  'SIP BUDDIES CAT': 'sip-buddies-cat',
+  'SIP BUDDIES PUPPY': 'sip-buddies-puppy',
+  'SIP BUDDIES APPLE': 'sip-buddies-apple',
 };
 
 function isValidSkuSlug(slug: string): slug is SkuSlug {
@@ -910,6 +958,7 @@ const VALID_PRODUCT_SLUGS: ReadonlyArray<ProductSlug> = [
   'rise-one-x-4x4',
   'drift-king',
   'baby-lingo',
+  'sip-buddies',
 ];
 
 function normalizeOrderStatus(raw: unknown): OrderStatus {
@@ -940,6 +989,14 @@ function itemSlugMatchesProduct(itemSlugVal: string, productSlug: ProductSlug): 
       itemSlugVal === 'magnetic-blocks-36-pcs' ||
       itemSlugVal === 'magnetic-blocks-42-pcs' ||
       itemSlugVal === 'magnetic-blocks-64-pcs'
+    );
+  }
+  if (productSlug === 'sip-buddies') {
+    return (
+      itemSlugVal === 'sip-buddies-cow' ||
+      itemSlugVal === 'sip-buddies-cat' ||
+      itemSlugVal === 'sip-buddies-puppy' ||
+      itemSlugVal === 'sip-buddies-apple'
     );
   }
   return itemSlugVal === productSlug;
@@ -2670,6 +2727,56 @@ export async function listAllCustomers(): Promise<CustomersOverview> {
   }
 }
 
+// A product that is seeded for the first time can belong to a default category that the saved
+// categories collection does not have yet (the collection was filled in before that default
+// existed). Create just that category, once, at the end of the list. A store with no saved
+// categories is left alone: it already shows every default.
+async function seedMissingDefaultCategories(slugs: string[]): Promise<void> {
+  const wanted = Array.from(new Set(slugs))
+    .map((slug) => DEFAULT_CATEGORIES.find((cat) => cat.slug === slug))
+    .filter((cat): cat is StoreCategoryRecord => Boolean(cat));
+  if (!wanted.length) return;
+  try {
+    const snap = await getDocs(collection(db, 'categories'));
+    if (snap.empty) return;
+    const saved = new Set<string>();
+    let highestOrder = -1;
+    snap.forEach((docSnap) => {
+      saved.add(docSnap.id);
+      const order = Number(docSnap.data().sortOrder);
+      if (Number.isFinite(order)) highestOrder = Math.max(highestOrder, order);
+    });
+    const missing = wanted.filter((cat) => !saved.has(cat.slug));
+    if (!missing.length) return;
+    const batch = writeBatch(db);
+    const added: StoreCategoryRecord[] = [];
+    missing.forEach((cat, idx) => {
+      const sortOrder = highestOrder + 1 + idx;
+      batch.set(doc(db, 'categories', cat.slug), {
+        slug: cat.slug,
+        name: cat.name,
+        shortDesc: cat.shortDesc,
+        shelfDesc: cat.shelfDesc,
+        accentColor: cat.accentColor,
+        sortOrder,
+        visible: cat.visible,
+        thumbnailUrl: cat.thumbnailUrl,
+        updatedAt: serverTimestamp(),
+      });
+      added.push({ ...cat, sortOrder, updatedAtMs: Date.now() });
+    });
+    await batch.commit();
+    added.forEach((cat) => liveCategoriesMap.set(cat.slug, cat));
+    persistCategoriesSessionCache();
+    dispatch('redpoly:categories-updated', {
+      categories: getCategories(),
+      map: getCategoriesMap(),
+    });
+  } catch (error) {
+    console.warn('Could not add the default category for a new product:', error);
+  }
+}
+
 export async function listAllProducts(): Promise<ProductCatalogRecord[]> {
   if (!isAdminUser()) {
     throw new Error('Admin access required to manage product inventory.');
@@ -2751,6 +2858,11 @@ export async function listAllProducts(): Promise<ProductCatalogRecord[]> {
         }
       }
       await batch.commit();
+    }
+    if (missingSkus.length) {
+      await seedMissingDefaultCategories(
+        missingSkus.map((sku) => DEFAULT_PRODUCTS_META[sku].category)
+      );
     }
 
     catalogLoaded = true;

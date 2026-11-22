@@ -18,10 +18,20 @@
 | Gel Storm (3-in-1 M4 gel blaster, ages 14+) | `/gel-storm` (`products/gel-storm.html`) | ₹1,999 |
 | Pixel Splash (automatic pixel-block water blaster with RGB lighting and rechargeable power) | `/pixel-splash` (`products/pixel-splash.html`) | ₹1,749 |
 | Mecha Rover (2-in-1 build and transform fire rescue truck and robot, 27 pieces, ages 3+) | `/mecha-rover` (`products/mecha-rover.html`) | ₹499 |
+| Sip Buddies (480 ML insulated kids' bottle with a 3D character lid; cow, cat, puppy or apple) | `/sip-buddies` (`products/sip-buddies.html`) | ₹899 |
 
 Read CC Does a Spin (Issue 02), all three parts of Sector Zero (Issue 03), and Magnet Mayhem (Issue 04) at `/stories`. See [the comics guide](comics/README.md) for the catalog and page art.
 
 ### Adding a product
+
+Not everything in the shop is a toy (Sip Buddies is a bottle), so shop wording counts "products", and a
+new kind of product can get its own category. Categories are edited in the dashboard; a new default
+category in code (`DEFAULT_CATS` in `main.js`, `DEFAULT_CATEGORIES` in `dashboard.js` and
+`src/firebase-client.ts`) is added to the saved list the first time the dashboard loads its products.
+
+A product sold in several designs at one page can use the shared picker: mark the picker with
+`data-variant-picker`, put one radio input per design inside it (see `products/sip-buddies.html`) and load
+`/products/variant-picker.js` after `main.js`.
 
 1. Add a page in `products/` and a rewrite for its short URL in `vercel.json`.
 2. Add the product name, price and thumbnail to the `catalogue` list in **both** `main.js` and `checkout.js`. Bags and saved lists only keep items that are in this list at the listed price. A product sold in more than one version gets one catalogue entry per version (Cute Dinos has `CUTE DINOS GREEN`, `CUTE DINOS RED`, `CUTE DINOS TEAL` and `CUTE DINOS TRIO`), and the page's own script switches the button's `data-name` and `data-price` to match the pick.

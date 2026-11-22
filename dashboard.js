@@ -17,6 +17,10 @@
     'CUTE DINOS RED': { price: 249, href: '/cute-dinos?colour=red', image: '/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TEAL': { price: 249, href: '/cute-dinos?colour=teal', image: '/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TRIO': { price: 549, href: '/cute-dinos?pack=trio', image: '/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' },
+    'SIP BUDDIES COW': { price: 899, href: '/sip-buddies?buddy=cow', image: '/assets/images/redpoly/products/sip-buddies-cow-thumb.webp?v=sip-20261122' },
+    'SIP BUDDIES CAT': { price: 899, href: '/sip-buddies?buddy=cat', image: '/assets/images/redpoly/products/sip-buddies-cat-thumb.webp?v=sip-20261122' },
+    'SIP BUDDIES PUPPY': { price: 899, href: '/sip-buddies?buddy=puppy', image: '/assets/images/redpoly/products/sip-buddies-puppy-thumb.webp?v=sip-20261122' },
+    'SIP BUDDIES APPLE': { price: 899, href: '/sip-buddies?buddy=apple', image: '/assets/images/redpoly/products/sip-buddies-apple-thumb.webp?v=sip-20261122' },
     'MAGNETIC BLOCKS 25 PCS': { price: 319, href: '/magnetic-blocks?pack=25pcs', image: '/assets/images/redpoly/products/magnetic-blocks-25pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 36 PCS': { price: 479, href: '/magnetic-blocks?pack=36pcs', image: '/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 42 PCS': { price: 549, href: '/magnetic-blocks?pack=42pcs', image: '/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
@@ -32,7 +36,8 @@
     'magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs',
     'mecha-rover', 'bubble-gun', 'stunt-pet',
     'cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio',
-    'mini-cool-car', 'gel-storm', 'pixel-splash'
+    'mini-cool-car', 'gel-storm', 'pixel-splash',
+    'sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple'
   ];
   var SKU_TO_NAME = {
     'baby-lingo': 'BABY LINGO',
@@ -49,6 +54,10 @@
     'cute-dinos-red': 'CUTE DINOS RED',
     'cute-dinos-teal': 'CUTE DINOS TEAL',
     'cute-dinos-trio': 'CUTE DINOS TRIO',
+    'sip-buddies-cow': 'SIP BUDDIES COW',
+    'sip-buddies-cat': 'SIP BUDDIES CAT',
+    'sip-buddies-puppy': 'SIP BUDDIES PUPPY',
+    'sip-buddies-apple': 'SIP BUDDIES APPLE',
     'mini-cool-car': 'MINI COOL CAR',
     'gel-storm': 'GEL STORM',
     'pixel-splash': 'PIXEL SPLASH'
@@ -92,7 +101,20 @@
     },
     { id: 'mini-cool-car', name: 'MINI COOL CAR', href: '/mini-cool-car', image: '/assets/images/redpoly/products/mini-cool-car-thumb.webp?v=car-20261117', skus: ['mini-cool-car'], variantLabels: {} },
     { id: 'gel-storm', name: 'GEL STORM', href: '/gel-storm', image: '/assets/images/redpoly/products/gel-storm-thumb.webp?v=gel-20261121', skus: ['gel-storm'], variantLabels: {} },
-    { id: 'pixel-splash', name: 'PIXEL SPLASH', href: '/pixel-splash', image: '/assets/images/redpoly/products/pixel-splash-thumb.webp?v=pixel-20261117-v3', skus: ['pixel-splash'], variantLabels: {} }
+    { id: 'pixel-splash', name: 'PIXEL SPLASH', href: '/pixel-splash', image: '/assets/images/redpoly/products/pixel-splash-thumb.webp?v=pixel-20261117-v3', skus: ['pixel-splash'], variantLabels: {} },
+    {
+      id: 'sip-buddies',
+      name: 'SIP BUDDIES',
+      href: '/sip-buddies',
+      image: '/assets/images/redpoly/products/sip-buddies-group-thumb.webp?v=sip-20261122',
+      skus: ['sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple'],
+      variantLabels: {
+        'sip-buddies-cow': 'Cow',
+        'sip-buddies-cat': 'Cat',
+        'sip-buddies-puppy': 'Puppy',
+        'sip-buddies-apple': 'Apple'
+      }
+    }
   ];
   var GROUP_BY_ID = {};
   var SKU_TO_GROUP = {};
@@ -120,7 +142,11 @@
     'cute-dinos-trio': '',
     'mini-cool-car': 'NEW IN STORE',
     'gel-storm': 'JUST LANDED',
-    'pixel-splash': 'NEW IN STORE'
+    'pixel-splash': 'NEW IN STORE',
+    'sip-buddies-cow': 'NEW IN STORE',
+    'sip-buddies-cat': '',
+    'sip-buddies-puppy': '',
+    'sip-buddies-apple': ''
   };
   var DEFAULT_LOW_STOCK_THRESHOLD = 5;
   var INITIAL_SEED_STOCK = 20;
@@ -170,6 +196,17 @@
       visible: true,
       thumbnailUrl: '',
       updatedAtMs: 0
+    },
+    {
+      slug: 'essentials',
+      name: 'Essentials',
+      shortDesc: 'Bottles & everyday kids gear',
+      shelfDesc: 'Insulated bottles and everyday gear for school, travel and play.',
+      accentColor: '#D6336C',
+      sortOrder: 5,
+      visible: true,
+      thumbnailUrl: '',
+      updatedAtMs: 0
     }
   ];
   var DEFAULT_PRODUCT_CATEGORIES = {
@@ -189,11 +226,15 @@
     'cute-dinos-trio': 'fun',
     'mini-cool-car': 'cars',
     'gel-storm': 'guns',
-    'pixel-splash': 'guns'
+    'pixel-splash': 'guns',
+    'sip-buddies-cow': 'essentials',
+    'sip-buddies-cat': 'essentials',
+    'sip-buddies-puppy': 'essentials',
+    'sip-buddies-apple': 'essentials'
   };
 
   var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-  var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo'];
+  var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo', 'sip-buddies'];
   var PRODUCT_PAGE_BY_SLUG = {
     'bubble-gun': '/bubble-gun#product-reviews',
     'stunt-pet': '/stunt-pet#product-reviews',
@@ -205,7 +246,8 @@
     'magnetic-blocks': '/magnetic-blocks#product-reviews',
     'rise-one-x-4x4': '/rise-one-x-4x4#product-reviews',
     'drift-king': '/drift-king#product-reviews',
-    'baby-lingo': '/baby-lingo#product-reviews'
+    'baby-lingo': '/baby-lingo#product-reviews',
+    'sip-buddies': '/sip-buddies#product-reviews'
   };
 
   var GOOGLE_SVG = '<svg class="google-btn-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5H1.2v3.1C3.2 21.4 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.2C.4 8.2 0 10.1 0 12s.4 3.8 1.2 5.4l4-3.1z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3.3.6 4.6 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.3 0 3.2 2.6 1.2 6.6l4 3.1c1-2.9 3.7-5 6.8-5z"/></svg>';
@@ -353,9 +395,9 @@
         if (!Number.isFinite(num) || num < 0 || num > 500000) return null;
         return Math.round(num * 100) / 100;
       }
-      var DEFAULT_COST_PRICES = { 'drift-king': 485, 'baby-lingo': 500 };
+      var DEFAULT_COST_PRICES = { 'drift-king': 485, 'baby-lingo': 500, 'sip-buddies-cow': 479, 'sip-buddies-cat': 479, 'sip-buddies-puppy': 479, 'sip-buddies-apple': 479 };
       var DEFAULT_PRICE_COMPARISONS = { 'drift-king': [{ platform: 'Amazon', price: 859 }], 'baby-lingo': [{ platform: 'Amazon', price: 899 }] };
-      var fallbackCostCache = { 'drift-king': 485, 'baby-lingo': 500 };
+      var fallbackCostCache = { 'drift-king': 485, 'baby-lingo': 500, 'sip-buddies-cow': 479, 'sip-buddies-cat': 479, 'sip-buddies-puppy': 479, 'sip-buddies-apple': 479 };
 
       function toReviewRecord(docId, d, fallbackSlug) {
         var createdTs = d.createdAt;
@@ -1557,7 +1599,8 @@
   var draftComparisons = [];
   var expandedProductGroups = {
     'magnetic-blocks': true,
-    'cute-dinos': true
+    'cute-dinos': true,
+    'sip-buddies': true
   };
 
   var allCategories = DEFAULT_CATEGORIES.map(function (c) { return Object.assign({}, c); });

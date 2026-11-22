@@ -48,6 +48,8 @@ const permanentRedirects = {
   '/products/drift-king.html': '/drift-king',
   '/products/baby-lingo': '/baby-lingo',
   '/products/baby-lingo.html': '/baby-lingo',
+  '/products/sip-buddies': '/sip-buddies',
+  '/products/sip-buddies.html': '/sip-buddies',
 };
 
 const temporaryRedirects = new Set([
@@ -93,6 +95,7 @@ const rewrites = {
   '/rise-one-x-4x4': 'products/rise-one-x-4x4.html',
   '/drift-king': 'products/drift-king.html',
   '/baby-lingo': 'products/baby-lingo.html',
+  '/sip-buddies': 'products/sip-buddies.html',
   '/account': 'account.html',
   '/my-account': 'account.html',
   '/dashboard': 'dashboard.html',
