@@ -57,7 +57,11 @@ service cloud.firestore {
         'magnetic-blocks-64-pcs',
         'rise-one-x-4x4',
         'drift-king',
-        'baby-lingo'
+        'baby-lingo',
+        'sip-buddies-cow',
+        'sip-buddies-cat',
+        'sip-buddies-puppy',
+        'sip-buddies-apple'
       ];
     }
 
@@ -75,6 +79,10 @@ service cloud.firestore {
         name == 'CUTE DINOS RED' ? 'cute-dinos-red' :
         name == 'CUTE DINOS TEAL' ? 'cute-dinos-teal' :
         name == 'CUTE DINOS TRIO' ? 'cute-dinos-trio' :
+        name == 'SIP BUDDIES COW' ? 'sip-buddies-cow' :
+        name == 'SIP BUDDIES CAT' ? 'sip-buddies-cat' :
+        name == 'SIP BUDDIES PUPPY' ? 'sip-buddies-puppy' :
+        name == 'SIP BUDDIES APPLE' ? 'sip-buddies-apple' :
         name == 'MAGNETIC BLOCKS 25 PCS' ? 'magnetic-blocks-25-pcs' :
         name == 'MAGNETIC BLOCKS 36 PCS' ? 'magnetic-blocks-36-pcs' :
         name == 'MAGNETIC BLOCKS 42 PCS' ? 'magnetic-blocks-42-pcs' :
@@ -95,6 +103,10 @@ service cloud.firestore {
         slug == 'cute-dinos-red' ? 'CUTE DINOS RED' :
         slug == 'cute-dinos-teal' ? 'CUTE DINOS TEAL' :
         slug == 'cute-dinos-trio' ? 'CUTE DINOS TRIO' :
+        slug == 'sip-buddies-cow' ? 'SIP BUDDIES COW' :
+        slug == 'sip-buddies-cat' ? 'SIP BUDDIES CAT' :
+        slug == 'sip-buddies-puppy' ? 'SIP BUDDIES PUPPY' :
+        slug == 'sip-buddies-apple' ? 'SIP BUDDIES APPLE' :
         slug == 'magnetic-blocks-25-pcs' ? 'MAGNETIC BLOCKS 25 PCS' :
         slug == 'magnetic-blocks-36-pcs' ? 'MAGNETIC BLOCKS 36 PCS' :
         slug == 'magnetic-blocks-42-pcs' ? 'MAGNETIC BLOCKS 42 PCS' :
@@ -115,6 +127,10 @@ service cloud.firestore {
         name == 'CUTE DINOS RED' ? 249 :
         name == 'CUTE DINOS TEAL' ? 249 :
         name == 'CUTE DINOS TRIO' ? 549 :
+        name == 'SIP BUDDIES COW' ? 899 :
+        name == 'SIP BUDDIES CAT' ? 899 :
+        name == 'SIP BUDDIES PUPPY' ? 899 :
+        name == 'SIP BUDDIES APPLE' ? 899 :
         name == 'MAGNETIC BLOCKS 25 PCS' ? 399 :
         name == 'MAGNETIC BLOCKS 36 PCS' ? 549 :
         name == 'MAGNETIC BLOCKS 42 PCS' ? 599 :
@@ -301,14 +317,16 @@ service cloud.firestore {
         'magnetic-blocks',
         'rise-one-x-4x4',
         'drift-king',
-        'baby-lingo'
+        'baby-lingo',
+        'sip-buddies'
       ];
     }
 
     function itemSlugMatchesProduct(itemSlug, productSlug) {
       return (productSlug == 'cute-dinos' && itemSlug in ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio']) ||
         (productSlug == 'magnetic-blocks' && itemSlug in ['magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs']) ||
-        (productSlug != 'cute-dinos' && productSlug != 'magnetic-blocks' && itemSlug == productSlug);
+        (productSlug == 'sip-buddies' && itemSlug in ['sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple']) ||
+        (productSlug != 'cute-dinos' && productSlug != 'magnetic-blocks' && productSlug != 'sip-buddies' && itemSlug == productSlug);
     }
 
     function isValidOrderStatus(status) {

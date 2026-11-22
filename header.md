@@ -35,7 +35,7 @@ Styles live in `styles.css` (`site-header`, phone menu rules, and shared cart/sa
   shop controls (the help desk) the cart button is still shown but the drawer machinery is not built.
 - There is no back-to-top button anywhere in the site; none should be added.
 
-## The one exception: next toy
+## The one exception: next product
 
 Product pages carry a single extra element in the header, between the nav and the menu button:
 
@@ -43,7 +43,7 @@ Product pages carry a single extra element in the header, between the nav and th
 <a class="site-header__next" href="/NEXT-SLUG">NEXT: PRODUCT NAME <span aria-hidden="true">→</span></a>
 ```
 
-It is a single closed rotation through every toy, so every toy is reachable from every other without returning to the shop:
+It is a single closed rotation through every product, so every product is reachable from every other without returning to the shop:
 
 | Page | Links to |
 | --- | --- |
@@ -54,7 +54,8 @@ It is a single closed rotation through every toy, so every toy is reachable from
 | gel-storm | pixel-splash |
 | pixel-splash | drift-king |
 | drift-king | baby-lingo |
-| baby-lingo | rise-one-x-4x4 |
+| baby-lingo | sip-buddies |
+| sip-buddies | rise-one-x-4x4 |
 | rise-one-x-4x4 | magnetic-blocks |
 | magnetic-blocks | mecha-rover |
 | mecha-rover | bubble-gun |

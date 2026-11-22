@@ -88,6 +88,11 @@
     'CUTE DINOS RED': { price:249, href:'/cute-dinos?colour=red', image:'/assets/images/redpoly/products/cute-dinos-red-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TEAL': { price:249, href:'/cute-dinos?colour=teal', image:'/assets/images/redpoly/products/cute-dinos-teal-thumb.webp?v=dinos-20261116' },
     'CUTE DINOS TRIO': { price:549, href:'/cute-dinos?pack=trio', image:'/assets/images/redpoly/products/cute-dinos-trio-thumb.webp?v=dinos-20261116' },
+    // Sip Buddies is one bottle in four designs, all at the same price.
+    'SIP BUDDIES COW': { price:899, href:'/sip-buddies?buddy=cow', image:'/assets/images/redpoly/products/sip-buddies-cow-thumb.webp?v=sip-20261122' },
+    'SIP BUDDIES CAT': { price:899, href:'/sip-buddies?buddy=cat', image:'/assets/images/redpoly/products/sip-buddies-cat-thumb.webp?v=sip-20261122' },
+    'SIP BUDDIES PUPPY': { price:899, href:'/sip-buddies?buddy=puppy', image:'/assets/images/redpoly/products/sip-buddies-puppy-thumb.webp?v=sip-20261122' },
+    'SIP BUDDIES APPLE': { price:899, href:'/sip-buddies?buddy=apple', image:'/assets/images/redpoly/products/sip-buddies-apple-thumb.webp?v=sip-20261122' },
     'MAGNETIC BLOCKS 25 PCS': { price:319, href:'/magnetic-blocks?pack=25pcs', image:'/assets/images/redpoly/products/magnetic-blocks-25pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 36 PCS': { price:479, href:'/magnetic-blocks?pack=36pcs', image:'/assets/images/redpoly/products/magnetic-blocks-36pcs-thumb.webp?v=mag-20261122' },
     'MAGNETIC BLOCKS 42 PCS': { price:549, href:'/magnetic-blocks?pack=42pcs', image:'/assets/images/redpoly/products/magnetic-blocks-42pcs-thumb.webp?v=mag-20261122' },
@@ -113,6 +118,10 @@
     'CUTE DINOS RED': '',
     'CUTE DINOS TEAL': '',
     'CUTE DINOS TRIO': '',
+    'SIP BUDDIES COW': 'NEW IN STORE',
+    'SIP BUDDIES CAT': '',
+    'SIP BUDDIES PUPPY': '',
+    'SIP BUDDIES APPLE': '',
     'MINI COOL CAR': 'NEW IN STORE',
     'GEL STORM': 'JUST LANDED',
     'PIXEL SPLASH': 'NEW IN STORE',
@@ -129,7 +138,8 @@
     'magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs',
     'mecha-rover', 'bubble-gun', 'stunt-pet',
     'cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio',
-    'mini-cool-car', 'gel-storm', 'pixel-splash'
+    'mini-cool-car', 'gel-storm', 'pixel-splash',
+    'sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple'
   ];
   var SKU_TO_NAME = {
     'baby-lingo': 'BABY LINGO',
@@ -148,7 +158,11 @@
     'cute-dinos-trio': 'CUTE DINOS TRIO',
     'mini-cool-car': 'MINI COOL CAR',
     'gel-storm': 'GEL STORM',
-    'pixel-splash': 'PIXEL SPLASH'
+    'pixel-splash': 'PIXEL SPLASH',
+    'sip-buddies-cow': 'SIP BUDDIES COW',
+    'sip-buddies-cat': 'SIP BUDDIES CAT',
+    'sip-buddies-puppy': 'SIP BUDDIES PUPPY',
+    'sip-buddies-apple': 'SIP BUDDIES APPLE'
   };
   function toCatalogRecord(sku, raw) {
     var name = SKU_TO_NAME[sku];
@@ -280,7 +294,7 @@
       var FREE_GIFT_FROM = 3500;
       var GST_RATE = 12;
       var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo'];
+      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo', 'sip-buddies'];
 
       function normalizeOrderStatus(raw) {
         var str = String(raw || '');
@@ -298,6 +312,9 @@
         }
         if (productSlug === 'magnetic-blocks') {
           return itemSlugVal === 'magnetic-blocks-25-pcs' || itemSlugVal === 'magnetic-blocks-36-pcs' || itemSlugVal === 'magnetic-blocks-42-pcs' || itemSlugVal === 'magnetic-blocks-64-pcs';
+        }
+        if (productSlug === 'sip-buddies') {
+          return itemSlugVal === 'sip-buddies-cow' || itemSlugVal === 'sip-buddies-cat' || itemSlugVal === 'sip-buddies-puppy' || itemSlugVal === 'sip-buddies-apple';
         }
         return itemSlugVal === productSlug;
       }
@@ -1371,10 +1388,10 @@
         accountTitle.textContent = 'SIGN IN WITH GOOGLE';
         var copy = document.createElement('p');
         copy.className = 'account-panel__copy';
-        copy.textContent = 'Use your Google account to sync your cart, saved toys, delivery details, and REDPOLY demo order history across devices.';
+        copy.textContent = 'Use your Google account to sync your cart, saved items, delivery details, and REDPOLY demo order history across devices.';
         var perks = document.createElement('ul');
         perks.className = 'account-panel__perks';
-        ['Sync shopping cart across browser tabs and devices', 'Keep your Saved toys list tied to your account', 'Pre-fill checkout and track your REDPOLY orders'].forEach(function (text) {
+        ['Sync shopping cart across browser tabs and devices', 'Keep your Saved list tied to your account', 'Pre-fill checkout and track your REDPOLY orders'].forEach(function (text) {
           var li = document.createElement('li');
           li.textContent = text;
           perks.appendChild(li);
@@ -2520,6 +2537,20 @@
         });
       }
 
+      // 3c) Shared variant picker (products/variant-picker.js), used by Sip Buddies and any later
+      // product that sells one item in several designs
+      var variantPicker = document.querySelector('[data-variant-picker]');
+      if (variantPicker) {
+        variantPicker.querySelectorAll('input[type="radio"][data-name]').forEach(function (input) {
+          var r = getLiveRecord(input.getAttribute('data-name'));
+          if (!r) return;
+          input.setAttribute('data-price', String(r.price));
+          var optionLabel = input.closest('label');
+          var optionPrice = optionLabel ? optionLabel.querySelector('[data-variant-option-price]') : null;
+          if (optionPrice) optionPrice.textContent = money(r.price);
+        });
+      }
+
       // 4) Product page buy row, MRP, stock pill, non-linked market comparison tags, final CTA & sticky bar
       if (pageBuy) {
         var activeSku = pageBuy.getAttribute('data-name') || '';
@@ -2575,12 +2606,13 @@
           applyButtonStockState(pageBuy, activeRec, 'ADD TO CART', 'OUT OF STOCK');
           var finalBuy = document.querySelector('.char-buy--final');
           if (finalBuy) {
-            var finalSku = document.getElementById('magnetic-picker')
+            var followsPicker = Boolean(document.getElementById('magnetic-picker') || document.querySelector('[data-variant-picker]'));
+            var finalSku = followsPicker
               ? activeSku
               : (finalBuy.getAttribute('data-name') || activeSku);
             var finalRec = getLiveRecord(finalSku) || activeRec;
             finalBuy.setAttribute('data-name', finalSku);
-            if (document.getElementById('magnetic-picker')) {
+            if (followsPicker) {
               var magFinalText = 'ADD TO CART · ' + money(finalRec.price);
               finalBuy.dataset.baseLabel = magFinalText;
               finalBuy.dataset.baseHtml = magFinalText + ' <span aria-hidden="true">↗</span>';
@@ -2613,6 +2645,9 @@
       }
       if (document.getElementById('magnetic-picker')) {
         window.dispatchEvent(new CustomEvent('redpoly:magnetic-blocks-catalog-sync'));
+      }
+      if (document.querySelector('[data-variant-picker]')) {
+        window.dispatchEvent(new CustomEvent('redpoly:variant-picker-catalog-sync'));
       }
       renderWish();
     });
@@ -3159,7 +3194,11 @@
       'magnetic-blocks-64-pcs': '/magnetic-blocks',
       'rise-one-x-4x4': '/rise-one-x-4x4',
       'drift-king': '/drift-king',
-      'baby-lingo': '/baby-lingo'
+      'baby-lingo': '/baby-lingo',
+      'sip-buddies-cow': '/sip-buddies',
+      'sip-buddies-cat': '/sip-buddies',
+      'sip-buddies-puppy': '/sip-buddies',
+      'sip-buddies-apple': '/sip-buddies'
     };
 
     function itemToSlug(name) {
@@ -3473,7 +3512,8 @@
       'magnetic-blocks': ['magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs'],
       'rise-one-x-4x4': ['rise-one-x-4x4'],
       'drift-king': ['drift-king'],
-      'baby-lingo': ['baby-lingo']
+      'baby-lingo': ['baby-lingo'],
+      'sip-buddies': ['sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple']
     };
     var matchingItemSlugs = ELIGIBLE_ITEM_SLUGS[productSlug] || [productSlug];
 
@@ -3609,7 +3649,7 @@
       var meta = document.createElement('div');
       meta.className = 'review-card__meta';
       var author = document.createElement('span');
-      var showVariantSuffix = review.productName && (productSlug === 'cute-dinos' || productSlug === 'magnetic-blocks');
+      var showVariantSuffix = review.productName && (productSlug === 'cute-dinos' || productSlug === 'magnetic-blocks' || productSlug === 'sip-buddies');
       author.textContent = review.authorName + (showVariantSuffix ? ' · ' + review.productName : '');
       var date = document.createElement('span');
       date.textContent = formatReviewDate(review.createdAtMs);
@@ -3948,11 +3988,13 @@
       { slug: 'guns', name: 'Guns', shortDesc: 'Gel, water & automatic bubble blasters', shelfDesc: 'Gel blasters, automatic water guns, and backyard bubble action.', accentColor: '#FF6B1A', sortOrder: 1, visible: true, thumbnailUrl: '' },
       { slug: 'cars', name: 'Cars', shortDesc: 'RC drift, spray, stunt & transform cars', shelfDesc: 'Remote-control drift racers, exhaust mist sprayers, stunt cars & transformable rescue trucks.', accentColor: '#1C7ED6', sortOrder: 2, visible: true, thumbnailUrl: '' },
       { slug: 'educational', name: 'Educational', shortDesc: 'Bilingual first words & magnetic STEM', shelfDesc: 'Screen-free bilingual learning and magnetic STEM construction sets.', accentColor: '#0E9F6E', sortOrder: 3, visible: true, thumbnailUrl: '' },
-      { slug: 'fun', name: 'Fun', shortDesc: 'Rolling voice pets & push-and-go dinos', shelfDesc: 'Voice-activated rolling characters and chunky push-and-go dinosaurs.', accentColor: '#7C3AED', sortOrder: 4, visible: true, thumbnailUrl: '' }
+      { slug: 'fun', name: 'Fun', shortDesc: 'Rolling voice pets & push-and-go dinos', shelfDesc: 'Voice-activated rolling characters and chunky push-and-go dinosaurs.', accentColor: '#7C3AED', sortOrder: 4, visible: true, thumbnailUrl: '' },
+      { slug: 'essentials', name: 'Essentials', shortDesc: 'Bottles & everyday kids gear', shelfDesc: 'Insulated bottles and everyday gear for school, travel and play.', accentColor: '#D6336C', sortOrder: 5, visible: true, thumbnailUrl: '' }
     ];
     var GROUP_PRIMARY_SKU = {
       'magnetic-blocks': 'magnetic-blocks-25-pcs',
-      'cute-dinos': 'cute-dinos-green'
+      'cute-dinos': 'cute-dinos-green',
+      'sip-buddies': 'sip-buddies-cow'
     };
     var DEFAULT_GROUP_CATS = {
       'gel-storm': 'guns',
@@ -3965,7 +4007,8 @@
       'baby-lingo': 'educational',
       'magnetic-blocks': 'educational',
       'stunt-pet': 'fun',
-      'cute-dinos': 'fun'
+      'cute-dinos': 'fun',
+      'sip-buddies': 'essentials'
     };
 
     // Snapshot original 11 .shop-card DOM elements in initial order so wishlist hearts, cart listeners & live badges stay attached
@@ -4042,7 +4085,7 @@
           filterStatus.textContent = '';
         } else {
           filterBar.hidden = false;
-          filterStatus.textContent = 'SHOWING ' + (categoryNameBySlug[next] || next).toUpperCase() + ' · ' + visibleCount + (visibleCount === 1 ? ' TOY' : ' TOYS');
+          filterStatus.textContent = 'SHOWING ' + (categoryNameBySlug[next] || next).toUpperCase() + ' · ' + visibleCount + (visibleCount === 1 ? ' PRODUCT' : ' PRODUCTS');
         }
       }
 
@@ -4073,6 +4116,32 @@
       var rawCats = (fb && typeof fb.getCategories === 'function' && fb.getCategories().length)
         ? fb.getCategories()
         : DEFAULT_CATS;
+
+      // A product can ship in a default category that the saved category list does not have yet
+      // (the list is edited in the dashboard, and a new default only reaches it once the dashboard
+      // has been opened). Rather than drop that product into the first shelf, show its default
+      // category until the saved list catches up. A category the admin has hidden stays hidden.
+      if (rawCats !== DEFAULT_CATS) {
+        var savedSlugs = {};
+        rawCats.forEach(function (c) { savedSlugs[c.slug] = true; });
+        var earlyLookup = buildSkuCategoryLookup();
+        var highestOrder = rawCats.reduce(function (max, c) { return Math.max(max, Number(c.sortOrder) || 0); }, 0);
+        var extraCats = [];
+        initialCards.forEach(function (entry) {
+          var wanted = earlyLookup[entry.primarySku] || DEFAULT_GROUP_CATS[entry.groupSlug];
+          if (!wanted || savedSlugs[wanted]) return;
+          var fallbackCat = null;
+          DEFAULT_CATS.forEach(function (c) { if (c.slug === wanted) fallbackCat = c; });
+          if (!fallbackCat) return;
+          savedSlugs[wanted] = true;
+          highestOrder += 1;
+          var copy = {};
+          Object.keys(fallbackCat).forEach(function (key) { copy[key] = fallbackCat[key]; });
+          copy.sortOrder = highestOrder;
+          extraCats.push(copy);
+        });
+        if (extraCats.length) rawCats = rawCats.concat(extraCats);
+      }
 
       var allCats = rawCats.slice().sort(function (a, b) {
         return (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0) || String(a.name || '').localeCompare(String(b.name || ''));
@@ -4117,7 +4186,7 @@
         allBtn.className = 'shop-tab';
         allBtn.setAttribute('role', 'tab');
         allBtn.setAttribute('data-shop-filter', 'all');
-        allBtn.appendChild(document.createTextNode('ALL TOYS '));
+        allBtn.appendChild(document.createTextNode('ALL PRODUCTS '));
         var allCnt = document.createElement('span');
         allCnt.className = 'shop-tab__count';
         allCnt.textContent = '(' + totalVisibleToys + ')';
@@ -4169,7 +4238,7 @@
           var idxSpan = document.createElement('span');
           idxSpan.textContent = String(idx + 1).padStart(2, '0');
           var cntSpan = document.createElement('span');
-          cntSpan.textContent = cnt + (cnt === 1 ? ' TOY' : ' TOYS');
+          cntSpan.textContent = cnt + (cnt === 1 ? ' PRODUCT' : ' PRODUCTS');
           meta.appendChild(idxSpan);
           meta.appendChild(cntSpan);
           cardBtn.appendChild(meta);
@@ -4246,7 +4315,7 @@
         } else {
           var emptyNote = document.createElement('p');
           emptyNote.className = 'shop-shelf__empty';
-          emptyNote.textContent = 'New toys coming soon to ' + c.name + '.';
+          emptyNote.textContent = 'New arrivals coming soon to ' + c.name + '.';
           shelf.appendChild(emptyNote);
         }
 
@@ -4254,7 +4323,7 @@
       });
 
       if (filterReset) {
-        filterReset.textContent = 'SHOW ALL ' + totalVisibleToys + (totalVisibleToys === 1 ? ' TOY' : ' TOYS');
+        filterReset.textContent = 'SHOW ALL ' + totalVisibleToys + (totalVisibleToys === 1 ? ' PRODUCT' : ' PRODUCTS');
       }
 
       var isFirstSync = !hasRenderedDynamic;
