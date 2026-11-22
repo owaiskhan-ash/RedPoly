@@ -18,7 +18,7 @@
 | Gel Storm (3-in-1 M4 gel blaster, ages 14+) | `/gel-storm` (`products/gel-storm.html`) | ₹1,999 |
 | Pixel Splash (automatic pixel-block water blaster with RGB lighting and rechargeable power) | `/pixel-splash` (`products/pixel-splash.html`) | ₹1,749 |
 | Mecha Rover (2-in-1 build and transform fire rescue truck and robot, 27 pieces, ages 3+) | `/mecha-rover` (`products/mecha-rover.html`) | ₹499 |
-| Sip Buddies (480 ML insulated kids' bottle with a 3D character lid; cow, cat, puppy or apple) | `/sip-buddies` (`products/sip-buddies.html`) | ₹899 |
+| Sip Buddies (380 ML insulated kids' bottle with a 3D character lid; cow, cat, puppy or apple) | `/sip-buddies` (`products/sip-buddies.html`) | ₹899 |
 
 Read CC Does a Spin (Issue 02), all three parts of Sector Zero (Issue 03), and Magnet Mayhem (Issue 04) at `/stories`. See [the comics guide](comics/README.md) for the catalog and page art.
 
