@@ -20,6 +20,7 @@
 | Mecha Rover (2-in-1 build and transform fire rescue truck and robot, 27 pieces, ages 3+) | `/mecha-rover` (`products/mecha-rover.html`) | ₹499 |
 | Sip Buddies (380 ML insulated kids' bottle with a 3D character lid; cow, cat, puppy or apple) | `/sip-buddies` (`products/sip-buddies.html`) | ₹899 |
 | Mario Toothbrush (glossy Mario-themed standing toothbrush for kids: soft nylon bristles, removable hygiene cap, 15 cm handle) | `/mario-toothbrush` (`products/mario-toothbrush.html`) | ₹99 |
+| Bolt Backpack (colour-block everyday backpack with detachable side mini zip pouch; Blue Good 4You or Red Born Right) | `/bolt-backpack` (`products/bolt-backpack.html`) | ₹899 |
 
 Read CC Does a Spin (Issue 02), all three parts of Sector Zero (Issue 03), and Magnet Mayhem (Issue 04) at `/stories`. See [the comics guide](comics/README.md) for the catalog and page art.
 

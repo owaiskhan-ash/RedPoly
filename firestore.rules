@@ -62,7 +62,9 @@ service cloud.firestore {
         'sip-buddies-cat',
         'sip-buddies-puppy',
         'sip-buddies-apple',
-        'mario-toothbrush'
+        'mario-toothbrush',
+        'bolt-backpack-blue',
+        'bolt-backpack-red'
       ];
     }
 
@@ -88,7 +90,9 @@ service cloud.firestore {
         name == 'MAGNETIC BLOCKS 36 PCS' ? 'magnetic-blocks-36-pcs' :
         name == 'MAGNETIC BLOCKS 42 PCS' ? 'magnetic-blocks-42-pcs' :
         name == 'MAGNETIC BLOCKS 64 PCS' ? 'magnetic-blocks-64-pcs' :
-        name == 'MARIO TOOTHBRUSH' ? 'mario-toothbrush' : '';
+        name == 'MARIO TOOTHBRUSH' ? 'mario-toothbrush' :
+        name == 'BOLT BACKPACK BLUE' ? 'bolt-backpack-blue' :
+        name == 'BOLT BACKPACK RED' ? 'bolt-backpack-red' : '';
     }
 
     function nameForSkuSlug(slug) {
@@ -113,7 +117,9 @@ service cloud.firestore {
         slug == 'magnetic-blocks-36-pcs' ? 'MAGNETIC BLOCKS 36 PCS' :
         slug == 'magnetic-blocks-42-pcs' ? 'MAGNETIC BLOCKS 42 PCS' :
         slug == 'magnetic-blocks-64-pcs' ? 'MAGNETIC BLOCKS 64 PCS' :
-        slug == 'mario-toothbrush' ? 'MARIO TOOTHBRUSH' : '';
+        slug == 'mario-toothbrush' ? 'MARIO TOOTHBRUSH' :
+        slug == 'bolt-backpack-blue' ? 'BOLT BACKPACK BLUE' :
+        slug == 'bolt-backpack-red' ? 'BOLT BACKPACK RED' : '';
     }
 
     function defaultPriceForName(name) {
@@ -138,7 +144,9 @@ service cloud.firestore {
         name == 'MAGNETIC BLOCKS 36 PCS' ? 549 :
         name == 'MAGNETIC BLOCKS 42 PCS' ? 599 :
         name == 'MAGNETIC BLOCKS 64 PCS' ? 799 :
-        name == 'MARIO TOOTHBRUSH' ? 99 : -1;
+        name == 'MARIO TOOTHBRUSH' ? 99 :
+        name == 'BOLT BACKPACK BLUE' ? 899 :
+        name == 'BOLT BACKPACK RED' ? 899 : -1;
     }
 
     function isValidCatalogueItem(name, price) {
@@ -323,7 +331,8 @@ service cloud.firestore {
         'drift-king',
         'baby-lingo',
         'sip-buddies',
-        'mario-toothbrush'
+        'mario-toothbrush',
+        'bolt-backpack'
       ];
     }
 
@@ -331,7 +340,8 @@ service cloud.firestore {
       return (productSlug == 'cute-dinos' && itemSlug in ['cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio']) ||
         (productSlug == 'magnetic-blocks' && itemSlug in ['magnetic-blocks-25-pcs', 'magnetic-blocks-36-pcs', 'magnetic-blocks-42-pcs', 'magnetic-blocks-64-pcs']) ||
         (productSlug == 'sip-buddies' && itemSlug in ['sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple']) ||
-        (productSlug != 'cute-dinos' && productSlug != 'magnetic-blocks' && productSlug != 'sip-buddies' && itemSlug == productSlug);
+        (productSlug == 'bolt-backpack' && itemSlug in ['bolt-backpack-blue', 'bolt-backpack-red']) ||
+        (productSlug != 'cute-dinos' && productSlug != 'magnetic-blocks' && productSlug != 'sip-buddies' && productSlug != 'bolt-backpack' && itemSlug == productSlug);
     }
 
     function isValidOrderStatus(status) {

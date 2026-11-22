@@ -25,7 +25,7 @@ Styles live in `styles.css` (`site-header`, phone menu rules, and shared cart/sa
 
 ## Pages that carry it
 
-`index.html`, `products/*.html` (13), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `account.html`, `stories/index.html` (21 pages).
+`index.html`, `products/*.html` (14), `checkout.html`, `thank-you.html`, `help.html`, `privacy.html`, `terms.html`, `account.html`, `stories/index.html` (22 pages).
 
 ## Notes
 
@@ -55,7 +55,8 @@ It is a single closed rotation through every product, so every product is reacha
 | pixel-splash | drift-king |
 | drift-king | baby-lingo |
 | baby-lingo | mario-toothbrush |
-| mario-toothbrush | sip-buddies |
+| mario-toothbrush | bolt-backpack |
+| bolt-backpack | sip-buddies |
 | sip-buddies | rise-one-x-4x4 |
 | rise-one-x-4x4 | magnetic-blocks |
 | magnetic-blocks | mecha-rover |

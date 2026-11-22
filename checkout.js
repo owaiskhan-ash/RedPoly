@@ -30,7 +30,9 @@
     'RISE ONE X 4X4': { price:1499, image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
     'DRIFT KING': { price:799, image:'/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' },
     'BABY LINGO': { price:799, image:'/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119' },
-    'MARIO TOOTHBRUSH': { price:99, image:'/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2' }
+    'MARIO TOOTHBRUSH': { price:99, image:'/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2' },
+    'BOLT BACKPACK BLUE': { price:899, image:'/assets/images/redpoly/products/bag-thumb.webp?v=bag-20261122' },
+    'BOLT BACKPACK RED': { price:899, image:'/assets/images/redpoly/products/bag-scene-1.jpg?v=bag-20261122' }
   };
   var liveCatalogMap = {};
   (function hydrateCatalogFromCache() {

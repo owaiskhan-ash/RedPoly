@@ -349,7 +349,8 @@
             "drift-king",
             "baby-lingo",
             "sip-buddies",
-            "mario-toothbrush"
+            "mario-toothbrush",
+            "bolt-backpack"
           ]
         },
         "itemSlug": {
@@ -443,7 +444,9 @@
             "sip-buddies-cat",
             "sip-buddies-puppy",
             "sip-buddies-apple",
-            "mario-toothbrush"
+            "mario-toothbrush",
+            "bolt-backpack-blue",
+            "bolt-backpack-red"
           ]
         },
         "name": {
@@ -604,7 +607,9 @@
             "sip-buddies-cat",
             "sip-buddies-puppy",
             "sip-buddies-apple",
-            "mario-toothbrush"
+            "mario-toothbrush",
+            "bolt-backpack-blue",
+            "bolt-backpack-red"
           ]
         },
         "costPrice": {

@@ -52,6 +52,8 @@ const permanentRedirects = {
   '/products/sip-buddies.html': '/sip-buddies',
   '/products/mario-toothbrush': '/mario-toothbrush',
   '/products/mario-toothbrush.html': '/mario-toothbrush',
+  '/products/bolt-backpack': '/bolt-backpack',
+  '/products/bolt-backpack.html': '/bolt-backpack',
 };
 
 const temporaryRedirects = new Set([
@@ -99,6 +101,7 @@ const rewrites = {
   '/baby-lingo': 'products/baby-lingo.html',
   '/sip-buddies': 'products/sip-buddies.html',
   '/mario-toothbrush': 'products/mario-toothbrush.html',
+  '/bolt-backpack': 'products/bolt-backpack.html',
   '/account': 'account.html',
   '/my-account': 'account.html',
   '/dashboard': 'dashboard.html',

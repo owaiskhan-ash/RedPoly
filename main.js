@@ -100,7 +100,10 @@
     'RISE ONE X 4X4': { price:1499, href:'/rise-one-x-4x4', image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
     'DRIFT KING': { price:799, href:'/drift-king', image:'/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' },
     'BABY LINGO': { price:799, href:'/baby-lingo', image:'/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119' },
-    'MARIO TOOTHBRUSH': { price:99, href:'/mario-toothbrush', image:'/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2' }
+    'MARIO TOOTHBRUSH': { price:99, href:'/mario-toothbrush', image:'/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2' },
+    // Bolt Backpack sells in two colourways (Blue Good 4You & Red Born Right) at the same price.
+    'BOLT BACKPACK BLUE': { price:899, href:'/bolt-backpack?colour=blue', image:'/assets/images/redpoly/products/bag-thumb.webp?v=bag-20261122' },
+    'BOLT BACKPACK RED': { price:899, href:'/bolt-backpack?colour=red', image:'/assets/images/redpoly/products/bag-scene-1.jpg?v=bag-20261122' }
   };
   function isCatalogueProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
   function inCatalogue(name, price) { return isCatalogueProduct(name) && catalogue[name].price === Number(price); }
@@ -127,7 +130,9 @@
     'GEL STORM': 'JUST LANDED',
     'PIXEL SPLASH': 'NEW IN STORE',
     'BABY LINGO': 'NEW IN STORE',
-    'MARIO TOOTHBRUSH': 'NEW IN STORE'
+    'MARIO TOOTHBRUSH': 'NEW IN STORE',
+    'BOLT BACKPACK BLUE': 'NEW IN STORE',
+    'BOLT BACKPACK RED': ''
   };
   var DEFAULT_PRICE_COMPARISONS = {
     'drift-king': [{ platform: 'Amazon', price: 859 }],
@@ -142,7 +147,8 @@
     'cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio',
     'mini-cool-car', 'gel-storm', 'pixel-splash',
     'sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple',
-    'mario-toothbrush'
+    'mario-toothbrush',
+    'bolt-backpack-blue', 'bolt-backpack-red'
   ];
   var SKU_TO_NAME = {
     'baby-lingo': 'BABY LINGO',
@@ -166,7 +172,9 @@
     'sip-buddies-cat': 'SIP BUDDIES CAT',
     'sip-buddies-puppy': 'SIP BUDDIES PUPPY',
     'sip-buddies-apple': 'SIP BUDDIES APPLE',
-    'mario-toothbrush': 'MARIO TOOTHBRUSH'
+    'mario-toothbrush': 'MARIO TOOTHBRUSH',
+    'bolt-backpack-blue': 'BOLT BACKPACK BLUE',
+    'bolt-backpack-red': 'BOLT BACKPACK RED'
   };
   function toCatalogRecord(sku, raw) {
     var name = SKU_TO_NAME[sku];
@@ -298,7 +306,7 @@
       var FREE_GIFT_FROM = 3500;
       var GST_RATE = 12;
       var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo', 'sip-buddies', 'mario-toothbrush'];
+      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo', 'sip-buddies', 'mario-toothbrush', 'bolt-backpack'];
 
       function normalizeOrderStatus(raw) {
         var str = String(raw || '');
@@ -319,6 +327,9 @@
         }
         if (productSlug === 'sip-buddies') {
           return itemSlugVal === 'sip-buddies-cow' || itemSlugVal === 'sip-buddies-cat' || itemSlugVal === 'sip-buddies-puppy' || itemSlugVal === 'sip-buddies-apple';
+        }
+        if (productSlug === 'bolt-backpack') {
+          return itemSlugVal === 'bolt-backpack-blue' || itemSlugVal === 'bolt-backpack-red';
         }
         return itemSlugVal === productSlug;
       }
@@ -3203,7 +3214,9 @@
       'sip-buddies-cat': '/sip-buddies',
       'sip-buddies-puppy': '/sip-buddies',
       'sip-buddies-apple': '/sip-buddies',
-      'mario-toothbrush': '/mario-toothbrush'
+      'mario-toothbrush': '/mario-toothbrush',
+      'bolt-backpack-blue': '/bolt-backpack',
+      'bolt-backpack-red': '/bolt-backpack'
     };
 
     function itemToSlug(name) {
@@ -3519,7 +3532,8 @@
       'drift-king': ['drift-king'],
       'baby-lingo': ['baby-lingo'],
       'sip-buddies': ['sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple'],
-      'mario-toothbrush': ['mario-toothbrush']
+      'mario-toothbrush': ['mario-toothbrush'],
+      'bolt-backpack': ['bolt-backpack-blue', 'bolt-backpack-red']
     };
     var matchingItemSlugs = ELIGIBLE_ITEM_SLUGS[productSlug] || [productSlug];
 
@@ -3655,7 +3669,7 @@
       var meta = document.createElement('div');
       meta.className = 'review-card__meta';
       var author = document.createElement('span');
-      var showVariantSuffix = review.productName && (productSlug === 'cute-dinos' || productSlug === 'magnetic-blocks' || productSlug === 'sip-buddies');
+      var showVariantSuffix = review.productName && (productSlug === 'cute-dinos' || productSlug === 'magnetic-blocks' || productSlug === 'sip-buddies' || productSlug === 'bolt-backpack');
       author.textContent = review.authorName + (showVariantSuffix ? ' · ' + review.productName : '');
       var date = document.createElement('span');
       date.textContent = formatReviewDate(review.createdAtMs);
@@ -4000,7 +4014,8 @@
     var GROUP_PRIMARY_SKU = {
       'magnetic-blocks': 'magnetic-blocks-25-pcs',
       'cute-dinos': 'cute-dinos-green',
-      'sip-buddies': 'sip-buddies-cow'
+      'sip-buddies': 'sip-buddies-cow',
+      'bolt-backpack': 'bolt-backpack-blue'
     };
     var DEFAULT_GROUP_CATS = {
       'gel-storm': 'guns',
@@ -4015,7 +4030,8 @@
       'stunt-pet': 'fun',
       'cute-dinos': 'fun',
       'sip-buddies': 'essentials',
-      'mario-toothbrush': 'essentials'
+      'mario-toothbrush': 'essentials',
+      'bolt-backpack': 'essentials'
     };
 
     // Snapshot original 11 .shop-card DOM elements in initial order so wishlist hearts, cart listeners & live badges stay attached

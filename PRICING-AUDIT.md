@@ -28,6 +28,7 @@ npm run check:prices
 | Stunt Pet | ₹599 | `social/stunt-pet-og.png` | **ONLY ₹599 · INCL. GST** | ✅ correct |
 | Gel Storm | ₹1,999 | `products/gel-storm-scene-1.jpg` (photo) | no price printed | ✅ nothing to be wrong |
 | Mecha Rover | ₹499 | `products/mecha-rover-catalog.jpg` (photo) | no price printed | ✅ nothing to be wrong |
+| Bolt Backpack | ₹899 (Blue &amp; Red) | `products/bag-scene-2.jpg` (photo) | no price printed | ✅ nothing to be wrong |
 
 Amazon comparison prices quoted on the Baby Lingo (₹899) and Drift King (₹859) cards also match
 the "on Amazon" comparison shown on those two product pages.

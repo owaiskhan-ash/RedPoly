@@ -921,6 +921,7 @@ body.creature-page--sip .char-final-cta h2 span{color:#1747a6}
 .variant-picker__title{font-size:9px;font-weight:900;letter-spacing:2px;color:var(--character-accent)}
 .variant-picker__state{font-size:9px;font-weight:900;letter-spacing:1.1px;color:var(--character-muted-strong)}
 .variant-picker__options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.variant-picker__options--two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .variant-picker__options--four{grid-template-columns:repeat(4,minmax(0,1fr))}
 .variant-option{position:relative;display:grid;justify-items:center;gap:5px;padding:8px 4px 8px;background:var(--character-light);color:var(--character-card-ink);border:2px solid transparent;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
 .variant-option:hover{transform:translateY(-2px)}
@@ -962,3 +963,32 @@ body.creature-page--tooth .char-final-cta h2 span{color:#c8ff00}
 @media(max-width:680px){
   body.creature-page--tooth .char-stage__figure{max-width:min(72%,290px);max-height:420px}
 }
+
+/* Bolt Backpack: deep BOLT navy, crisp sky-blue highlight, and REDPOLY lime */
+body.creature-page--bolt{--character-primary:#163d7a;--character-mid:#102f63;--character-dark:#071734;--character-deep:#0b2147;--character-hot:#d64545;--character-accent:#c8ff00;--character-light:#f5f9ff;--character-ink:#081833;--character-story:#06132b;--character-card-dark:#123163;--character-glow:rgba(122,193,240,.52);--character-glow-soft:rgba(164,218,255,.55);--character-glow-faint:rgba(122,193,240,.22);--character-accent-soft:rgba(200,255,0,.16);--character-ring:rgba(200,255,0,.52);--character-accent-halo:rgba(122,193,240,.12);--character-accent-halo-strong:rgba(200,255,0,.06);--character-accent-inset:rgba(122,193,240,.14);--character-shadow:rgba(4,12,30,.58);--character-text-shadow:rgba(5,16,38,.48);--character-nav:rgba(6,19,43,.7);--character-soft-shade:rgba(5,16,38,.28);--character-muted:rgba(245,249,255,.8);--character-muted-strong:rgba(245,249,255,.96);--character-muted-border:rgba(245,249,255,.42);--character-muted-border-strong:rgba(245,249,255,.56);--character-card-ink:#0b2147;--character-button-shadow:rgba(4,12,30,.55);--character-final-ink:#081833;--character-accent-bright:#dcff5c;--character-plate-top:#7ac1f0;--character-plate-mid:#2c64b5;--character-plate-bottom:#0b2147;--character-border:#051126}
+body.creature-page--bolt .char-hero__texture{background-image:radial-gradient(circle at 74% 32%,rgba(122,193,240,.28),transparent 54%),repeating-linear-gradient(135deg,rgba(200,255,0,.045) 0 2px,transparent 2px 18px)}
+body.creature-page--bolt .char-hero h1{font-size:clamp(64px,9.6vw,138px);line-height:.76}
+body.creature-page--bolt .char-stage__figure{width:auto;max-width:min(86%,430px);max-height:560px;transform:rotate(-1.5deg);filter:drop-shadow(0 26px 22px var(--character-shadow))}
+body.creature-page--bolt .char-stage__figure[src*="bag-scene-1"]{max-width:min(80%,390px);max-height:520px;border-radius:18px;border:2px solid var(--character-ring);box-shadow:0 24px 48px rgba(4,12,30,.64);filter:none;object-fit:cover}
+body.creature-page--bolt .variant-option__photo img[src*="bag-scene-1"]{object-fit:cover;object-position:50% 44%;border-radius:6px}
+body.creature-page--bolt .char-tags span{border:2px solid var(--character-ring);background:rgba(122,193,240,.16);box-shadow:inset 0 0 0 1px rgba(245,249,255,.12)}
+body.creature-page--bolt .char-buy{color:var(--character-ink)}
+body.creature-page--bolt .char-box__photo{border:4px solid var(--character-light);background:#fff;box-shadow:8px 8px 0 var(--character-accent);overflow:hidden}
+body.creature-page--bolt .char-box__photo img{filter:none;aspect-ratio:4/5;object-fit:cover;object-position:50% 45%}
+body.creature-page--bolt .char-file__portrait{display:block;min-height:472px;padding:0;background:#0b2147}
+body.creature-page--bolt .char-file__photo{position:absolute;inset:0;z-index:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;object-position:50% 42%;border:0;box-shadow:none;transform:none;filter:none}
+body.creature-page--bolt .char-file__portrait::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(6,19,43,.6),rgba(6,19,43,0) 26%),linear-gradient(0deg,rgba(6,19,43,.62),rgba(6,19,43,0) 28%)}
+body.creature-page--bolt .char-file__no{top:14px;left:16px;z-index:3}
+body.creature-page--bolt .char-file__stamp{z-index:3;bottom:16px;right:16px;background:rgba(6,19,43,.72)}
+body.creature-page--bolt .char-final-cta h2 span{color:#163d7a}
+@media(min-width:761px){
+  body.creature-page--bolt .accessory-policy-panel header{grid-row:span 3}
+  body.creature-page--bolt .accessory-policy-panel details{grid-column:2}
+}
+@media(max-width:680px){
+  body.creature-page--bolt .char-hero h1{font-size:clamp(54px,15.5vw,104px)}
+  body.creature-page--bolt .char-stage__figure{max-width:min(76%,320px);max-height:420px}
+  body.creature-page--bolt .char-file__portrait{min-height:400px}
+  body.creature-page--bolt .char-file__no{font-size:44px}
+}
+

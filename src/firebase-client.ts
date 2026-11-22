@@ -110,7 +110,8 @@ export type ProductSlug =
   | 'drift-king'
   | 'baby-lingo'
   | 'sip-buddies'
-  | 'mario-toothbrush';
+  | 'mario-toothbrush'
+  | 'bolt-backpack';
 
 export interface OrderRecord {
   id: string;
@@ -210,7 +211,9 @@ export type SkuSlug =
   | 'sip-buddies-cat'
   | 'sip-buddies-puppy'
   | 'sip-buddies-apple'
-  | 'mario-toothbrush';
+  | 'mario-toothbrush'
+  | 'bolt-backpack-blue'
+  | 'bolt-backpack-red';
 
 export interface StoreCategoryRecord {
   slug: string;
@@ -460,6 +463,16 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
     href: '/mario-toothbrush',
     image: '/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2',
   },
+  'BOLT BACKPACK BLUE': {
+    price: 899,
+    href: '/bolt-backpack?colour=blue',
+    image: '/assets/images/redpoly/products/bag-thumb.webp?v=bag-20261122',
+  },
+  'BOLT BACKPACK RED': {
+    price: 899,
+    href: '/bolt-backpack?colour=red',
+    image: '/assets/images/redpoly/products/bag-scene-1.jpg?v=bag-20261122',
+  },
 };
 
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
@@ -554,6 +567,8 @@ const SKU_ORDER: ReadonlyArray<SkuSlug> = [
   'sip-buddies-puppy',
   'sip-buddies-apple',
   'mario-toothbrush',
+  'bolt-backpack-blue',
+  'bolt-backpack-red',
 ];
 
 interface DefaultSeedMeta {
@@ -602,6 +617,8 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
   'sip-buddies-puppy': { name: 'SIP BUDDIES PUPPY', price: 899, cardTag: '', category: 'essentials', costPrice: 479 },
   'sip-buddies-apple': { name: 'SIP BUDDIES APPLE', price: 899, cardTag: '', category: 'essentials', costPrice: 479 },
   'mario-toothbrush': { name: 'MARIO TOOTHBRUSH', price: 99, cardTag: 'NEW IN STORE', category: 'essentials' },
+  'bolt-backpack-blue': { name: 'BOLT BACKPACK BLUE', price: 899, cardTag: 'NEW IN STORE', category: 'essentials' },
+  'bolt-backpack-red': { name: 'BOLT BACKPACK RED', price: 899, cardTag: '', category: 'essentials' },
 };
 
 const NAME_TO_SKU: Record<string, SkuSlug> = {
@@ -627,6 +644,8 @@ const NAME_TO_SKU: Record<string, SkuSlug> = {
   'SIP BUDDIES PUPPY': 'sip-buddies-puppy',
   'SIP BUDDIES APPLE': 'sip-buddies-apple',
   'MARIO TOOTHBRUSH': 'mario-toothbrush',
+  'BOLT BACKPACK BLUE': 'bolt-backpack-blue',
+  'BOLT BACKPACK RED': 'bolt-backpack-red',
 };
 
 function isValidSkuSlug(slug: string): slug is SkuSlug {
@@ -970,6 +989,7 @@ const VALID_PRODUCT_SLUGS: ReadonlyArray<ProductSlug> = [
   'baby-lingo',
   'sip-buddies',
   'mario-toothbrush',
+  'bolt-backpack',
 ];
 
 function normalizeOrderStatus(raw: unknown): OrderStatus {
@@ -1009,6 +1029,9 @@ function itemSlugMatchesProduct(itemSlugVal: string, productSlug: ProductSlug): 
       itemSlugVal === 'sip-buddies-puppy' ||
       itemSlugVal === 'sip-buddies-apple'
     );
+  }
+  if (productSlug === 'bolt-backpack') {
+    return itemSlugVal === 'bolt-backpack-blue' || itemSlugVal === 'bolt-backpack-red';
   }
   return itemSlugVal === productSlug;
 }
