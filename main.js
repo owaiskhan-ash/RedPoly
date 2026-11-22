@@ -298,7 +298,7 @@
       var FREE_GIFT_FROM = 3500;
       var GST_RATE = 12;
       var VALID_ORDER_STATUSES = ['placed', 'created', 'processed', 'shipped', 'out_for_delivery', 'delivered', 'fulfilled', 'cancelled'];
-      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo', 'sip-buddies'];
+      var VALID_PRODUCT_SLUGS = ['bubble-gun', 'stunt-pet', 'mini-cool-car', 'gel-storm', 'mecha-rover', 'pixel-splash', 'cute-dinos', 'magnetic-blocks', 'rise-one-x-4x4', 'drift-king', 'baby-lingo', 'sip-buddies', 'mario-toothbrush'];
 
       function normalizeOrderStatus(raw) {
         var str = String(raw || '');
@@ -3202,7 +3202,8 @@
       'sip-buddies-cow': '/sip-buddies',
       'sip-buddies-cat': '/sip-buddies',
       'sip-buddies-puppy': '/sip-buddies',
-      'sip-buddies-apple': '/sip-buddies'
+      'sip-buddies-apple': '/sip-buddies',
+      'mario-toothbrush': '/mario-toothbrush'
     };
 
     function itemToSlug(name) {
@@ -3517,7 +3518,8 @@
       'rise-one-x-4x4': ['rise-one-x-4x4'],
       'drift-king': ['drift-king'],
       'baby-lingo': ['baby-lingo'],
-      'sip-buddies': ['sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple']
+      'sip-buddies': ['sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple'],
+      'mario-toothbrush': ['mario-toothbrush']
     };
     var matchingItemSlugs = ELIGIBLE_ITEM_SLUGS[productSlug] || [productSlug];
 

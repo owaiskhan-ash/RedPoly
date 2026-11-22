@@ -61,7 +61,8 @@ service cloud.firestore {
         'sip-buddies-cow',
         'sip-buddies-cat',
         'sip-buddies-puppy',
-        'sip-buddies-apple'
+        'sip-buddies-apple',
+        'mario-toothbrush'
       ];
     }
 
@@ -86,7 +87,8 @@ service cloud.firestore {
         name == 'MAGNETIC BLOCKS 25 PCS' ? 'magnetic-blocks-25-pcs' :
         name == 'MAGNETIC BLOCKS 36 PCS' ? 'magnetic-blocks-36-pcs' :
         name == 'MAGNETIC BLOCKS 42 PCS' ? 'magnetic-blocks-42-pcs' :
-        name == 'MAGNETIC BLOCKS 64 PCS' ? 'magnetic-blocks-64-pcs' : '';
+        name == 'MAGNETIC BLOCKS 64 PCS' ? 'magnetic-blocks-64-pcs' :
+        name == 'MARIO TOOTHBRUSH' ? 'mario-toothbrush' : '';
     }
 
     function nameForSkuSlug(slug) {
@@ -110,7 +112,8 @@ service cloud.firestore {
         slug == 'magnetic-blocks-25-pcs' ? 'MAGNETIC BLOCKS 25 PCS' :
         slug == 'magnetic-blocks-36-pcs' ? 'MAGNETIC BLOCKS 36 PCS' :
         slug == 'magnetic-blocks-42-pcs' ? 'MAGNETIC BLOCKS 42 PCS' :
-        slug == 'magnetic-blocks-64-pcs' ? 'MAGNETIC BLOCKS 64 PCS' : '';
+        slug == 'magnetic-blocks-64-pcs' ? 'MAGNETIC BLOCKS 64 PCS' :
+        slug == 'mario-toothbrush' ? 'MARIO TOOTHBRUSH' : '';
     }
 
     function defaultPriceForName(name) {
@@ -134,7 +137,8 @@ service cloud.firestore {
         name == 'MAGNETIC BLOCKS 25 PCS' ? 399 :
         name == 'MAGNETIC BLOCKS 36 PCS' ? 549 :
         name == 'MAGNETIC BLOCKS 42 PCS' ? 599 :
-        name == 'MAGNETIC BLOCKS 64 PCS' ? 799 : -1;
+        name == 'MAGNETIC BLOCKS 64 PCS' ? 799 :
+        name == 'MARIO TOOTHBRUSH' ? 99 : -1;
     }
 
     function isValidCatalogueItem(name, price) {
@@ -318,7 +322,8 @@ service cloud.firestore {
         'rise-one-x-4x4',
         'drift-king',
         'baby-lingo',
-        'sip-buddies'
+        'sip-buddies',
+        'mario-toothbrush'
       ];
     }
 

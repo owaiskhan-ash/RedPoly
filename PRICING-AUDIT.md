@@ -24,6 +24,7 @@ npm run check:prices
 | Pixel Splash | ₹1,749 | `social/pixel-splash-og.png` | **AUTOMATIC WATER BLASTER · ₹1,749 INCL. GST** | ✅ correct |
 | Rise one X 4X4 | ₹1,499 | `social/rise-one-x-4x4-og.png` | **ONLY ₹1,499 · INCL. GST** | ✅ correct |
 | Sip Buddies | ₹899 (all four designs) | `social/sip-buddies-og.png` | **ONLY ₹899 · INCL. GST** | ✅ correct |
+| Mario Toothbrush | ₹99 | `social/mario-toothbrush-og.png` | **ONLY ₹99** | ✅ correct |
 | Stunt Pet | ₹599 | `social/stunt-pet-og.png` | **ONLY ₹599 · INCL. GST** | ✅ correct |
 | Gel Storm | ₹1,999 | `products/gel-storm-scene-1.jpg` (photo) | no price printed | ✅ nothing to be wrong |
 | Mecha Rover | ₹499 | `products/mecha-rover-catalog.jpg` (photo) | no price printed | ✅ nothing to be wrong |

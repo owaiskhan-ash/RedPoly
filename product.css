@@ -946,8 +946,19 @@ body.creature-page--sip .char-final-cta h2 span{color:#1747a6}
   .variant-option:hover{transform:none}
 }
 
-/* Mario Toothbrush: longer name — keep the hero headline within the copy column */
+/* Mario Toothbrush: midnight arcade navy, Mario crimson, and REDPOLY lime */
+body.creature-page--tooth{--character-primary:#0b143b;--character-mid:#080f2e;--character-dark:#030614;--character-deep:#050a1f;--character-hot:#e52521;--character-accent:#c8ff00;--character-light:#f5f8ff;--character-ink:#070e26;--character-story:#040817;--character-card-dark:#121e54;--character-glow:rgba(229,37,33,.46);--character-glow-soft:rgba(200,255,0,.38);--character-glow-faint:rgba(229,37,33,.2);--character-accent-soft:rgba(200,255,0,.16);--character-ring:rgba(200,255,0,.52);--character-accent-halo:rgba(229,37,33,.1);--character-accent-halo-strong:rgba(200,255,0,.06);--character-accent-inset:rgba(229,37,33,.12);--character-shadow:rgba(2,5,16,.66);--character-text-shadow:rgba(3,7,22,.56);--character-nav:rgba(4,8,24,.72);--character-soft-shade:rgba(4,8,24,.28);--character-muted:rgba(245,248,255,.78);--character-muted-strong:rgba(245,248,255,.96);--character-muted-border:rgba(245,248,255,.42);--character-muted-border-strong:rgba(245,248,255,.56);--character-card-ink:#070e26;--character-button-shadow:rgba(2,5,16,.6);--character-final-ink:#070e26;--character-accent-bright:#dcff5c;--character-plate-top:#ff5b3c;--character-plate-mid:#c1121f;--character-plate-bottom:#060c24;--character-border:#030614}
+body.creature-page--tooth .char-hero__texture{background-image:radial-gradient(circle at 75% 32%,rgba(229,37,33,.22),transparent 54%),repeating-linear-gradient(135deg,rgba(200,255,0,.045) 0 2px,transparent 2px 18px)}
 body.creature-page--tooth .char-hero h1{font-size:clamp(56px,8.2vw,126px);line-height:.7}
+body.creature-page--tooth .char-tags span{border:2px solid var(--character-ring);background:rgba(229,37,33,.16);box-shadow:inset 0 0 0 1px rgba(245,248,255,.12)}
+body.creature-page--tooth .char-stage__figure{width:auto;max-width:min(78%,360px);max-height:530px;border-radius:18px;border:2px solid var(--character-ring);background:#000;box-shadow:0 24px 48px rgba(0,0,0,.68);filter:none;transform:rotate(-2deg)}
+body.creature-page--tooth .char-file__portrait{background:#000;padding:18px}
+body.creature-page--tooth .char-file__no{z-index:3}
+body.creature-page--tooth .char-file__stamp{z-index:3;background:rgba(4,8,23,.78)}
+body.creature-page--tooth .char-final-cta h2 span{color:#c8ff00}
 @media(max-width:920px){
   body.creature-page--tooth .char-hero h1{font-size:clamp(64px,14.5vw,120px)}
+}
+@media(max-width:680px){
+  body.creature-page--tooth .char-stage__figure{max-width:min(72%,290px);max-height:420px}
 }

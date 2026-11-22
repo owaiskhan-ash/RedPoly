@@ -348,7 +348,8 @@
             "rise-one-x-4x4",
             "drift-king",
             "baby-lingo",
-            "sip-buddies"
+            "sip-buddies",
+            "mario-toothbrush"
           ]
         },
         "itemSlug": {
@@ -441,7 +442,8 @@
             "sip-buddies-cow",
             "sip-buddies-cat",
             "sip-buddies-puppy",
-            "sip-buddies-apple"
+            "sip-buddies-apple",
+            "mario-toothbrush"
           ]
         },
         "name": {
@@ -601,7 +603,8 @@
             "sip-buddies-cow",
             "sip-buddies-cat",
             "sip-buddies-puppy",
-            "sip-buddies-apple"
+            "sip-buddies-apple",
+            "mario-toothbrush"
           ]
         },
         "costPrice": {

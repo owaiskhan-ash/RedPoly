@@ -109,7 +109,8 @@ export type ProductSlug =
   | 'rise-one-x-4x4'
   | 'drift-king'
   | 'baby-lingo'
-  | 'sip-buddies';
+  | 'sip-buddies'
+  | 'mario-toothbrush';
 
 export interface OrderRecord {
   id: string;
@@ -208,7 +209,8 @@ export type SkuSlug =
   | 'sip-buddies-cow'
   | 'sip-buddies-cat'
   | 'sip-buddies-puppy'
-  | 'sip-buddies-apple';
+  | 'sip-buddies-apple'
+  | 'mario-toothbrush';
 
 export interface StoreCategoryRecord {
   slug: string;
@@ -453,6 +455,11 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
     href: '/sip-buddies?buddy=apple',
     image: '/assets/images/redpoly/products/sip-buddies-apple-thumb.webp?v=sip-20261122',
   },
+  'MARIO TOOTHBRUSH': {
+    price: 99,
+    href: '/mario-toothbrush',
+    image: '/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122',
+  },
 };
 
 const CART_STORAGE_KEY = 'redpoly-cart-v1';
@@ -546,6 +553,7 @@ const SKU_ORDER: ReadonlyArray<SkuSlug> = [
   'sip-buddies-cat',
   'sip-buddies-puppy',
   'sip-buddies-apple',
+  'mario-toothbrush',
 ];
 
 interface DefaultSeedMeta {
@@ -593,6 +601,7 @@ const DEFAULT_PRODUCTS_META: Record<SkuSlug, DefaultSeedMeta> = {
   'sip-buddies-cat': { name: 'SIP BUDDIES CAT', price: 899, cardTag: '', category: 'essentials', costPrice: 479 },
   'sip-buddies-puppy': { name: 'SIP BUDDIES PUPPY', price: 899, cardTag: '', category: 'essentials', costPrice: 479 },
   'sip-buddies-apple': { name: 'SIP BUDDIES APPLE', price: 899, cardTag: '', category: 'essentials', costPrice: 479 },
+  'mario-toothbrush': { name: 'MARIO TOOTHBRUSH', price: 99, cardTag: 'NEW IN STORE', category: 'essentials' },
 };
 
 const NAME_TO_SKU: Record<string, SkuSlug> = {
@@ -617,6 +626,7 @@ const NAME_TO_SKU: Record<string, SkuSlug> = {
   'SIP BUDDIES CAT': 'sip-buddies-cat',
   'SIP BUDDIES PUPPY': 'sip-buddies-puppy',
   'SIP BUDDIES APPLE': 'sip-buddies-apple',
+  'MARIO TOOTHBRUSH': 'mario-toothbrush',
 };
 
 function isValidSkuSlug(slug: string): slug is SkuSlug {
@@ -959,6 +969,7 @@ const VALID_PRODUCT_SLUGS: ReadonlyArray<ProductSlug> = [
   'drift-king',
   'baby-lingo',
   'sip-buddies',
+  'mario-toothbrush',
 ];
 
 function normalizeOrderStatus(raw: unknown): OrderStatus {
