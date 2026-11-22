@@ -28,7 +28,7 @@
     'RISE ONE X 4X4': { price: 1499, href: '/rise-one-x-4x4', image: '/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
     'DRIFT KING': { price: 799, href: '/drift-king', image: '/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' },
     'BABY LINGO': { price: 799, href: '/baby-lingo', image: '/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119' },
-    'MARIO TOOTHBRUSH': { price: 99, href: '/mario-toothbrush', image: '/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122' }
+    'MARIO TOOTHBRUSH': { price: 99, href: '/mario-toothbrush', image: '/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2' }
   };
   var SKU_ORDER = [
     'baby-lingo',
@@ -118,7 +118,7 @@
         'sip-buddies-apple': 'Apple'
       }
     },
-    { id: 'mario-toothbrush', name: 'MARIO TOOTHBRUSH', href: '/mario-toothbrush', image: '/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122', skus: ['mario-toothbrush'], variantLabels: {} }
+    { id: 'mario-toothbrush', name: 'MARIO TOOTHBRUSH', href: '/mario-toothbrush', image: '/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2', skus: ['mario-toothbrush'], variantLabels: {} }
   ];
   var GROUP_BY_ID = {};
   var SKU_TO_GROUP = {};

@@ -458,7 +458,7 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
   'MARIO TOOTHBRUSH': {
     price: 99,
     href: '/mario-toothbrush',
-    image: '/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122',
+    image: '/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2',
   },
 };
 
