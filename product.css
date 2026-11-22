@@ -945,3 +945,9 @@ body.creature-page--sip .char-final-cta h2 span{color:#1747a6}
   .variant-option{transition:none}
   .variant-option:hover{transform:none}
 }
+
+/* Mario Toothbrush: longer name — keep the hero headline within the copy column */
+body.creature-page--tooth .char-hero h1{font-size:clamp(56px,8.2vw,126px);line-height:.7}
+@media(max-width:920px){
+  body.creature-page--tooth .char-hero h1{font-size:clamp(64px,14.5vw,120px)}
+}

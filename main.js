@@ -99,7 +99,8 @@
     'MAGNETIC BLOCKS 64 PCS': { price:799, href:'/magnetic-blocks?pack=64pcs', image:'/assets/images/redpoly/products/magnetic-blocks-64pcs-thumb.webp?v=mag-20261122' },
     'RISE ONE X 4X4': { price:1499, href:'/rise-one-x-4x4', image:'/assets/images/redpoly/products/rise-one-x-4x4-thumb.webp?v=rise-20261122' },
     'DRIFT KING': { price:799, href:'/drift-king', image:'/assets/images/redpoly/products/drift-king-thumb.webp?v=dk-20261124' },
-    'BABY LINGO': { price:799, href:'/baby-lingo', image:'/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119' }
+    'BABY LINGO': { price:799, href:'/baby-lingo', image:'/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119' },
+    'MARIO TOOTHBRUSH': { price:99, href:'/mario-toothbrush', image:'/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122' }
   };
   function isCatalogueProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
   function inCatalogue(name, price) { return isCatalogueProduct(name) && catalogue[name].price === Number(price); }
@@ -125,7 +126,8 @@
     'MINI COOL CAR': 'NEW IN STORE',
     'GEL STORM': 'JUST LANDED',
     'PIXEL SPLASH': 'NEW IN STORE',
-    'BABY LINGO': 'NEW IN STORE'
+    'BABY LINGO': 'NEW IN STORE',
+    'MARIO TOOTHBRUSH': 'NEW IN STORE'
   };
   var DEFAULT_PRICE_COMPARISONS = {
     'drift-king': [{ platform: 'Amazon', price: 859 }],
@@ -139,7 +141,8 @@
     'mecha-rover', 'bubble-gun', 'stunt-pet',
     'cute-dinos-green', 'cute-dinos-red', 'cute-dinos-teal', 'cute-dinos-trio',
     'mini-cool-car', 'gel-storm', 'pixel-splash',
-    'sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple'
+    'sip-buddies-cow', 'sip-buddies-cat', 'sip-buddies-puppy', 'sip-buddies-apple',
+    'mario-toothbrush'
   ];
   var SKU_TO_NAME = {
     'baby-lingo': 'BABY LINGO',
@@ -162,7 +165,8 @@
     'sip-buddies-cow': 'SIP BUDDIES COW',
     'sip-buddies-cat': 'SIP BUDDIES CAT',
     'sip-buddies-puppy': 'SIP BUDDIES PUPPY',
-    'sip-buddies-apple': 'SIP BUDDIES APPLE'
+    'sip-buddies-apple': 'SIP BUDDIES APPLE',
+    'mario-toothbrush': 'MARIO TOOTHBRUSH'
   };
   function toCatalogRecord(sku, raw) {
     var name = SKU_TO_NAME[sku];
@@ -4008,7 +4012,8 @@
       'magnetic-blocks': 'educational',
       'stunt-pet': 'fun',
       'cute-dinos': 'fun',
-      'sip-buddies': 'essentials'
+      'sip-buddies': 'essentials',
+      'mario-toothbrush': 'essentials'
     };
 
     // Snapshot original 11 .shop-card DOM elements in initial order so wishlist hearts, cart listeners & live badges stay attached
