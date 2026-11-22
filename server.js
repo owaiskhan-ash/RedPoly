@@ -50,6 +50,8 @@ const permanentRedirects = {
   '/products/baby-lingo.html': '/baby-lingo',
   '/products/sip-buddies': '/sip-buddies',
   '/products/sip-buddies.html': '/sip-buddies',
+  '/products/mario-toothbrush': '/mario-toothbrush',
+  '/products/mario-toothbrush.html': '/mario-toothbrush',
 };
 
 const temporaryRedirects = new Set([
@@ -96,6 +98,7 @@ const rewrites = {
   '/drift-king': 'products/drift-king.html',
   '/baby-lingo': 'products/baby-lingo.html',
   '/sip-buddies': 'products/sip-buddies.html',
+  '/mario-toothbrush': 'products/mario-toothbrush.html',
   '/account': 'account.html',
   '/my-account': 'account.html',
   '/dashboard': 'dashboard.html',

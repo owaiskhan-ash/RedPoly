@@ -146,7 +146,8 @@
     'sip-buddies-cow': 'NEW IN STORE',
     'sip-buddies-cat': '',
     'sip-buddies-puppy': '',
-    'sip-buddies-apple': ''
+    'sip-buddies-apple': '',
+    'mario-toothbrush': 'NEW IN STORE'
   };
   var DEFAULT_LOW_STOCK_THRESHOLD = 5;
   var INITIAL_SEED_STOCK = 20;
