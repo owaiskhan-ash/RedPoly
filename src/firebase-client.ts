@@ -471,7 +471,7 @@ const CATALOGUE: Record<string, CatalogueEntry> = {
   'BOLT BACKPACK RED': {
     price: 899,
     href: '/bolt-backpack?colour=red',
-    image: '/assets/images/redpoly/products/bag-scene-1.jpg?v=bag-20261122',
+    image: '/assets/images/redpoly/products/bag-red-thumb.webp?v=bag-20261122',
   },
 };
 
