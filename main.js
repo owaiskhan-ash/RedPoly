@@ -103,7 +103,7 @@
     'MARIO TOOTHBRUSH': { price:99, href:'/mario-toothbrush', image:'/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2' },
     // Bolt Backpack sells in two colourways (Blue Good 4You & Red Born Right) at the same price.
     'BOLT BACKPACK BLUE': { price:899, href:'/bolt-backpack?colour=blue', image:'/assets/images/redpoly/products/bag-thumb.webp?v=bag-20261122' },
-    'BOLT BACKPACK RED': { price:899, href:'/bolt-backpack?colour=red', image:'/assets/images/redpoly/products/bag-scene-1.jpg?v=bag-20261122' }
+    'BOLT BACKPACK RED': { price:899, href:'/bolt-backpack?colour=red', image:'/assets/images/redpoly/products/bag-red-thumb.webp?v=bag-20261122' }
   };
   function isCatalogueProduct(name) { return Object.prototype.hasOwnProperty.call(catalogue, name); }
   function inCatalogue(name, price) { return isCatalogueProduct(name) && catalogue[name].price === Number(price); }

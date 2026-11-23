@@ -32,7 +32,7 @@
     'BABY LINGO': { price:799, image:'/assets/images/redpoly/products/baby-lingo-thumb.webp?v=lingo-20261119' },
     'MARIO TOOTHBRUSH': { price:99, image:'/assets/images/redpoly/products/mario-toothbrush-studio.jpg?v=tooth-20261122-v2' },
     'BOLT BACKPACK BLUE': { price:899, image:'/assets/images/redpoly/products/bag-thumb.webp?v=bag-20261122' },
-    'BOLT BACKPACK RED': { price:899, image:'/assets/images/redpoly/products/bag-scene-1.jpg?v=bag-20261122' }
+    'BOLT BACKPACK RED': { price:899, image:'/assets/images/redpoly/products/bag-red-thumb.webp?v=bag-20261122' }
   };
   var liveCatalogMap = {};
   (function hydrateCatalogFromCache() {
