@@ -87,6 +87,18 @@ html.motion-ready .char-story h2 .char-story__magic{animation:char-story-magic 5
 .char-detail-card h3{margin-top:77px;font:28px/.95 'Anton',sans-serif;letter-spacing:.4px}
 .char-detail-card p{max-width:300px;margin-top:8px;font-size:12px;font-weight:600;line-height:1.5;opacity:.78}
 
+/* Bolt Backpack infographic section. */
+.char-inside{position:relative;padding:30px clamp(20px,8vw,120px) 92px;background:var(--character-story);color:var(--character-light)}
+.char-inside__inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,430px);gap:clamp(28px,4.5vw,70px);align-items:center;max-width:1120px;margin:0 auto}
+.char-inside__copy h2{margin-top:12px;font:clamp(44px,5.4vw,72px)/.84 'Anton',sans-serif;letter-spacing:-.5px;text-transform:uppercase;color:var(--character-light)}
+.char-inside__copy h2 span{color:var(--character-accent)}
+.char-inside__copy>p:not(.char-overline){margin-top:20px;font-size:16px;font-weight:600;line-height:1.65;color:var(--character-muted)}
+.char-inside__copy .char-text-link{margin-top:26px}
+.char-inside__media{position:relative;margin:0;text-align:center}
+.char-inside__media img{display:block;width:100%;max-width:430px;height:auto;border:3px solid var(--character-card-ink);box-shadow:12px 12px 0 var(--character-accent);transform:rotate(1.2deg);background:#f4ede0}
+.char-inside__media figcaption{margin-top:18px;font-size:10px;font-weight:900;letter-spacing:2.4px;color:var(--character-accent)}
+@media(max-width:900px){.char-inside__inner{grid-template-columns:1fr;gap:34px}.char-inside__media img{margin:0 auto}.char-inside__media{text-align:center}}
+
 /* Barsaat's three feature cards each get a tiny, contained motion detail. */
 body.creature-page--barsaat .char-detail-card{overflow:hidden;isolation:isolate}
 body.creature-page--barsaat .char-detail-card::before,
